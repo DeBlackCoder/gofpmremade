@@ -28,7 +28,7 @@ function getDailyPhoto(): string {
 const navLinks = [
   [{ label: "Welcome", href: "/" },       { label: "Community", href: "/community" }],
   [{ label: "Our Mission", href: "/mission" }, { label: "Ministry", href: "/ministry" }],
-  [{ label: "Events", href: "/events" },  { label: "Location", href: "/location" }],
+  [{ label: "Events", href: "/events" },  { label: "Contact", href: "/contact" }],
 ];
 
 export default function Hero() {
