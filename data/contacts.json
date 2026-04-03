@@ -1,0 +1,42 @@
+[
+  {
+    "id": "msg-001",
+    "name": "Chisom Eze",
+    "email": "chisom.eze@example.com",
+    "phone": "+234 803 456 7890",
+    "subject": "membership",
+    "message": "Good day Pastor, I recently moved to Port Harcourt and I am looking for a church home. I attended your Sunday service last week and felt very welcome. I would love to know more about becoming a member. God bless you.",
+    "submittedAt": "2025-04-10T09:14:00.000Z",
+    "read": true
+  },
+  {
+    "id": "msg-002",
+    "name": "Emeka Nwosu",
+    "email": "emeka.n@example.com",
+    "phone": "",
+    "subject": "prayer",
+    "message": "Please pray for my family. My wife has been ill for three weeks and the doctors are still running tests. We are trusting God for a miracle. Thank you for your ministry — it has been a great encouragement to us.",
+    "submittedAt": "2025-04-09T17:42:00.000Z",
+    "read": true
+  },
+  {
+    "id": "msg-003",
+    "name": "Blessing Okafor",
+    "email": "blessing.o@example.com",
+    "phone": "+234 812 345 6789",
+    "subject": "events",
+    "message": "Hello, I wanted to ask if the youth hangout on April 26 is open to teenagers who are not yet members of the church. My daughter is 16 and has been asking to attend. Thank you.",
+    "submittedAt": "2025-04-08T11:05:00.000Z",
+    "read": true
+  },
+  {
+    "id": "msg-004",
+    "name": "Tunde Adeyemi",
+    "email": "tunde.a@example.com",
+    "phone": "",
+    "subject": "general",
+    "message": "I just wanted to say thank you for the sermon series on identity. The message on Matthew 3:17 changed something in me. I have been struggling with feeling like I am not enough, and that word broke something loose. Please keep preaching the truth.",
+    "submittedAt": "2025-04-07T08:30:00.000Z",
+    "read": true
+  }
+]
