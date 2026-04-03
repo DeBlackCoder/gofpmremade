@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const navItems = [
   {
@@ -70,6 +70,31 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const router = useRouter();
   const [open, setOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  if (isMobile) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-8 text-center gap-6">
+        <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-2xl">⊞</div>
+        <div className="flex flex-col gap-2">
+          <h1 className="font-heading text-white font-black text-2xl leading-tight tracking-tight">Desktop only</h1>
+          <p className="font-body text-white/45 text-sm leading-relaxed max-w-xs">
+            The admin dashboard is not available on mobile devices. Please use a desktop or laptop to manage your site.
+          </p>
+        </div>
+        <a href="/" className="font-body text-white/40 text-xs border border-white/15 px-4 py-2 rounded-lg hover:text-white hover:bg-white/6 transition-colors">
+          ← Return to site
+        </a>
+      </div>
+    );
+  }
 
   async function handleLogout() {
     await fetch("/api/admin/logout", { method: "POST" });
