@@ -58,7 +58,12 @@ export default function ContactPage() {
     e.preventDefault();
     setStatus("sending");
     try {
-      await new Promise((r) => setTimeout(r, 1400)); // replace with real API call
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error();
       setStatus("sent");
     } catch {
       setStatus("error");
