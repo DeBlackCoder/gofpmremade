@@ -19,5 +19,6 @@ export const config = {
     "/admin-live/:path*",
     "/admin-sermons/:path*",
     "/admin-contacts/:path*",
+    "/admin-community/:path*",
   ],
 };

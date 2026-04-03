@@ -42,6 +42,18 @@ const navItems = [
     ),
   },
   {
+    label: "Community",
+    sub: "Groups & members",
+    href: "/admin-community",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="5" cy="6" r="2" stroke="currentColor" strokeWidth="1.2" fill="none"/>
+        <circle cx="11" cy="6" r="2" stroke="currentColor" strokeWidth="1.2" fill="none"/>
+        <path d="M1 14c0-2.2 1.8-4 4-4M10 14c0-2.2 1.8-4 4-4M7 10c0-1.1.9-2 2-2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none"/>
+      </svg>
+    ),
+  },
+  {
     label: "Messages",
     sub: "Contact responses",
     href: "/admin-contacts",

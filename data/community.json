@@ -1,0 +1,38 @@
+[
+  {
+    "id": "grp-001",
+    "name": "Men of Valour",
+    "tag": "Men",
+    "meets": "Saturdays, 7:00 AM",
+    "leader": "Pastor James Okafor",
+    "bio": "A brotherhood of men committed to accountability, prayer, and growing in godly character. We meet weekly over breakfast for the Word and open conversation.",
+    "spots": null
+  },
+  {
+    "id": "grp-002",
+    "name": "Women of Grace",
+    "tag": "Women",
+    "meets": "Thursdays, 5:30 PM",
+    "leader": "Deaconess Ruth Amadi",
+    "bio": "A warm space for women to study Scripture, share life, and support one another through every season. All women are welcome.",
+    "spots": null
+  },
+  {
+    "id": "grp-003",
+    "name": "Youth Connect",
+    "tag": "Youth",
+    "meets": "Fridays, 6:00 PM",
+    "leader": "Bro. Emmanuel Dike",
+    "bio": "Built for teenagers aged 13–19. We do life together through worship, real talk, and community service.",
+    "spots": 12
+  },
+  {
+    "id": "grp-004",
+    "name": "Family Life Circle",
+    "tag": "Families",
+    "meets": "2nd & 4th Sundays, 12:30 PM",
+    "leader": "Pastor & Mrs. Nwosu",
+    "bio": "For married couples and parents navigating faith and family through a Biblical lens.",
+    "spots": 6
+  }
+]
