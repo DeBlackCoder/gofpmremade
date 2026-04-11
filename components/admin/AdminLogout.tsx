@@ -1,12 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/stores/authStore";
 
 export default function AdminLogout() {
   const router = useRouter();
+  const logout = useAuthStore((s) => s.logout);
 
   async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
+    await logout();
     router.push("/");
   }
 

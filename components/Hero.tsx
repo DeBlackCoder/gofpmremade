@@ -7,25 +7,65 @@ import HeroTour from "@/components/HeroTour";
 import { getDailyPhoto } from "@/lib/church-photos";
 
 const navLinks = [
-  [{ label: "Welcome", href: "/" },          { label: "Community", href: "/community" }, { label: "Give",     href: "/give"     }],
-  [{ label: "Our Mission", href: "/mission" },{ label: "Ministry",  href: "/ministry"  }, { label: "Events",   href: "/events"   }],
-  [{ label: "Location", href: "/location" },  { label: "Contact",   href: "/contact"   }, { label: "Sermons",  href: "/sermons"  }],
+  [
+    { label: "Welcome", href: "/" },
+    { label: "Community", href: "/community" },
+    { label: "Give", href: "/give" },
+  ],
+  [
+    { label: "Our Mission", href: "/mission" },
+    { label: "Ministry", href: "/ministry" },
+    { label: "Events", href: "/events" },
+  ],
+  [
+    { label: "Location", href: "/location" },
+    { label: "Contact", href: "/contact" },
+    { label: "Sermons", href: "/sermons" },
+  ],
 ];
 
 const dailyQuotes = [
-  { quote: "Faith is not the absence of doubt — it is the decision to trust despite it.", ref: "Hebrews 11:1" },
-  { quote: "You are not an afterthought in His story. You are the reason He entered the wilderness.", ref: "Genesis 16:13" },
-  { quote: "The table is His. The food is His. The invitation is His. Your only job is to come.", ref: "Psalm 23:5" },
-  { quote: "Open your hands. Whatever He wants to place here, receive. Whatever He wants to remove, release.", ref: "Matthew 6:10" },
-  { quote: "You are not loved because of what you do. You are loved because of who you are — His.", ref: "Matthew 3:17" },
-  { quote: "In this house, we believe there is a God worth talking to. We believe He is listening.", ref: "Joshua 24:15" },
-  { quote: "To be seen by God is not a threat. It is the safest thing there is.", ref: "Genesis 16:13" },
+  {
+    quote:
+      "Faith is not the absence of doubt — it is the decision to trust despite it.",
+    ref: "Hebrews 11:1",
+  },
+  {
+    quote:
+      "You are not an afterthought in His story. You are the reason He entered the wilderness.",
+    ref: "Genesis 16:13",
+  },
+  {
+    quote:
+      "The table is His. The food is His. The invitation is His. Your only job is to come.",
+    ref: "Psalm 23:5",
+  },
+  {
+    quote:
+      "Open your hands. Whatever He wants to place here, receive. Whatever He wants to remove, release.",
+    ref: "Matthew 6:10",
+  },
+  {
+    quote:
+      "You are not loved because of what you do. You are loved because of who you are — His.",
+    ref: "Matthew 3:17",
+  },
+  {
+    quote:
+      "In this house, we believe there is a God worth talking to. We believe He is listening.",
+    ref: "Joshua 24:15",
+  },
+  {
+    quote:
+      "To be seen by God is not a threat. It is the safest thing there is.",
+    ref: "Genesis 16:13",
+  },
 ];
 
 function getDailyQuote() {
   const now = new Date();
   const dayOfYear = Math.floor(
-    (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000
+    (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86400000,
   );
   return dailyQuotes[dayOfYear % dailyQuotes.length];
 }
@@ -48,11 +88,10 @@ export default function Hero() {
 
       {/* Dark gradient overlay — heavier on the left so text is always readable */}
       <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
-<div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
+      <div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col h-full px-6 py-6 sm:px-10 sm:py-8">
-
         {/* Top bar */}
         <div className="flex items-center justify-between">
           <motion.p
@@ -107,21 +146,39 @@ export default function Hero() {
           data-tour="latest-sermons"
           initial="hidden"
           animate="show"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 1.0 } } }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.12, delayChildren: 1.0 } },
+          }}
         >
           <motion.div
             className="flex items-center justify-between mb-3"
-            variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.5 } } }}
+            variants={{
+              hidden: { opacity: 0, y: 8 },
+              show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+            }}
           >
-            <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">Latest sermons</span>
-            <Link href="/sermons" className="font-body text-white/50 text-[10px] tracking-widest uppercase hover:text-white transition-colors">
+            <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
+              Latest sermons
+            </span>
+            <Link
+              href="/sermons"
+              className="font-body text-white/50 text-[10px] tracking-widest uppercase hover:text-white transition-colors"
+            >
               View all →
             </Link>
           </motion.div>
           {sermons.slice(0, 3).map((sermon) => (
             <motion.div
               key={sermon.slug}
-              variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } } }}
+              variants={{
+                hidden: { opacity: 0, y: 16 },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.55, ease: "easeOut" },
+                },
+              }}
             >
               <Link
                 href={`/sermons/${sermon.slug}`}
@@ -131,9 +188,13 @@ export default function Hero() {
                   <span className="font-body text-white/85 font-semibold text-sm truncate group-hover:text-white transition-colors">
                     {sermon.title}
                   </span>
-                  <span className="font-body text-white/35 text-xs italic">{sermon.scripture} · {sermon.pastor}</span>
+                  <span className="font-body text-white/35 text-xs italic">
+                    {sermon.scripture} · {sermon.pastor}
+                  </span>
                 </div>
-                <span className="text-white/25 group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 flex-shrink-0 text-sm">→</span>
+                <span className="text-white/25 group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 flex-shrink-0 text-sm">
+                  →
+                </span>
               </Link>
             </motion.div>
           ))}
@@ -147,7 +208,10 @@ export default function Hero() {
           className="flex items-end justify-between gap-8 w-full"
           initial="hidden"
           animate="show"
-          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 1.0 } } }}
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.08, delayChildren: 1.0 } },
+          }}
         >
           {/* Nav */}
           <motion.nav
@@ -160,21 +224,30 @@ export default function Hero() {
                 <motion.a
                   href={left.href}
                   className="py-3 text-white/90 font-body font-semibold text-sm sm:text-[15px] tracking-wide border-t border-white/20 hover:text-white transition-colors"
-                  variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+                  variants={{
+                    hidden: { opacity: 0, y: 8 },
+                    show: { opacity: 1, y: 0 },
+                  }}
                 >
                   {left.label}
                 </motion.a>
                 <motion.a
                   href={mid.href}
                   className="py-3 text-white/90 font-body font-semibold text-sm sm:text-[15px] tracking-wide border-t border-white/20 hover:text-white transition-colors"
-                  variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+                  variants={{
+                    hidden: { opacity: 0, y: 8 },
+                    show: { opacity: 1, y: 0 },
+                  }}
                 >
                   {mid.label}
                 </motion.a>
                 <motion.a
                   href={right.href}
                   className="py-3 text-white/90 font-body font-semibold text-sm sm:text-[15px] tracking-wide border-t border-white/20 hover:text-white transition-colors"
-                  variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }}
+                  variants={{
+                    hidden: { opacity: 0, y: 8 },
+                    show: { opacity: 1, y: 0 },
+                  }}
                 >
                   {right.label}
                 </motion.a>
@@ -186,17 +259,26 @@ export default function Hero() {
           <motion.div
             className="hidden md:flex flex-col items-end gap-1.5 max-w-sm pb-1 border-t border-white/15 pt-3"
             data-tour="daily-quote"
-            variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } } }}
+            variants={{
+              hidden: { opacity: 0, y: 10 },
+              show: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.7, ease: "easeOut" },
+              },
+            }}
           >
-            <span className="font-body text-white/30 text-[9px] tracking-widest uppercase">Word for today</span>
+            <span className="font-body text-white/30 text-[9px] tracking-widest uppercase">
+              Word for today
+            </span>
             <p className="font-heading text-white/80 font-black text-sm sm:text-base leading-snug italic text-right">
               &ldquo;{dailyQuote.quote}&rdquo;
             </p>
-            <span className="font-body text-white/35 text-[10px] tracking-wide">— {dailyQuote.ref}</span>
+            <span className="font-body text-white/35 text-[10px] tracking-wide">
+              — {dailyQuote.ref}
+            </span>
           </motion.div>
-
         </motion.div>
-
       </div>
     </section>
   );

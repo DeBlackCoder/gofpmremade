@@ -4,6 +4,8 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useMinistries } from "@/lib/hooks/queries";
+import { useUiStore } from "@/lib/stores/uiStore";
 
 // ─── Background ──────────────────────────────────────────────────────────────
 
@@ -15,123 +17,70 @@ const BG_URL =
 type MinistryTag = "Worship" | "Outreach" | "Care" | "Children" | "Media";
 
 interface Ministry {
-  id: number;
+  id: string;
   name: string;
-  tag: MinistryTag;
-  lead: string;
-  schedule: string;
-  desc: string;
-  volunteers: number | null;
+  tag: string;
+  leader: string;
+  meets: string;
+  bio: string;
+  spots: number | null;
 }
 
 // ─── Data ────────────────────────────────────────────────────────────────────
-
-const ministries: Ministry[] = [
-  {
-    id: 1,
-    name: "Praise & Worship Team",
-    tag: "Worship",
-    lead: "Min. Grace Obi",
-    schedule: "Rehearsals: Fridays, 5:00 PM",
-    desc: "We lead the congregation into the presence of God every Sunday and at special services. We are looking for singers, instrumentalists, and sound engineers who love God and are committed to excellence.",
-    volunteers: null,
-  },
-  {
-    id: 2,
-    name: "Evangelism & Street Outreach",
-    tag: "Outreach",
-    lead: "Deacon Philip Nwosu",
-    schedule: "Every 3rd Saturday, 8:00 AM",
-    desc: "We take the Gospel to markets, neighbourhoods, campuses, and hospitals. If you have a heart for the lost and want to see Port Harcourt transformed, this is your team.",
-    volunteers: 8,
-  },
-  {
-    id: 3,
-    name: "Children's Church",
-    tag: "Children",
-    lead: "Sis. Joy Amaechi",
-    schedule: "Sundays, 9:00 AM",
-    desc: "We disciple the next generation through age-appropriate Bible teaching, games, and worship. Teachers, storytellers, and creatives — we need you.",
-    volunteers: 4,
-  },
-  {
-    id: 4,
-    name: "Welfare & Visitation",
-    tag: "Care",
-    lead: "Pastor Mrs. Briggs",
-    schedule: "Tuesdays & Thursdays",
-    desc: "We care for the sick, bereaved, elderly, and vulnerable in our congregation. We coordinate hospital visits, food drives, and crisis support for members in need.",
-    volunteers: null,
-  },
-  {
-    id: 5,
-    name: "Media & Communications",
-    tag: "Media",
-    lead: "Bro. Daniel Eze",
-    schedule: "Every Sunday + events",
-    desc: "We handle live streaming, photography, social media, and graphic design. If you're skilled in tech, film, or design and want to use those gifts for God's kingdom — join us.",
-    volunteers: 3,
-  },
-  {
-    id: 6,
-    name: "Ushering & Hospitality",
-    tag: "Care",
-    lead: "Sis. Sandra Okoro",
-    schedule: "Sundays & special services",
-    desc: "The first face a visitor sees is ours. We create an atmosphere of warmth, order, and welcome every time the doors open. No experience required — just a heart of service.",
-    volunteers: null,
-  },
-  {
-    id: 7,
-    name: "Prayer & Intercession",
-    tag: "Worship",
-    lead: "Elder Thomas Briggs",
-    schedule: "Wednesdays, 6:00 AM",
-    desc: "We are the engine room of this church. We carry the congregation, the leadership, and the city before God in prayer. All are welcome at the altar.",
-    volunteers: null,
-  },
-];
-
 const tagFilters: (MinistryTag | "All")[] = [
-  "All", "Worship", "Outreach", "Care", "Children", "Media",
+  "All",
+  "Worship",
+  "Outreach",
+  "Care",
+  "Children",
+  "Media",
 ];
 
 const tagColors: Record<MinistryTag, string> = {
-  Worship:  "bg-violet-500/20 text-violet-200",
+  Worship: "bg-violet-500/20 text-violet-200",
   Outreach: "bg-amber-500/20 text-amber-200",
-  Care:     "bg-rose-500/20 text-rose-200",
+  Care: "bg-rose-500/20 text-rose-200",
   Children: "bg-sky-500/20 text-sky-200",
-  Media:    "bg-teal-500/20 text-teal-200",
+  Media: "bg-teal-500/20 text-teal-200",
 };
 
 const tagActiveBg: Record<MinistryTag | "All", string> = {
-  All:      "bg-white text-black",
-  Worship:  "bg-violet-400 text-violet-950",
+  All: "bg-white text-black",
+  Worship: "bg-violet-400 text-violet-950",
   Outreach: "bg-amber-400 text-amber-950",
-  Care:     "bg-rose-400 text-rose-950",
+  Care: "bg-rose-400 text-rose-950",
   Children: "bg-sky-400 text-sky-950",
-  Media:    "bg-teal-400 text-teal-950",
+  Media: "bg-teal-400 text-teal-950",
 };
 
 const stats = [
-  { value: "7",    label: "Active ministries" },
+  { value: "7", label: "Active ministries" },
   { value: "200+", label: "Volunteers" },
-  { value: "52",   label: "Sundays a year" },
-  { value: "∞",    label: "Room for you" },
+  { value: "52", label: "Sundays a year" },
+  { value: "∞", label: "Room for you" },
 ];
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function MinistryPage() {
-  const [activeTag, setActiveTag] = useState<MinistryTag | "All">("All");
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [activeTag, setActiveTag] = useState<string | "All">("All");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { data: ministriesData, isLoading, error } = useMinistries();
+  const addToast = useUiStore((s) => s.addToast);
+
+  if (error) {
+    addToast({ type: "error", message: "Failed to load ministries" });
+  }
+
+  const ministries = ministriesData?.data || [];
 
   const filtered =
-    activeTag === "All" ? ministries : ministries.filter((m) => m.tag === activeTag);
+    activeTag === "All"
+      ? ministries
+      : (ministries as any[]).filter((m) => m.tag === activeTag || (m.tag as string).toUpperCase() === activeTag.toUpperCase());
 
   return (
     <section className="relative w-full min-h-svh">
-
       {/* Background */}
       <motion.div
         className="absolute inset-0"
@@ -149,11 +98,10 @@ export default function MinistryPage() {
         />
       </motion.div>
       <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
-<div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
+      <div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
       <div className="relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-
         {/* Top bar */}
         <div className="flex items-center justify-between">
           <motion.p
@@ -206,7 +154,9 @@ export default function MinistryPage() {
           transition={{ delay: 0.85, duration: 0.7 }}
         >
           <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm">
-            Every believer is called to serve. Our ministries are the hands and feet of this church — each one a place where your gifts, your time, and your story become part of something greater than yourself.
+            Every believer is called to serve. Our ministries are the hands and
+            feet of this church — each one a place where your gifts, your time,
+            and your story become part of something greater than yourself.
           </p>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-px border border-white/15 bg-white/15">
@@ -246,7 +196,10 @@ export default function MinistryPage() {
               {tagFilters.map((tag) => (
                 <button
                   key={tag}
-                  onClick={() => { setActiveTag(tag); setExpandedId(null); }}
+                  onClick={() => {
+                    setActiveTag(tag);
+                    setExpandedId(null);
+                  }}
                   className={`font-body text-xs tracking-widest uppercase px-3 py-1 border transition-all duration-200 ${
                     activeTag === tag
                       ? `${tagActiveBg[tag]} border-transparent`
@@ -282,22 +235,26 @@ export default function MinistryPage() {
                         <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
                           {ministry.name}
                         </span>
-                        <span className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${tagColors[ministry.tag]}`}>
-                          {ministry.tag}
+                        <span
+                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${(tagColors as any)[ministry.tag] || "bg-white/10 text-white/50"}`}
+                        >
+                          {ministry.tag as string}
                         </span>
-                        {ministry.volunteers !== null && (
+                        {ministry.spots !== null && (
                           <span className="font-body text-[10px] tracking-widest uppercase px-2 py-0.5 bg-rose-500/20 text-rose-300">
-                            {ministry.volunteers} spots left
+                            {ministry.spots} spots left
                           </span>
                         )}
                       </div>
                       <span className="font-body text-white/45 text-xs">
-                        {ministry.schedule} · Led by {ministry.lead}
+                        {ministry.meets || (ministry as any).schedule} · Led by {ministry.leader || (ministry as any).lead}
                       </span>
                     </div>
                     <span
                       className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 transition-all duration-300 inline-block"
-                      style={{ transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
+                      style={{
+                        transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+                      }}
                     >
                       +
                     </span>
@@ -314,7 +271,7 @@ export default function MinistryPage() {
                       >
                         <div className="pb-6 pr-8 flex flex-col gap-4 max-w-lg">
                           <p className="font-body text-white/70 text-sm leading-relaxed">
-                            {ministry.desc}
+                            {ministry.bio || (ministry as any).desc}
                           </p>
                           <div className="flex gap-3 flex-wrap">
                             <Button
@@ -414,7 +371,9 @@ export default function MinistryPage() {
               Ready to serve?
             </p>
             <p className="font-heading text-white font-black text-2xl sm:text-3xl leading-tight">
-              Your gift was made<br />for a moment like this.
+              Your gift was made
+              <br />
+              for a moment like this.
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">

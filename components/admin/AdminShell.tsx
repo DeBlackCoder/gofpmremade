@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useAuthStore } from "@/lib/stores/authStore";
 
 const navItems = [
   {
@@ -83,6 +84,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   const router = useRouter();
   const [open, setOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const logout = useAuthStore((s) => s.logout);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024);
@@ -109,7 +111,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
   }
 
   async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
+    await logout();
     router.push("/");
   }
 
