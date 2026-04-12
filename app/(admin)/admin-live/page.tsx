@@ -1,43 +1,56 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiClient } from "@/lib/api/client";
+import { Button } from "@/components/ui/button";
+import {
+  useCreateLivestreamMutation,
+  useEndLivestream,
+  useLivestreamActive,
+  useLivestreamSchedule,
+  useStartLivestream,
+} from "@/lib/hooks/queries";
+import { toYouTubeEmbedUrl, toYouTubeWatchUrl } from "@/lib/utils/youtube";
 
-interface PreviousStream {
-  id: string;
-  title: string;
-  description?: string;
-  streamUrl: string;
-  date: string;
-}
-
-interface LiveSettings {
+interface LiveSettingsForm {
   isLive: boolean;
   streamUrl: string;
   title: string;
   description: string;
-  previousStreams?: PreviousStream[];
 }
 
-const defaultLiveSettings: LiveSettings = {
+const defaultLiveSettings: LiveSettingsForm = {
   isLive: false,
   streamUrl: "",
-  title: "",
-  description: "",
-  previousStreams: [],
+  title: "Sunday Service",
+  description: "Join us live for worship and the Word.",
 };
 
 export default function AdminLivePage() {
-  const [settings, setSettings] = useState<LiveSettings>(defaultLiveSettings);
+  const activeQuery = useLivestreamActive();
+  const scheduleQuery = useLivestreamSchedule();
+  const createLivestreamMutation = useCreateLivestreamMutation();
+  const startLivestreamMutation = useStartLivestream();
+  const endLivestreamMutation = useEndLivestream();
+
+  const [settings, setSettings] =
+    useState<LiveSettingsForm>(defaultLiveSettings);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [editingStream, setEditingStream] = useState<PreviousStream | null>(
-    null,
+  const [liveAction, setLiveAction] = useState<"idle" | "starting" | "ending">(
+    "idle",
   );
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    apiClient.get<LiveSettings>("/admin/live").then(setSettings);
-  }, []);
+    const active = activeQuery.data;
+    if (!active) return;
+
+    setSettings({
+      isLive: !!active.isLive,
+      streamUrl: active.streamUrl || "",
+      title: active.title || defaultLiveSettings.title,
+      description: active.description || defaultLiveSettings.description,
+    });
+  }, [activeQuery.data]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -53,43 +66,66 @@ export default function AdminLivePage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const updated = await apiClient.post<{ ok: boolean }>(
-      "/admin/live",
-      settings,
-    );
-    if (updated.ok) {
-      const fresh = await apiClient.get<LiveSettings>("/admin/live");
-      setSettings(fresh);
+
+    try {
+      const updated = await createLivestreamMutation.mutateAsync({
+        streamUrl: settings.streamUrl,
+        title: settings.title,
+        description: settings.description,
+      });
+
+      setSettings((p) => ({
+        ...p,
+        isLive: !!updated.isLive,
+        streamUrl: updated.streamUrl || p.streamUrl,
+        title: updated.title || p.title,
+        description: updated.description || p.description,
+      }));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
   }
 
-  async function handleDeleteStream(id: string) {
-    await apiClient.delete("/admin/live", { body: { id } });
-    setSettings((p) => ({
-      ...p,
-      previousStreams: (p.previousStreams ?? []).filter((s) => s.id !== id),
-    }));
+  async function handleGoLive() {
+    setLiveAction("starting");
+    try {
+      const live = await startLivestreamMutation.mutateAsync();
+      setSettings((p) => ({
+        ...p,
+        isLive: !!live.isLive,
+        streamUrl: live.streamUrl || p.streamUrl,
+        title: live.title || p.title,
+        description: live.description || p.description,
+      }));
+    } finally {
+      setLiveAction("idle");
+    }
   }
 
-  async function handleUpdateStream(e: React.FormEvent) {
-    e.preventDefault();
-    if (!editingStream) return;
-    await apiClient.put("/admin/live", editingStream);
-    setSettings((p) => ({
-      ...p,
-      previousStreams: (p.previousStreams ?? []).map((s) =>
-        s.id === editingStream.id ? editingStream : s,
-      ),
-    }));
-    setEditingStream(null);
+  async function handleEndLive() {
+    setLiveAction("ending");
+    try {
+      const live = await endLivestreamMutation.mutateAsync();
+      setSettings((p) => ({
+        ...p,
+        isLive: !!live.isLive,
+        streamUrl: live.streamUrl || p.streamUrl,
+        title: live.title || p.title,
+        description: live.description || p.description,
+      }));
+    } finally {
+      setLiveAction("idle");
+    }
   }
 
   const inputClass =
     "bg-white/5 border border-white/15 px-3 py-2.5 font-body text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/40 transition-colors w-full";
-  const prevStreams = settings.previousStreams ?? [];
+  const prevStreams = scheduleQuery.data ?? [];
+  const activeEmbedUrl = settings.streamUrl
+    ? toYouTubeEmbedUrl(settings.streamUrl)
+    : "";
 
   return (
     <div className="flex flex-col min-h-screen px-6 py-8 sm:px-10 sm:py-10 max-w-3xl mx-auto">
@@ -110,22 +146,7 @@ export default function AdminLivePage() {
           Stream settings
         </p>
 
-        <label className="flex items-center gap-4 cursor-pointer group">
-          <div className="relative">
-            <input
-              type="checkbox"
-              name="isLive"
-              checked={settings.isLive}
-              onChange={handleChange}
-              className="sr-only"
-            />
-            <div
-              className={`w-10 h-5 rounded-full transition-colors ${settings.isLive ? "bg-red-500" : "bg-white/15"}`}
-            />
-            <div
-              className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white transition-transform ${settings.isLive ? "translate-x-5" : ""}`}
-            />
-          </div>
+        <div className="flex items-center justify-between gap-4 border border-white/10 bg-white/5 px-4 py-3">
           <div className="flex flex-col gap-0.5">
             <span className="font-body text-white font-semibold text-sm">
               {settings.isLive ? (
@@ -134,27 +155,51 @@ export default function AdminLivePage() {
                   Live now
                 </span>
               ) : (
-                "Go live"
+                "Offline"
               )}
             </span>
             <span className="font-body text-white/35 text-xs">
-              Toggle to show the Watch Live button on the homepage. Turning off
-              auto-archives this stream.
+              Use the buttons below to start or end the live stream.
             </span>
           </div>
-        </label>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={liveAction !== "idle" || settings.isLive}
+              onClick={handleGoLive}
+              className="border-white/30 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-4"
+            >
+              {liveAction === "starting" ? "Starting…" : "Go live"}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={liveAction !== "idle" || !settings.isLive}
+              onClick={handleEndLive}
+              className="border-white/30 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-4"
+            >
+              {liveAction === "ending" ? "Ending…" : "End live"}
+            </Button>
+          </div>
+        </div>
 
         <div className="flex flex-col gap-1">
           <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
-            Stream URL
+            YouTube stream URL
           </label>
           <input
             name="streamUrl"
             value={settings.streamUrl}
             onChange={handleChange}
-            placeholder="https://youtube.com/live/..."
+            placeholder="https://www.youtube.com/watch?v=..."
             className={inputClass}
           />
+          <p className="font-body text-white/25 text-xs">
+            We will turn this into an embedded player for the public live page.
+          </p>
         </div>
         <div className="flex flex-col gap-1">
           <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
@@ -196,6 +241,26 @@ export default function AdminLivePage() {
         </div>
       </form>
 
+      {activeEmbedUrl && (
+        <div className="mt-8 border border-white/10 bg-white/5 p-4">
+          <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-3">
+            Preview
+          </p>
+          <div className="aspect-video w-full overflow-hidden border border-white/10 bg-black">
+            <iframe
+              className="h-full w-full"
+              src={activeEmbedUrl}
+              title="Livestream preview"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+          <p className="font-body text-white/30 text-xs mt-2 break-all">
+            {toYouTubeWatchUrl(settings.streamUrl)}
+          </p>
+        </div>
+      )}
+
       {/* Previous streams */}
       <div className="mt-10">
         <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-3">
@@ -204,116 +269,36 @@ export default function AdminLivePage() {
 
         {prevStreams.length === 0 && (
           <p className="font-body text-white/25 text-sm">
-            No previous streams yet.
+            No previous streams yet. End a live session to archive it here.
           </p>
         )}
 
         {prevStreams.map((stream) => (
-          <div key={stream.id}>
-            {editingStream?.id === stream.id ? (
-              /* Edit form */
-              <form
-                onSubmit={handleUpdateStream}
-                className="border border-white/15 bg-white/5 p-4 mb-2 flex flex-col gap-3"
+          <div
+            key={stream.id}
+            className="flex items-start justify-between gap-4 py-4 border-t border-white/10 hover:border-white/20 transition-colors"
+          >
+            <div className="flex flex-col gap-0.5 min-w-0">
+              <span className="font-body text-white font-semibold text-sm truncate">
+                {stream.title}
+              </span>
+              <span className="font-body text-white/35 text-xs">
+                {stream.date}
+              </span>
+              {stream.description && (
+                <span className="font-body text-white/30 text-xs mt-0.5 line-clamp-1">
+                  {stream.description}
+                </span>
+              )}
+              <a
+                href={toYouTubeWatchUrl(stream.streamUrl)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-body text-white/30 text-[10px] underline underline-offset-2 hover:text-white transition-colors truncate mt-0.5"
               >
-                <div className="flex flex-col gap-1">
-                  <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
-                    Title
-                  </label>
-                  <input
-                    value={editingStream.title}
-                    onChange={(e) =>
-                      setEditingStream(
-                        (p) => p && { ...p, title: e.target.value },
-                      )
-                    }
-                    className={inputClass}
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
-                    Stream URL
-                  </label>
-                  <input
-                    value={editingStream.streamUrl}
-                    onChange={(e) =>
-                      setEditingStream(
-                        (p) => p && { ...p, streamUrl: e.target.value },
-                      )
-                    }
-                    className={inputClass}
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
-                    Description
-                  </label>
-                  <textarea
-                    value={editingStream.description}
-                    onChange={(e) =>
-                      setEditingStream(
-                        (p) => p && { ...p, description: e.target.value },
-                      )
-                    }
-                    rows={2}
-                    className={`${inputClass} resize-none`}
-                  />
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="submit"
-                    className="font-body text-sm text-white border border-white/30 px-4 py-1.5 hover:bg-white hover:text-black transition-colors cursor-pointer"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEditingStream(null)}
-                    className="font-body text-white/40 text-sm hover:text-white transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <div className="flex items-start justify-between gap-4 py-4 border-t border-white/10 hover:border-white/20 transition-colors">
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <span className="font-body text-white font-semibold text-sm truncate">
-                    {stream.title}
-                  </span>
-                  <span className="font-body text-white/35 text-xs">
-                    {stream.date}
-                  </span>
-                  {stream.description && (
-                    <span className="font-body text-white/30 text-xs mt-0.5 line-clamp-1">
-                      {stream.description}
-                    </span>
-                  )}
-                  <a
-                    href={stream.streamUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-body text-white/30 text-[10px] underline underline-offset-2 hover:text-white transition-colors truncate mt-0.5"
-                  >
-                    {stream.streamUrl}
-                  </a>
-                </div>
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <button
-                    onClick={() => setEditingStream(stream)}
-                    className="font-body text-white/40 text-xs hover:text-white transition-colors cursor-pointer"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteStream(stream.id)}
-                    className="font-body text-white/25 text-xs hover:text-red-400 transition-colors cursor-pointer"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            )}
+                {stream.streamUrl}
+              </a>
+            </div>
           </div>
         ))}
       </div>

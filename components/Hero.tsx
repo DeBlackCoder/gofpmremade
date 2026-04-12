@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { sermons } from "@/lib/sermons-data";
@@ -95,12 +96,19 @@ export default function Hero() {
             transition={{ delay: 0.3, duration: 0.6 }}
           >
             <div className="flex items-center justify-between gap-4 lg:contents">
-              <motion.p
-                className="font-body text-white/70 text-xs tracking-widest uppercase"
-                data-tour="brand"
-              >
-                Assemblies Of God Church
-              </motion.p>
+              <motion.div className="flex items-center gap-3" data-tour="brand">
+                <Image
+                  src="/logo.jpeg"
+                  alt="Assemblies Of God Church logo"
+                  width={60}
+                  height={60}
+                  priority
+                  className="h-16 w-16 rounded-md object-contain border border-white/15 bg-white/5 p-1.5"
+                />
+                <p className="font-body text-white/70 text-xs tracking-widest uppercase">
+                  Assemblies Of God Church
+                </p>
+              </motion.div>
 
               <div className="flex items-center gap-3 lg:order-last">
                 <motion.a
@@ -342,9 +350,13 @@ export default function Hero() {
       <footer className="relative z-10 bg-black border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-8 sm:px-10 sm:py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-md border border-white/20 bg-white/5 flex items-center justify-center text-[10px] tracking-widest uppercase text-white/35 shrink-0">
-              Logo
-            </div>
+            <Image
+              src="/logo.jpeg"
+              alt="Assemblies Of God Church logo"
+              width={48}
+              height={48}
+              className="h-12 w-12 rounded-md object-contain border border-white/20 bg-white/5 p-1.5 shrink-0"
+            />
             <div className="flex flex-col gap-1">
               <span className="font-body text-white text-sm tracking-widest uppercase">
                 Assemblies Of God Church

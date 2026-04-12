@@ -2,26 +2,23 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useVerifyPaymentMutation } from "@/lib/hooks/queries";
 
 type VerifyState = "idle" | "verifying" | "success" | "failed";
 
 function GivingVerifyContent() {
   const params = useSearchParams();
-  const verifyMutation = useVerifyPaymentMutation();
+  const { mutateAsync: verifyPayment } = useVerifyPaymentMutation();
 
   const [state, setState] = useState<VerifyState>("idle");
   const [message, setMessage] = useState("Preparing verification...");
 
-  const reference = useMemo(() => {
-    return (
-      params.get("reference") ||
-      params.get("trxref") ||
-      params.get("tx_ref") ||
-      ""
-    );
-  }, [params]);
+  const reference =
+    params.get("reference") ||
+    params.get("trxref") ||
+    params.get("tx_ref") ||
+    "";
 
   const providerStatus =
     params.get("status") || params.get("payment_status") || "";
@@ -40,7 +37,7 @@ function GivingVerifyContent() {
         setState("verifying");
         setMessage("Verifying payment, please wait...");
 
-        const result = await verifyMutation.mutateAsync(reference);
+        const result = await verifyPayment(reference);
         if (cancelled) return;
 
         const normalized = String(result.status || "").toUpperCase();
@@ -79,14 +76,15 @@ function GivingVerifyContent() {
     return () => {
       cancelled = true;
     };
-  }, [providerStatus, reference, verifyMutation]);
+  }, [providerStatus, reference, verifyPayment]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6 py-10">
-      <div className="w-full max-w-xl border border-white/10 bg-white/5 p-6 sm:p-8">
-        <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-2">
+    <div className="relative min-h-screen flex items-center justify-center px-6 py-10 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/55" />
+      <div className="relative z-10 w-full max-w-xl border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-sm">
+        {/* <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-2">
           Payment callback
-        </p>
+        </p> */}
         <h1 className="font-heading text-white font-black text-3xl leading-none tracking-tight mb-4">
           {state === "success"
             ? "Payment confirmed"
@@ -128,8 +126,9 @@ export default function GivingVerifyPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center px-6 py-10">
-          <div className="w-full max-w-xl border border-white/10 bg-white/5 p-6 sm:p-8">
+        <div className="relative min-h-screen flex items-center justify-center px-6 py-10 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/55" />
+          <div className="relative z-10 w-full max-w-xl border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-sm">
             <p className="font-body text-white/70 text-sm">Loading...</p>
           </div>
         </div>

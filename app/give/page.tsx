@@ -4,13 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  useInitiateDonationMutation,
-  useVerifyPaymentMutation,
-} from "@/lib/hooks/queries";
+import { useInitiateDonationMutation } from "@/lib/hooks/queries";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { useAuthStore } from "@/lib/stores/authStore";
 import { getDailyPhoto } from "@/lib/church-photos";
+import { API_BASE_URL } from "@/lib/constants/config";
 import Link from "next/link";
 
 type GivingType =
@@ -71,7 +69,6 @@ export default function GivePage() {
 
   // Real API mutations
   const initiateMutation = useInitiateDonationMutation();
-  const verifyMutation = useVerifyPaymentMutation();
 
   // Form state
   const [step, setStep] = useState<Step>("amount");
@@ -86,27 +83,11 @@ export default function GivePage() {
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
   const [reference, setReference] = useState("");
-  const [method, setMethod] = useState<"bank" | "card">("card");
+  const [method, setMethod] = useState<"PAYSTACK" | "FLUTTERWAVE">("PAYSTACK");
   const [submitting, setSubmitting] = useState(false);
-  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [completionMessage, setCompletionMessage] = useState(
     "Your gift has been recorded.",
   );
-
-  // Bank details for transfers
-  const bankDetails = [
-    {
-      bank: "Zenith Bank",
-      account: "1010899365",
-      name: "Assemblies of God Church",
-    },
-    { bank: "GTBank", account: "0211277651", name: "Assemblies of God Church" },
-    {
-      bank: "Access Bank",
-      account: "0720891840",
-      name: "Assemblies of God Church",
-    },
-  ];
 
   const amount =
     preset ?? (customAmt ? parseInt(customAmt.replace(/\D/g, ""), 10) : 0);
@@ -121,48 +102,83 @@ export default function GivePage() {
       return;
     }
 
+    console.info("[GiveFlow] initiate:start", {
+      method,
+      amount,
+      givingType,
+      frequency,
+      hasEmail: !!email,
+      hasName: !!fullName,
+      apiBaseUrl: API_BASE_URL,
+    });
+
     setStep("processing");
     try {
-      const paymentMethod = method === "card" ? "PAYSTACK" : "BANK";
+      const result = await Promise.race([
+        initiateMutation.mutateAsync({
+          amount,
+          type: givingType,
+          frequency,
+          fullName,
+          email,
+          phone,
+          note,
+          method,
+          redirectUrl: window.location.href,
+        }),
+        new Promise<never>((_, reject) => {
+          setTimeout(() => {
+            reject(new Error("Payment initialization timed out after 15s"));
+          }, 15000);
+        }),
+      ]);
 
-      const result = await initiateMutation.mutateAsync({
-        amount,
-        type: givingType,
-        frequency,
-        fullName,
-        email,
-        phone,
-        note,
-        method: paymentMethod,
-        redirectUrl: window.location.href,
+      console.info("[GiveFlow] initiate:response", {
+        method: result.method,
+        status: result.status,
+        reference: result.reference,
+        hasPaymentUrl: !!result.paymentUrl,
+        paymentUrlPreview: result.paymentUrl
+          ? String(result.paymentUrl).slice(0, 80)
+          : null,
       });
 
       // Payment URL generated
-      if (result.paymentUrl) {
+      if (result.paymentUrl && /^https?:\/\//i.test(result.paymentUrl)) {
         setReference(result.reference);
         setCompletionMessage("Redirecting to secure payment checkout...");
-        // Redirect to payment gateway
-        window.location.href = result.paymentUrl;
+        console.info("[GiveFlow] redirect:attempt", {
+          reference: result.reference,
+          method,
+          url: result.paymentUrl,
+        });
+        window.location.assign(result.paymentUrl);
       } else {
-        setStep("done");
-        setCompletionMessage(
-          method === "bank"
-            ? "Your bank transfer notice has been recorded. Please complete the transfer using the account details shown above."
-            : "Your gift has been recorded. Check your email for the next step.",
-        );
+        console.warn("[GiveFlow] redirect:missing-or-invalid-url", {
+          reference: result.reference,
+          method,
+          paymentUrl: result.paymentUrl ?? null,
+        });
+        setStep("confirm");
         addToast({
-          type: "success",
+          type: "error",
           message:
-            method === "bank"
-              ? "Bank transfer notice recorded"
-              : "Donation initiated! Check your email for payment link",
+            "Could not open payment checkout. Please confirm your payment method and try again.",
         });
       }
     } catch (error: any) {
+      console.error("[GiveFlow] initiate:error", {
+        method,
+        message: error?.message || "Unknown error",
+        details: error?.details || null,
+        apiBaseUrl: API_BASE_URL,
+      });
       setStep("confirm");
       addToast({
         type: "error",
-        message: error?.message || "Failed to initiate donation",
+        message:
+          error?.message ||
+          "Failed to reach payment server. Check API URL / ngrok and try again.",
       });
     }
   };
@@ -177,7 +193,7 @@ export default function GivePage() {
     setNote("");
     setGivingType("Tithe");
     setFrequency("One-time");
-    setMethod("card");
+    setMethod("PAYSTACK");
     setReference("");
     setCompletionMessage("Your gift has been recorded.");
   };
@@ -188,16 +204,6 @@ export default function GivePage() {
       await handleInitiateDonation();
     } finally {
       setSubmitting(false);
-    }
-  };
-
-  const copyAccount = async (account: string, idx: number) => {
-    try {
-      await navigator.clipboard.writeText(account);
-      setCopiedIdx(idx);
-      setTimeout(() => setCopiedIdx(null), 2000);
-    } catch {
-      addToast({ type: "error", message: "Failed to copy" });
     }
   };
 
@@ -361,7 +367,7 @@ export default function GivePage() {
                   </div>
 
                   {/* Frequency */}
-                  <div className="flex flex-col gap-2">
+                  {/* <div className="flex flex-col gap-2">
                     <label className="font-body text-white/45 text-xs tracking-widest uppercase">
                       Frequency
                     </label>
@@ -372,7 +378,7 @@ export default function GivePage() {
                       Recurring giving options are intentionally disabled for
                       this church flow.
                     </p>
-                  </div>
+                  </div> */}
 
                   {/* Preset amounts */}
                   <div className="flex flex-col gap-2">
@@ -510,7 +516,7 @@ export default function GivePage() {
                       Payment method
                     </label>
                     <div className="flex gap-2">
-                      {(["bank", "card"] as const).map((m) => (
+                      {(["PAYSTACK", "FLUTTERWAVE"] as const).map((m) => (
                         <button
                           key={m}
                           onClick={() => setMethod(m)}
@@ -520,14 +526,13 @@ export default function GivePage() {
                               : "border-white/25 text-white/60 hover:border-white/50 hover:text-white"
                           }`}
                         >
-                          {m === "bank" ? "Bank transfer" : "Card"}
+                          {m === "PAYSTACK" ? "Paystack" : "Flutterwave"}
                         </button>
                       ))}
                     </div>
-                    {method === "card" && (
+                    {method === "PAYSTACK" && (
                       <p className="font-body text-white/40 text-xs mt-1 leading-relaxed">
-                        Card payments are processed securely via Paystack.
-                        You&apos;ll be redirected after confirmation.
+                        Paystack checkout will open after you confirm.
                       </p>
                     )}
                   </div>
@@ -567,12 +572,13 @@ export default function GivePage() {
                     {[
                       { label: "Amount", value: displayAmount },
                       { label: "Giving type", value: givingType },
-                      { label: "Frequency", value: frequency },
+                      // { label: "Frequency", value: frequency },
                       { label: "Name", value: fullName },
                       { label: "Email", value: email },
                       {
                         label: "Method",
-                        value: method === "bank" ? "Bank transfer" : "Card",
+                        value:
+                          method === "PAYSTACK" ? "Paystack" : "Flutterwave",
                       },
                       ...(note ? [{ label: "Note", value: note }] : []),
                     ].map(({ label, value }) => (
@@ -590,45 +596,6 @@ export default function GivePage() {
                     ))}
                   </div>
 
-                  {/* Bank details (if bank method) */}
-                  {method === "bank" && (
-                    <div className="flex flex-col gap-3">
-                      <p className="font-body text-white/45 text-xs tracking-widest uppercase">
-                        Transfer to any of these accounts
-                      </p>
-                      <div className="flex flex-col gap-2">
-                        {bankDetails.map((b, idx) => (
-                          <div
-                            key={b.bank}
-                            className="border border-white/15 bg-white/5 px-4 py-3 flex items-center justify-between gap-4"
-                          >
-                            <div className="flex flex-col gap-0.5">
-                              <span className="font-body text-white/40 text-[10px] tracking-widests uppercase">
-                                {b.bank}
-                              </span>
-                              <span className="font-body text-white font-semibold text-sm tracking-wider">
-                                {b.account}
-                              </span>
-                              <span className="font-body text-white/50 text-[10px]">
-                                {b.name}
-                              </span>
-                            </div>
-                            <button
-                              onClick={() => copyAccount(b.account, idx)}
-                              className="font-body text-[10px] tracking-widests uppercase border border-white/25 px-3 py-1.5 text-white/50 hover:bg-white hover:text-black hover:border-transparent transition-colors flex-shrink-0"
-                            >
-                              {copiedIdx === idx ? "Copied!" : "Copy"}
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                      <p className="font-body text-white/35 text-xs leading-relaxed">
-                        After transferring, click the button below to notify us
-                        and receive your giving acknowledgement.
-                      </p>
-                    </div>
-                  )}
-
                   <Button
                     onClick={handleConfirm}
                     disabled={submitting}
@@ -638,16 +605,50 @@ export default function GivePage() {
                     {submitting && (
                       <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
                     )}
-                    {submitting
-                      ? "Processing…"
-                      : method === "bank"
-                        ? "I've sent the transfer"
-                        : "Proceed to payment"}
+                    {submitting ? "Processing…" : "Proceed to payment"}
                   </Button>
                 </motion.div>
               )}
 
-              {/* STEP 4 — Done */}
+              {/* STEP 4 — Processing */}
+              {step === "processing" && (
+                <motion.div
+                  key="processing"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.35 }}
+                  className="flex flex-col gap-6 py-4"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    <p className="font-body text-white/70 text-sm">
+                      Preparing secure checkout...
+                    </p>
+                  </div>
+
+                  <p className="font-body text-white/45 text-xs leading-relaxed max-w-sm">
+                    If this takes more than a few seconds, click back and try
+                    again. We will not charge you until checkout completes.
+                  </p>
+
+                  {reference ? (
+                    <p className="font-body text-white/35 text-xs break-all">
+                      Reference: {reference}
+                    </p>
+                  ) : null}
+
+                  <Button
+                    onClick={() => setStep("confirm")}
+                    variant="ghost"
+                    className="self-start text-white/50 hover:text-white hover:bg-transparent font-body text-sm tracking-wide rounded-none px-0 underline underline-offset-4"
+                  >
+                    Back to confirmation
+                  </Button>
+                </motion.div>
+              )}
+
+              {/* STEP 5 — Done */}
               {step === "done" && (
                 <motion.div
                   key="done"
@@ -774,8 +775,8 @@ export default function GivePage() {
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>
               <p className="font-body text-white/35 text-[10px] leading-relaxed">
-                Your financial information is never stored on our servers. Bank
-                transfers go directly to our verified church account.
+                Your financial information is never stored on our servers. All
+                payments are processed through Paystack or Flutterwave.
               </p>
             </div>
           </motion.div>
