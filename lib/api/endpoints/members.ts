@@ -4,7 +4,11 @@
 
 import { apiClient } from "@/lib/api/client";
 import { unwrap } from "@/lib/api/unwrap";
-import { MemberListResult, MemberProfile, PublicUser } from "@/lib/types/resources";
+import {
+  MemberListResult,
+  MemberProfile,
+  PublicUser,
+} from "@/lib/types/resources";
 import type { ApiResponse } from "@/lib/types/common";
 
 export const membersApi = {
@@ -30,14 +34,17 @@ export const membersApi = {
     return unwrap(res);
   },
 
-  getByBranch: async (branchId: string): Promise<{ data: PublicUser[] }> => {
-    const res = await apiClient.get<ApiResponse<{ data: PublicUser[] }>>(
-      `/members/branch/${branchId}`,
-    );
-    return unwrap(res);
+  // Single-church setup: no branch segmentation.
+  getByBranch: async (_branchId: string): Promise<{ data: PublicUser[] }> => {
+    const res =
+      await apiClient.get<ApiResponse<MemberListResult>>("/members?page=1");
+    const payload = unwrap(res);
+    return { data: payload.data };
   },
 
-  getByMinistry: async (ministryId: string): Promise<{ data: PublicUser[] }> => {
+  getByMinistry: async (
+    ministryId: string,
+  ): Promise<{ data: PublicUser[] }> => {
     const res = await apiClient.get<ApiResponse<{ data: PublicUser[] }>>(
       `/members/ministry/${ministryId}`,
     );

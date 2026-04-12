@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useLivestream } from "@/lib/hooks/queries";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { getDailyPhoto } from "@/lib/church-photos";
+import { LiveSettings } from "@/lib/types/resources";
 
 export default function LiveServicePage() {
   const bgUrl = getDailyPhoto(1);
@@ -14,7 +15,8 @@ export default function LiveServicePage() {
     addToast({ type: "error", message: "Failed to load livestream" });
   }
 
-  const isLive = livestream?.isLive || (livestream as any)?.status === "LIVE";
+  const isLive =
+    livestream?.isLive || (livestream as LiveSettings)?.status === "LIVE";
 
   return (
     <section className="relative w-full min-h-svh">

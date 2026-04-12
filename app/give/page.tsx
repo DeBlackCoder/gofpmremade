@@ -11,6 +11,7 @@ import {
 import { useUiStore } from "@/lib/stores/uiStore";
 import { useAuthStore } from "@/lib/stores/authStore";
 import { getDailyPhoto } from "@/lib/church-photos";
+import Link from "next/link";
 
 type GivingType =
   | "Tithe"
@@ -18,7 +19,7 @@ type GivingType =
   | "Mission"
   | "Building Fund"
   | "Welfare";
-type Frequency = "One-time" | "Weekly" | "Monthly";
+type Frequency = "One-time";
 type Step = "amount" | "details" | "confirm" | "processing" | "done";
 
 interface GivingOption {
@@ -60,8 +61,6 @@ const givingOptions: GivingOption[] = [
 ];
 
 const presetAmounts = [1000, 2500, 5000, 10000, 25000];
-const frequencies: Frequency[] = ["One-time", "Weekly", "Monthly"];
-
 const inputClass =
   "bg-white/10 border-white/20 text-white placeholder:text-white/30 focus-visible:border-white/60 focus-visible:ring-0 rounded-none h-10";
 
@@ -80,7 +79,9 @@ export default function GivePage() {
   const [frequency, setFrequency] = useState<Frequency>("One-time");
   const [preset, setPreset] = useState<number | null>(null);
   const [customAmt, setCustomAmt] = useState("");
-  const [fullName, setFullName] = useState(user?.fullName || (user as any)?.name || "");
+  const [fullName, setFullName] = useState(
+    user?.fullName || (user as any)?.name || "",
+  );
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
@@ -88,6 +89,9 @@ export default function GivePage() {
   const [method, setMethod] = useState<"bank" | "card">("card");
   const [submitting, setSubmitting] = useState(false);
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+  const [completionMessage, setCompletionMessage] = useState(
+    "Your gift has been recorded.",
+  );
 
   // Bank details for transfers
   const bankDetails = [
@@ -119,6 +123,8 @@ export default function GivePage() {
 
     setStep("processing");
     try {
+      const paymentMethod = method === "card" ? "PAYSTACK" : "BANK";
+
       const result = await initiateMutation.mutateAsync({
         amount,
         type: givingType,
@@ -127,19 +133,29 @@ export default function GivePage() {
         email,
         phone,
         note,
+        method: paymentMethod,
         redirectUrl: window.location.href,
       });
 
       // Payment URL generated
       if (result.paymentUrl) {
         setReference(result.reference);
+        setCompletionMessage("Redirecting to secure payment checkout...");
         // Redirect to payment gateway
         window.location.href = result.paymentUrl;
       } else {
         setStep("done");
+        setCompletionMessage(
+          method === "bank"
+            ? "Your bank transfer notice has been recorded. Please complete the transfer using the account details shown above."
+            : "Your gift has been recorded. Check your email for the next step.",
+        );
         addToast({
           type: "success",
-          message: "Donation initiated! Check your email for payment link",
+          message:
+            method === "bank"
+              ? "Bank transfer notice recorded"
+              : "Donation initiated! Check your email for payment link",
         });
       }
     } catch (error: any) {
@@ -161,7 +177,9 @@ export default function GivePage() {
     setNote("");
     setGivingType("Tithe");
     setFrequency("One-time");
+    setMethod("card");
     setReference("");
+    setCompletionMessage("Your gift has been recorded.");
   };
 
   const handleConfirm = async () => {
@@ -347,21 +365,13 @@ export default function GivePage() {
                     <label className="font-body text-white/45 text-xs tracking-widest uppercase">
                       Frequency
                     </label>
-                    <div className="flex gap-2 flex-wrap">
-                      {frequencies.map((f) => (
-                        <button
-                          key={f}
-                          onClick={() => setFrequency(f)}
-                          className={`font-body text-xs tracking-widest uppercase px-3 py-1.5 border transition-all duration-200 ${
-                            frequency === f
-                              ? "bg-white text-black border-transparent"
-                              : "border-white/25 text-white/60 hover:border-white/50 hover:text-white"
-                          }`}
-                        >
-                          {f}
-                        </button>
-                      ))}
+                    <div className="inline-flex items-center gap-2 border border-white/25 px-3 py-1.5 text-white/80 text-xs tracking-widest uppercase w-fit">
+                      One-time giving only
                     </div>
+                    <p className="font-body text-white/35 text-xs leading-relaxed max-w-sm">
+                      Recurring giving options are intentionally disabled for
+                      this church flow.
+                    </p>
                   </div>
 
                   {/* Preset amounts */}
@@ -517,7 +527,7 @@ export default function GivePage() {
                     {method === "card" && (
                       <p className="font-body text-white/40 text-xs mt-1 leading-relaxed">
                         Card payments are processed securely via Paystack.
-                        You'll be redirected after confirmation.
+                        You&apos;ll be redirected after confirmation.
                       </p>
                     )}
                   </div>
@@ -658,9 +668,7 @@ export default function GivePage() {
                     {fullName.split(" ")[0] || "friend"}.
                   </p>
                   <p className="font-body text-white/65 text-sm leading-relaxed max-w-sm">
-                    Your {givingType.toLowerCase()} of {displayAmount} has been
-                    recorded. A confirmation will be sent to {email}. May God
-                    multiply what you have sown.
+                    {completionMessage}
                   </p>
                   <div className="flex gap-3 flex-wrap mt-2">
                     <Button
@@ -675,7 +683,7 @@ export default function GivePage() {
                       asChild
                       className="text-white/50 hover:text-white hover:bg-transparent font-body text-sm tracking-wide rounded-none px-0 underline underline-offset-4"
                     >
-                      <a href="/">Return home</a>
+                      <Link href="/">Return home</Link>
                     </Button>
                   </div>
                 </motion.div>
@@ -711,9 +719,9 @@ export default function GivePage() {
             {/* Scripture pull-quote */}
             <div className="border-l-2 border-white/25 pl-4">
               <p className="font-heading text-white/85 font-black text-lg sm:text-xl leading-snug italic">
-                "Each of you should give what you have decided in your heart to
-                give, not reluctantly or under compulsion, for God loves a
-                cheerful giver."
+                &quot;Each of you should give what you have decided in your
+                heart to give, not reluctantly or under compulsion, for God
+                loves a cheerful giver.&quot;
               </p>
               <p className="font-body text-white/35 text-xs mt-2 tracking-wide">
                 2 Corinthians 9:7

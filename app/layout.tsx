@@ -1,38 +1,35 @@
 import type { Metadata } from "next";
-import { Zalando_Sans_Expanded, DM_Sans, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
-
-const zalandoSansExpanded = Zalando_Sans_Expanded({
-  variable: "--font-heading",
-  subsets: ["latin"],
-  weight: ["200", "300", "400", "500", "600", "700", "800", "900"],
-});
-
-const dmSans = DM_Sans({
-  variable: "--font-body",
-  subsets: ["latin"],
-});
+import { Providers } from "@/lib/providers";
 
 export const metadata: Metadata = {
   title: {
     default: "Assemblies Of God Church",
     template: "%s | AG Church",
   },
-  description: "A Spirit-filled community rooted in love, faith, and service. Join us for worship, sermons, and community in Port Harcourt, Rivers State.",
-  keywords: ["church", "assemblies of god", "Port Harcourt", "worship", "sermons", "faith"],
+  description:
+    "A Spirit-filled community rooted in love, faith, and service. Join us for worship, sermons, and community in Port Harcourt, Rivers State.",
+  keywords: [
+    "church",
+    "assemblies of god",
+    "Port Harcourt",
+    "worship",
+    "sermons",
+    "faith",
+  ],
   openGraph: {
     type: "website",
     siteName: "Assemblies Of God Church",
     title: "Assemblies Of God Church",
-    description: "A Spirit-filled community rooted in love, faith, and service.",
+    description:
+      "A Spirit-filled community rooted in love, faith, and service.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Assemblies Of God Church",
-    description: "A Spirit-filled community rooted in love, faith, and service.",
+    description:
+      "A Spirit-filled community rooted in love, faith, and service.",
   },
 };
 
@@ -44,12 +41,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", zalandoSansExpanded.variable, dmSans.variable, "font-sans", geist.variable)}
+      className={cn("h-full", "antialiased", "font-sans")}
+      style={
+        {
+          "--font-sans": 'Georgia, "Times New Roman", serif',
+          "--font-body": 'Inter, "Segoe UI", Arial, sans-serif',
+        } as React.CSSProperties
+      }
     >
       <body className="min-h-full flex flex-col">
-        <div className="site-wrapper flex flex-col flex-1">
-          {children}
-        </div>
+        <Providers>
+          <div className="site-wrapper flex flex-col flex-1">{children}</div>
+        </Providers>
       </body>
     </html>
   );

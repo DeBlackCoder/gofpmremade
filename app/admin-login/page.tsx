@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/authStore";
 import { getDailyPhoto } from "@/lib/church-photos";
+import Link from "next/link";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -30,8 +31,8 @@ export default function AdminLoginPage() {
         return;
       }
       router.push("/admin-dashboard");
-    } catch (err: any) {
-      setError(err?.message || "Invalid password");
+    } catch (err: unknown) {
+      setError((err as Error)?.message || "Invalid password");
     } finally {
       setLoading(false);
     }
@@ -45,7 +46,7 @@ export default function AdminLoginPage() {
           { "--bg-url": `url(${bgUrl})`, opacity: 0.3 } as React.CSSProperties
         }
       />
-      <div className="fixed inset-0 bg-gradient-to-br from-black/85 via-black/60 to-black/85 pointer-events-none" />
+      <div className="fixed inset-0 bg-linear-to-br from-black/85 via-black/60 to-black/85 pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-sm flex flex-col gap-8">
         <div className="flex flex-col gap-1">
@@ -98,14 +99,21 @@ export default function AdminLoginPage() {
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
+
+          <Link
+            href="/register"
+            className="font-body text-white/35 text-xs hover:text-white/70 transition-colors"
+          >
+            Create member account →
+          </Link>
         </form>
 
-        <a
+        <Link
           href="/"
           className="font-body text-white/25 text-xs hover:text-white/60 transition-colors"
         >
           ← Return to site
-        </a>
+        </Link>
       </div>
     </div>
   );

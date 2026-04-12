@@ -89,7 +89,6 @@ export default function MissionPage() {
 
   return (
     <section className="relative w-full min-h-svh">
-
       {/* Fixed background */}
       <motion.div
         className="page-bg"
@@ -98,12 +97,17 @@ export default function MissionPage() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1.6 }}
       />
-      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 pointer-events-none" style={{ zIndex: 0 }} />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" style={{ zIndex: 0 }} />
+      <div
+        className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 pointer-events-none"
+        style={{ zIndex: 0 }}
+      />
+      <div
+        className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
+        style={{ zIndex: 0 }}
+      />
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-
         {/* Top bar */}
         <div className="flex items-center justify-between">
           <motion.p
@@ -156,15 +160,17 @@ export default function MissionPage() {
           transition={{ delay: 0.85, duration: 0.7 }}
         >
           <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm">
-            Our mission is not a programme — it's a calling. For over eighteen years,
-            we have pursued one thing: to know God deeply, make Him known boldly, and
-            serve humanity selflessly — right here in Port Harcourt and beyond.
+            Our mission is not a programme — it&apos;s a calling. For over
+            eighteen years, we have pursued one thing: to know God deeply, make
+            Him known boldly, and serve humanity selflessly — right here in Port
+            Harcourt and beyond.
           </p>
 
           <div className="border-l-2 border-white/25 pl-5 flex flex-col gap-2">
             <p className="font-heading text-white/90 font-black text-lg sm:text-xl leading-snug">
-              "Go therefore and make disciples of all nations, baptising them in the
-              name of the Father and of the Son and of the Holy Spirit."
+              &quot;Go therefore and make disciples of all nations, baptising
+              them in the name of the Father and of the Son and of the Holy
+              Spirit.&quot;
             </p>
             <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
               Matthew 28:19 — The Great Commission
@@ -192,7 +198,9 @@ export default function MissionPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.1 + i * 0.08, duration: 0.5 }}
               >
-                <span className="text-xl leading-none text-white/80">{p.icon}</span>
+                <span className="text-xl leading-none text-white/80">
+                  {p.icon}
+                </span>
                 <span className="font-heading text-white font-black text-lg leading-tight">
                   {p.title}
                 </span>
@@ -211,7 +219,6 @@ export default function MissionPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.7 }}
         >
-
           {/* Values accordion */}
           <div>
             <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-5">
@@ -236,7 +243,9 @@ export default function MissionPage() {
                     </div>
                     <span
                       className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 transition-all duration-300 inline-block"
-                      style={{ transform: isOpen ? "rotate(45deg)" : "rotate(0deg)" }}
+                      style={{
+                        transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+                      }}
                     >
                       +
                     </span>
@@ -289,7 +298,9 @@ export default function MissionPage() {
                     {item.year}
                   </p>
                   <p className="font-body text-white/70 text-sm leading-relaxed">
-                    <strong className="text-white font-semibold">{item.heading}</strong>{" "}
+                    <strong className="text-white font-semibold">
+                      {item.heading}
+                    </strong>{" "}
                     {item.desc}
                   </p>
                 </motion.div>
@@ -310,7 +321,9 @@ export default function MissionPage() {
               Be part of the mission
             </p>
             <p className="font-heading text-white font-black text-2xl sm:text-3xl leading-tight">
-              This story is still<br />being written.
+              This story is still
+              <br />
+              being written.
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">

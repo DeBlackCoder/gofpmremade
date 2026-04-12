@@ -32,11 +32,15 @@ export interface AdminMembersPayload {
   limit: number;
 }
 
+export interface AdminMemberDetails extends PublicUser {
+  role?: string;
+  updatedAt?: string;
+}
+
 export const adminApi = {
   getDashboardStats: async (): Promise<DashboardStats> => {
-    const res = await apiClient.get<ApiResponse<DashboardStats>>(
-      "/admin/dashboard",
-    );
+    const res =
+      await apiClient.get<ApiResponse<DashboardStats>>("/admin/dashboard");
     return unwrap(res);
   },
 
@@ -52,6 +56,13 @@ export const adminApi = {
     if (status) q.set("status", status);
     const res = await apiClient.get<ApiResponse<AdminMembersPayload>>(
       `/admin/members?${q.toString()}`,
+    );
+    return unwrap(res);
+  },
+
+  getMember: async (id: string): Promise<AdminMemberDetails> => {
+    const res = await apiClient.get<ApiResponse<AdminMemberDetails>>(
+      `/admin/members/${id}`,
     );
     return unwrap(res);
   },

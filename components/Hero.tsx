@@ -2,26 +2,19 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
 import { sermons } from "@/lib/sermons-data";
 import HeroTour from "@/components/HeroTour";
 import { getDailyPhoto } from "@/lib/church-photos";
 
 const navLinks = [
-  [
-    { label: "Welcome", href: "/" },
-    { label: "Community", href: "/community" },
-    { label: "Give", href: "/give" },
-  ],
-  [
-    { label: "Our Mission", href: "/mission" },
-    { label: "Ministry", href: "/ministry" },
-    { label: "Events", href: "/events" },
-  ],
-  [
-    { label: "Location", href: "/location" },
-    { label: "Contact", href: "/contact" },
-    { label: "Sermons", href: "/sermons" },
-  ],
+  { label: "Community", href: "/community" },
+  { label: "Give", href: "/give" },
+  { label: "Ministry", href: "/ministry" },
+  { label: "Events", href: "/events" },
+  { label: "Contact", href: "/contact" },
+  { label: "Sermons", href: "/sermons" },
+  { label: "Location", href: "/location" },
 ];
 
 const dailyQuotes = [
@@ -73,213 +66,323 @@ function getDailyQuote() {
 export default function Hero() {
   const bgUrl = getDailyPhoto(0);
   const dailyQuote = getDailyQuote();
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
-    <section className="relative w-full h-svh min-h-[600px]">
-      <HeroTour />
+    <>
+      <section className="relative w-full h-svh min-h-150">
+        <HeroTour />
 
-      {/* Fixed background */}
-      <motion.div
-        className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1.6 }}
-      />
-
-      {/* Dark gradient overlay — heavier on the left so text is always readable */}
-      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
-
-      {/* Content */}
-      <div className="public-content relative z-10 flex flex-col h-full px-6 py-6 sm:px-10 sm:py-8">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <motion.p
-            className="font-body text-white/70 text-xs tracking-widest uppercase"
-            data-tour="brand"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Assemblies Of God Church
-          </motion.p>
-          <motion.a
-            href="/live-service"
-            data-tour="watch-live"
-            className="flex items-center gap-2 font-body text-xs font-semibold text-white tracking-wide border border-white/30 px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-            Watch Live
-          </motion.a>
-        </div>
-
-        {/* Heading */}
-        <motion.h1
-          className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
-          data-tour="heading"
-          style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
-        >
-          <motion.span
-            className="block"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-          >
-            Love God, love
-          </motion.span>
-          <motion.span
-            className="block"
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.68, duration: 0.8 }}
-          >
-            to serve.
-          </motion.span>
-        </motion.h1>
-
-        {/* Latest Sermons */}
+        {/* Fixed background */}
         <motion.div
-          className="mt-8 sm:mt-10"
-          data-tour="latest-sermons"
-          initial="hidden"
-          animate="show"
-          variants={{
-            hidden: {},
-            show: { transition: { staggerChildren: 0.12, delayChildren: 1.0 } },
-          }}
-        >
-          <motion.div
-            className="flex items-center justify-between mb-3"
-            variants={{
-              hidden: { opacity: 0, y: 8 },
-              show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
-            }}
+          className="page-bg"
+          style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.6 }}
+        />
+
+        {/* Dark gradient overlay — heavier on the left so text is always readable */}
+        <div className="fixed inset-0 bg-linear-to-r from-black/75 via-black/40 to-black/10 z-10" />
+        <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10" />
+
+        {/* Content */}
+        <div className="public-content relative z-10 flex flex-col h-full px-6 py-6 sm:px-10 sm:py-8">
+          {/* Navbar */}
+          <motion.header
+            className="flex flex-col gap-4 border-b border-white/10 pb-4 sm:pb-5 lg:flex-row lg:items-center lg:justify-between lg:gap-6"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
           >
-            <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
-              Latest sermons
-            </span>
-            <Link
-              href="/sermons"
-              className="font-body text-white/50 text-[10px] tracking-widest uppercase hover:text-white transition-colors"
-            >
-              View all →
-            </Link>
-          </motion.div>
-          {sermons.slice(0, 3).map((sermon) => (
-            <motion.div
-              key={sermon.slug}
-              variants={{
-                hidden: { opacity: 0, y: 16 },
-                show: {
-                  opacity: 1,
-                  y: 0,
-                  transition: { duration: 0.55, ease: "easeOut" },
-                },
-              }}
-            >
-              <Link
-                href={`/sermons/${sermon.slug}`}
-                className="group flex items-center justify-between gap-4 py-3 border-t border-white/15 hover:border-white/35 transition-colors"
+            <div className="flex items-center justify-between gap-4 lg:contents">
+              <motion.p
+                className="font-body text-white/70 text-xs tracking-widest uppercase"
+                data-tour="brand"
               >
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <span className="font-body text-white/85 font-semibold text-sm truncate group-hover:text-white transition-colors">
-                    {sermon.title}
-                  </span>
-                  <span className="font-body text-white/35 text-xs italic">
-                    {sermon.scripture} · {sermon.pastor}
-                  </span>
-                </div>
-                <span className="text-white/25 group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 flex-shrink-0 text-sm">
-                  →
-                </span>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
+                Assemblies Of God Church
+              </motion.p>
 
-        {/* Spacer */}
-        <div className="flex-1" />
+              <div className="flex items-center gap-3 lg:order-last">
+                <motion.a
+                  href="/live-service"
+                  data-tour="watch-live"
+                  className="hidden sm:flex items-center justify-center gap-2 font-body text-xs font-semibold text-white tracking-wide border border-white/30 px-3 py-1.5 hover:bg-white hover:text-black transition-colors w-fit"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                  Watch Live
+                </motion.a>
 
-        {/* Bottom bar: nav left, daily quote right */}
-        <motion.div
-          className="flex items-end justify-between gap-8 w-full"
-          initial="hidden"
-          animate="show"
-          variants={{
-            hidden: {},
-            show: { transition: { staggerChildren: 0.08, delayChildren: 1.0 } },
-          }}
-        >
-          {/* Nav */}
-          <motion.nav
-            className="grid grid-cols-3 gap-x-8 sm:gap-x-14 flex-shrink-0"
-            data-tour="nav"
-            variants={{ hidden: { opacity: 0 }, show: { opacity: 1 } }}
-          >
-            {navLinks.map(([left, mid, right], i) => (
-              <div key={i} className="contents">
-                <motion.a
-                  href={left.href}
-                  className="py-3 text-white/90 font-body font-semibold text-sm sm:text-[15px] tracking-wide border-t border-white/20 hover:text-white transition-colors"
-                  variants={{
-                    hidden: { opacity: 0, y: 8 },
-                    show: { opacity: 1, y: 0 },
-                  }}
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen((open) => !open)}
+                  className="lg:hidden inline-flex items-center justify-center rounded-none border border-white/20 px-3 py-2 text-white/80 hover:bg-white hover:text-black transition-colors"
+                  aria-label="Toggle navigation menu"
+                  aria-expanded={menuOpen}
                 >
-                  {left.label}
-                </motion.a>
-                <motion.a
-                  href={mid.href}
-                  className="py-3 text-white/90 font-body font-semibold text-sm sm:text-[15px] tracking-wide border-t border-white/20 hover:text-white transition-colors"
-                  variants={{
-                    hidden: { opacity: 0, y: 8 },
-                    show: { opacity: 1, y: 0 },
-                  }}
-                >
-                  {mid.label}
-                </motion.a>
-                <motion.a
-                  href={right.href}
-                  className="py-3 text-white/90 font-body font-semibold text-sm sm:text-[15px] tracking-wide border-t border-white/20 hover:text-white transition-colors"
-                  variants={{
-                    hidden: { opacity: 0, y: 8 },
-                    show: { opacity: 1, y: 0 },
-                  }}
-                >
-                  {right.label}
-                </motion.a>
+                  <span className="flex flex-col gap-1">
+                    <span className="block h-px w-4 bg-current" />
+                    <span className="block h-px w-4 bg-current" />
+                    <span className="block h-px w-4 bg-current" />
+                  </span>
+                </button>
               </div>
-            ))}
-          </motion.nav>
+            </div>
 
-          {/* Daily quote */}
+            <nav
+              className="hidden lg:flex flex-wrap items-center gap-x-5 gap-y-2 lg:flex-1 lg:justify-center"
+              data-tour="nav"
+            >
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className="font-body text-[11px] tracking-widest uppercase text-white/65 hover:text-white transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
+            <motion.a
+              href="/live-service"
+              data-tour="watch-live"
+              className="sm:hidden flex items-center justify-center gap-2 font-body text-xs font-semibold text-white tracking-wide border border-white/30 px-3 py-1.5 hover:bg-white hover:text-black transition-colors w-fit"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+              Watch Live
+            </motion.a>
+
+            <motion.div
+              className="lg:hidden overflow-hidden"
+              initial={false}
+              animate={
+                menuOpen
+                  ? { height: "auto", opacity: 1 }
+                  : { height: 0, opacity: 0 }
+              }
+              transition={{ duration: 0.25, ease: "easeOut" }}
+            >
+              <div className="pt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.label}
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    className="rounded-none border border-white/15 bg-black/35 px-3 py-2 font-body text-[11px] tracking-widest uppercase text-white/75 hover:bg-white hover:text-black transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          </motion.header>
+
+          {/* Heading */}
+          <motion.h1
+            className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
+            data-tour="heading"
+            style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
+          >
+            <motion.span
+              className="block"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+            >
+              Love God, love
+            </motion.span>
+            <motion.span
+              className="block"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.68, duration: 0.8 }}
+            >
+              to serve.
+            </motion.span>
+          </motion.h1>
+
+          {/* Latest Sermons */}
           <motion.div
-            className="hidden md:flex flex-col items-end gap-1.5 max-w-sm pb-1 border-t border-white/15 pt-3"
-            data-tour="daily-quote"
+            className="mt-8 sm:mt-10"
+            data-tour="latest-sermons"
+            initial="hidden"
+            animate="show"
             variants={{
-              hidden: { opacity: 0, y: 10 },
+              hidden: {},
               show: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.7, ease: "easeOut" },
+                transition: { staggerChildren: 0.12, delayChildren: 1.0 },
               },
             }}
           >
-            <span className="font-body text-white/30 text-[9px] tracking-widest uppercase">
-              Word for today
-            </span>
-            <p className="font-heading text-white/80 font-black text-sm sm:text-base leading-snug italic text-right">
-              &ldquo;{dailyQuote.quote}&rdquo;
-            </p>
-            <span className="font-body text-white/35 text-[10px] tracking-wide">
-              — {dailyQuote.ref}
-            </span>
+            <motion.div
+              className="flex items-center justify-between mb-3"
+              variants={{
+                hidden: { opacity: 0, y: 8 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+              }}
+            >
+              <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
+                Latest sermons
+              </span>
+              <Link
+                href="/sermons"
+                className="font-body text-white/50 text-[10px] tracking-widest uppercase hover:text-white transition-colors"
+              >
+                View all →
+              </Link>
+            </motion.div>
+            {sermons.slice(0, 3).map((sermon) => (
+              <motion.div
+                key={sermon.slug}
+                variants={{
+                  hidden: { opacity: 0, y: 16 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.55, ease: "easeOut" },
+                  },
+                }}
+              >
+                <Link
+                  href={`/sermons/${sermon.slug}`}
+                  className="group flex items-center justify-between gap-4 py-3 border-t border-white/15 hover:border-white/35 transition-colors"
+                >
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="font-body text-white/85 font-semibold text-sm truncate group-hover:text-white transition-colors">
+                      {sermon.title}
+                    </span>
+                    <span className="font-body text-white/35 text-xs italic">
+                      {sermon.scripture} · {sermon.pastor}
+                    </span>
+                  </div>
+                  <span className="text-white/25 group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 shrink-0 text-sm">
+                    →
+                  </span>
+                </Link>
+              </motion.div>
+            ))}
           </motion.div>
-        </motion.div>
-      </div>
-    </section>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Bottom bar: daily quote */}
+          <motion.div
+            className="flex items-end justify-end gap-8 w-full"
+            initial="hidden"
+            animate="show"
+            variants={{
+              hidden: {},
+              show: {
+                transition: { staggerChildren: 0.08, delayChildren: 1.0 },
+              },
+            }}
+          >
+            {/* Daily quote */}
+            <motion.div
+              className="hidden md:flex flex-col items-end gap-1.5 max-w-sm pb-1 border-t border-white/15 pt-3"
+              data-tour="daily-quote"
+              variants={{
+                hidden: { opacity: 0, y: 10 },
+                show: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.7, ease: "easeOut" },
+                },
+              }}
+            >
+              <span className="font-body text-white/30 text-[9px] tracking-widest uppercase">
+                Word for today
+              </span>
+              <p className="font-heading text-white/80 font-black text-sm sm:text-base leading-snug italic text-right">
+                &ldquo;{dailyQuote.quote}&rdquo;
+              </p>
+              <span className="font-body text-white/35 text-[10px] tracking-wide">
+                — {dailyQuote.ref}
+              </span>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="relative z-10 bg-black/92 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-16 sm:px-10 sm:py-20">
+          <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-10 lg:gap-16 items-start">
+            <div>
+              <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-4">
+                Our Mission
+              </p>
+              <h2 className="font-heading text-white font-black text-3xl sm:text-4xl leading-tight tracking-tight max-w-md">
+                Why we exist.
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-5 max-w-2xl">
+              <p className="font-body text-white/72 text-sm sm:text-base leading-relaxed">
+                Our mission is not a programme — it&apos;s a calling. For over
+                eighteen years, we have pursued one thing: to know God deeply,
+                make Him known boldly, and serve humanity selflessly.
+              </p>
+              <p className="font-body text-white/52 text-sm sm:text-base leading-relaxed">
+                Worship, community, and mission are the heartbeat of this house.
+                We exist to help people encounter Christ, grow in faith, and
+                live out the gospel in Port Harcourt and beyond.
+              </p>
+              <Link
+                href="/mission"
+                className="font-body text-white/80 text-sm tracking-wide underline underline-offset-4 hover:text-white transition-colors w-fit"
+              >
+                Read the full mission
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="relative z-10 bg-black border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-8 sm:px-10 sm:py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-md border border-white/20 bg-white/5 flex items-center justify-center text-[10px] tracking-widest uppercase text-white/35 shrink-0">
+              Logo
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="font-body text-white text-sm tracking-widest uppercase">
+                Assemblies Of God Church
+              </span>
+              <span className="font-body text-white/35 text-xs">
+                Port Harcourt, Rivers State
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
+            <Link
+              href="/community"
+              className="font-body text-white/45 text-xs tracking-widest uppercase hover:text-white transition-colors"
+            >
+              Community
+            </Link>
+            <Link
+              href="/events"
+              className="font-body text-white/45 text-xs tracking-widest uppercase hover:text-white transition-colors"
+            >
+              Events
+            </Link>
+            <Link
+              href="/give"
+              className="font-body text-white/45 text-xs tracking-widest uppercase hover:text-white transition-colors"
+            >
+              Give
+            </Link>
+            <Link
+              href="/contact"
+              className="font-body text-white/45 text-xs tracking-widest uppercase hover:text-white transition-colors"
+            >
+              Contact
+            </Link>
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }

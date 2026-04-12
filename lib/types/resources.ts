@@ -15,6 +15,7 @@ export interface ChurchEvent {
   id: string;
   title: string;
   description: string;
+  imageUrl?: string | null;
   date: string | Date;
   time: string;
   location: string;
@@ -46,12 +47,7 @@ export interface EventRegistration {
 
 // --- Sermons ---
 
-export type SermonTag =
-  | "FAITH"
-  | "FAMILY"
-  | "PRAYER"
-  | "IDENTITY"
-  | "PROPHECY";
+export type SermonTag = "FAITH" | "FAMILY" | "PRAYER" | "IDENTITY" | "PROPHECY";
 
 export interface Sermon {
   id: string;

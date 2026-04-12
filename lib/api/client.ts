@@ -14,10 +14,9 @@ import {
   ApiClientError,
   getErrorMessage,
   normalizeApiError,
-  isRetryableError,
 } from "@/lib/utils/errors";
 import { localStorageUtil, cookieUtil } from "@/lib/utils/storage";
-import { ApiResponse, ApiError } from "@/lib/types/common";
+import { ApiResponse } from "@/lib/types/common";
 
 interface RequestOptions extends Omit<RequestInit, "body"> {
   body?: unknown;
@@ -37,7 +36,7 @@ export class ApiClient {
    */
   private getAccessToken(): string | null {
     // Try cookie first (more secure)
-    let token = cookieUtil.get(COOKIE_TOKEN_NAME);
+    const token = cookieUtil.get(COOKIE_TOKEN_NAME);
     if (token) return token;
 
     // Fallback to localStorage (from Zustand persist)
@@ -51,7 +50,7 @@ export class ApiClient {
    * Get refresh token from storage
    */
   private getRefreshToken(): string | null {
-    let token = cookieUtil.get(COOKIE_REFRESH_TOKEN_NAME);
+    const token = cookieUtil.get(COOKIE_REFRESH_TOKEN_NAME);
     if (token) return token;
 
     const authState = localStorageUtil.getJSON<{
@@ -174,7 +173,8 @@ export class ApiClient {
     cookieUtil.set(COOKIE_REFRESH_TOKEN_NAME, refreshToken);
 
     // Also update localStorage for Zustand
-    const authState = localStorageUtil.getJSON<any>("auth-store") || {};
+    const authState =
+      localStorageUtil.getJSON<Record<string, unknown>>("auth-store") || {};
     localStorageUtil.setJSON("auth-store", {
       ...authState,
       tokens: { accessToken, refreshToken },

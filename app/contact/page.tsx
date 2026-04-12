@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
-import type { ChangeEvent, SyntheticEvent, CSSProperties } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,8 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getDailyPhoto } from "@/lib/church-photos";
-import { useUiStore } from "@/lib/stores/uiStore";
-import { apiClient } from "@/lib/api/client";
+import { API_BASE_URL } from "@/lib/constants/config";
 
 const contactDetails = [
   {
@@ -51,31 +49,28 @@ export default function ContactPage() {
     message: "",
   });
   const [status, setStatus] = useState<FormState>("idle");
-  const addToast = useUiStore((s: any) => s.addToast);
 
   function handleChange(
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-  async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus("sending");
     try {
-      await apiClient.post("/contact", form);
+      const res = await fetch(`${API_BASE_URL}/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error();
       setStatus("sent");
-      setForm({ name: "", email: "", phone: "", subject: "", message: "" });
-      addToast({
-        type: "success",
-        message: "Message sent! We'll get back to you soon.",
-      });
-    } catch (err: any) {
+    } catch {
       setStatus("error");
-      addToast({
-        type: "error",
-        message: err?.message || "Failed to send message",
-      });
     }
   }
 
@@ -84,13 +79,13 @@ export default function ContactPage() {
       {/* Background */}
       <motion.div
         className="page-bg"
-        style={{ "--bg-url": `url(${bgUrl})` } as CSSProperties}
+        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.6 }}
       />
-      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
+      <div className="fixed inset-0 bg-linear-to-r from-black/75 via-black/40 to-black/10 z-10" />
+      <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col px-6 py-6 sm:px-10 sm:py-8">
@@ -148,9 +143,9 @@ export default function ContactPage() {
           {/* Left — details */}
           <div className="flex flex-col gap-8">
             <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm">
-              We'd love to hear from you. Reach out with any questions, prayer
-              requests, or if you'd simply like to know more about our
-              community.
+              We&apos;d love to hear from you. Reach out with any questions,
+              prayer requests, or if you&apos;d simply like to know more about
+              our community.
             </p>
             <dl className="flex flex-col gap-5">
               {contactDetails.map((item, i) => (
@@ -209,8 +204,8 @@ export default function ContactPage() {
                   {form.name.split(" ")[0] || "friend"}.
                 </p>
                 <p className="font-body text-white/65 text-sm leading-relaxed max-w-xs">
-                  We'll get back to you as soon as we can. May God bless your
-                  day.
+                  We&apos;ll get back to you as soon as we can. May God bless
+                  your day.
                 </p>
                 <button
                   onClick={() => {

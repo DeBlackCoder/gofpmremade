@@ -14,9 +14,10 @@ export type LiveWithStreams = LiveSettings & {
 export const livestreamApi = {
   /** Current live settings + recent streams (cached on server) */
   getActive: async (): Promise<LiveWithStreams | null> => {
-    const res = await apiClient.get<
-      ApiResponse<{ data: LiveWithStreams | null }>
-    >("/livestream/active");
+    const res =
+      await apiClient.get<ApiResponse<{ data: LiveWithStreams | null }>>(
+        "/livestream/active",
+      );
     const body = unwrap(res);
     return body.data ?? null;
   },
@@ -38,17 +39,16 @@ export const livestreamApi = {
     return unwrap(res);
   },
 
-  goLive: async (id: string): Promise<LiveSettings> => {
+  goLive: async (): Promise<LiveSettings> => {
     const res = await apiClient.put<ApiResponse<LiveSettings>>(
-      `/livestream/${id}/go-live`,
+      "/livestream/go-live",
     );
     return unwrap(res);
   },
 
-  end: async (id: string): Promise<LiveSettings> => {
-    const res = await apiClient.put<ApiResponse<LiveSettings>>(
-      `/livestream/${id}/end`,
-    );
+  end: async (): Promise<LiveSettings> => {
+    const res =
+      await apiClient.put<ApiResponse<LiveSettings>>("/livestream/end");
     return unwrap(res);
   },
 };

@@ -1,18 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { ContactSubmission } from "@/lib/contact-data";
 import { apiClient } from "@/lib/api/client";
-
-interface ContactSubmission {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  subject: string;
-  message: string;
-  read: boolean;
-  submittedAt: string;
-}
 
 const subjectLabels: Record<string, string> = {
   general: "General inquiry",
@@ -28,7 +18,10 @@ export default function AdminContactsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
 
   useEffect(() => {
-    apiClient.get<ContactSubmission[]>("/admin/contacts").then(setContacts);
+    apiClient
+      .get<ContactSubmission[]>("/admin/contacts")
+      .then(setContacts)
+      .catch(() => setContacts([]));
   }, []);
 
   async function markRead(id: string) {
@@ -80,7 +73,7 @@ export default function AdminContactsPage() {
             <div className="flex flex-col gap-0.5 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 {!c.read && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
                 )}
                 <span
                   className={`font-body font-semibold text-sm ${c.read ? "text-white/70" : "text-white"}`}
@@ -102,7 +95,7 @@ export default function AdminContactsPage() {
               </span>
             </div>
             <span
-              className={`text-white/25 text-sm transition-transform flex-shrink-0 mt-1 ${expanded === c.id ? "rotate-90" : ""}`}
+              className={`text-white/25 text-sm transition-transform shrink-0 mt-1 ${expanded === c.id ? "rotate-90" : ""}`}
             >
               →
             </span>

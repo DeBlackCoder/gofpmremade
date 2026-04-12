@@ -80,19 +80,22 @@ const groups: Group[] = [
 const testimonials = [
   {
     id: 1,
-    quote: "I walked in knowing no one. Within two months, I had a family. This church changed my life.",
+    quote:
+      "I walked in knowing no one. Within two months, I had a family. This church changed my life.",
     name: "Adaeze M.",
     role: "Member since 2022",
   },
   {
     id: 2,
-    quote: "The Men of Valour group held me accountable when I had nothing holding me together. I owe those brothers so much.",
+    quote:
+      "The Men of Valour group held me accountable when I had nothing holding me together. I owe those brothers so much.",
     name: "Chukwuemeka O.",
     role: "Men of Valour",
   },
   {
     id: 3,
-    quote: "As a young professional new to Port Harcourt, the Young Adults Fellowship gave me a home away from home.",
+    quote:
+      "As a young professional new to Port Harcourt, the Young Adults Fellowship gave me a home away from home.",
     name: "Blessing A.",
     role: "Young Adults Fellowship",
   },
@@ -100,26 +103,33 @@ const testimonials = [
 
 const stats = [
   { value: "1,200+", label: "Members" },
-  { value: "6",      label: "Life groups" },
-  { value: "18",     label: "Years serving PH" },
-  { value: "40+",    label: "Nations represented" },
+  { value: "6", label: "Life groups" },
+  { value: "18", label: "Years serving PH" },
+  { value: "40+", label: "Nations represented" },
 ];
 
-const tagFilters: (GroupTag | "All")[] = ["All", "Men", "Women", "Youth", "Families", "All Ages"];
+const tagFilters: (GroupTag | "All")[] = [
+  "All",
+  "Men",
+  "Women",
+  "Youth",
+  "Families",
+  "All Ages",
+];
 
 const tagColors: Record<GroupTag, string> = {
-  Men:      "bg-sky-500/20 text-sky-200",
-  Women:    "bg-rose-500/20 text-rose-200",
-  Youth:    "bg-violet-500/20 text-violet-200",
+  Men: "bg-sky-500/20 text-sky-200",
+  Women: "bg-rose-500/20 text-rose-200",
+  Youth: "bg-violet-500/20 text-violet-200",
   Families: "bg-amber-500/20 text-amber-200",
   "All Ages": "bg-teal-500/20 text-teal-200",
 };
 
 const tagActiveBg: Record<GroupTag | "All", string> = {
-  All:      "bg-white text-black",
-  Men:      "bg-sky-400 text-sky-950",
-  Women:    "bg-rose-400 text-rose-950",
-  Youth:    "bg-violet-400 text-violet-950",
+  All: "bg-white text-black",
+  Men: "bg-sky-400 text-sky-950",
+  Women: "bg-rose-400 text-rose-950",
+  Youth: "bg-violet-400 text-violet-950",
   Families: "bg-amber-400 text-amber-950",
   "All Ages": "bg-teal-400 text-teal-950",
 };
@@ -132,38 +142,46 @@ export default function CommunityPage() {
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [testimonialIdx, setTestimonialIdx] = useState(0);
 
-  const filtered = activeTag === "All" ? groups : groups.filter((g) => g.tag === activeTag);
+  const filtered =
+    activeTag === "All" ? groups : groups.filter((g) => g.tag === activeTag);
 
-  const prev = () => setTestimonialIdx((i) => (i - 1 + testimonials.length) % testimonials.length);
+  const prev = () =>
+    setTestimonialIdx(
+      (i) => (i - 1 + testimonials.length) % testimonials.length,
+    );
   const next = () => setTestimonialIdx((i) => (i + 1) % testimonials.length);
 
   return (
     <section className="relative w-full min-h-svh">
-
       {/* Background */}
       <motion.div
         className="page-bg"
         style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1.6 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.6 }}
       />
-      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
-<div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
+      <div className="fixed inset-0 bg-linear-to-r from-black/75 via-black/40 to-black/10 z-10" />
+      <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10" />
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-
         {/* Top bar */}
         <div className="flex items-center justify-between">
           <motion.p
             className="font-body text-white/70 text-xs tracking-widest uppercase"
-            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
           >
             Assemblies Of God Church
           </motion.p>
           <motion.a
             href="/"
             className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
-            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
           >
             ← Return home
           </motion.a>
@@ -174,10 +192,20 @@ export default function CommunityPage() {
           className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
         >
-          <motion.span className="block" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5, duration: 0.8 }}>
+          <motion.span
+            className="block"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+          >
             Better
           </motion.span>
-          <motion.span className="block" initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.68, duration: 0.8 }}>
+          <motion.span
+            className="block"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.68, duration: 0.8 }}
+          >
             together.
           </motion.span>
         </motion.h1>
@@ -185,11 +213,15 @@ export default function CommunityPage() {
         {/* Intro + Stats */}
         <motion.div
           className="mt-8 sm:mt-12 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16"
-          initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85, duration: 0.7 }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.85, duration: 0.7 }}
         >
           {/* Left — intro */}
           <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm">
-            We believe no one should do life alone. Whether you're new to faith or have walked with God for years, there's a place for you in our community — a group, a table, a home.
+            We believe no one should do life alone. Whether you&apos;re new to
+            faith or have walked with God for years, there&apos;s a place for
+            you in our community — a group, a table, a home.
           </p>
 
           {/* Right — stats */}
@@ -202,8 +234,12 @@ export default function CommunityPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}
               >
-                <span className="font-heading text-white font-black text-2xl sm:text-3xl leading-none">{s.value}</span>
-                <span className="font-body text-white/45 text-[10px] tracking-widest uppercase mt-1">{s.label}</span>
+                <span className="font-heading text-white font-black text-2xl sm:text-3xl leading-none">
+                  {s.value}
+                </span>
+                <span className="font-body text-white/45 text-[10px] tracking-widest uppercase mt-1">
+                  {s.label}
+                </span>
               </motion.div>
             ))}
           </div>
@@ -212,16 +248,23 @@ export default function CommunityPage() {
         {/* ── Life Groups ───────────────────────────────── */}
         <motion.div
           className="mt-12 sm:mt-16"
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.05, duration: 0.7 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.05, duration: 0.7 }}
         >
           <div className="flex items-end justify-between mb-5 flex-wrap gap-4">
-            <h2 className="font-body text-white/45 text-xs tracking-widest uppercase">Life groups</h2>
+            <h2 className="font-body text-white/45 text-xs tracking-widest uppercase">
+              Life groups
+            </h2>
             {/* Tag filters */}
             <div className="flex flex-wrap gap-2">
               {tagFilters.map((tag) => (
                 <button
                   key={tag}
-                  onClick={() => { setActiveTag(tag); setExpandedId(null); }}
+                  onClick={() => {
+                    setActiveTag(tag);
+                    setExpandedId(null);
+                  }}
                   className={`font-body text-xs tracking-widest uppercase px-3 py-1 border transition-all duration-200 ${
                     activeTag === tag
                       ? `${tagActiveBg[tag]} border-transparent`
@@ -257,7 +300,9 @@ export default function CommunityPage() {
                         <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
                           {group.name}
                         </span>
-                        <span className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${tagColors[group.tag]}`}>
+                        <span
+                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${tagColors[group.tag]}`}
+                        >
                           {group.tag}
                         </span>
                         {group.spots !== null && (
@@ -272,7 +317,10 @@ export default function CommunityPage() {
                     </div>
                     <span
                       className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 transition-all duration-300"
-                      style={{ transform: isOpen ? "rotate(45deg)" : "rotate(0deg)", display: "inline-block" }}
+                      style={{
+                        transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
+                        display: "inline-block",
+                      }}
                     >
                       +
                     </span>
@@ -317,7 +365,11 @@ export default function CommunityPage() {
           </AnimatePresence>
 
           {filtered.length === 0 && (
-            <motion.p className="font-body text-white/40 text-sm pt-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <motion.p
+              className="font-body text-white/40 text-sm pt-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
               No groups in this category right now.
             </motion.p>
           )}
@@ -326,9 +378,13 @@ export default function CommunityPage() {
         {/* ── Testimonials ─────────────────────────────── */}
         <motion.div
           className="mt-16 sm:mt-20 border-t border-white/20 pt-10"
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2, duration: 0.7 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.7 }}
         >
-          <h2 className="font-body text-white/45 text-xs tracking-widest uppercase mb-8">Stories from our community</h2>
+          <h2 className="font-body text-white/45 text-xs tracking-widest uppercase mb-8">
+            Stories from our community
+          </h2>
 
           <div className="relative max-w-xl">
             <AnimatePresence mode="wait">
@@ -341,11 +397,15 @@ export default function CommunityPage() {
                 className="flex flex-col gap-4"
               >
                 <p className="font-heading text-white font-black text-xl sm:text-2xl leading-snug">
-                  "{testimonials[testimonialIdx].quote}"
+                  &quot;{testimonials[testimonialIdx].quote}&quot;
                 </p>
                 <div className="flex flex-col">
-                  <span className="font-body text-white font-semibold text-sm">{testimonials[testimonialIdx].name}</span>
-                  <span className="font-body text-white/45 text-xs tracking-wide">{testimonials[testimonialIdx].role}</span>
+                  <span className="font-body text-white font-semibold text-sm">
+                    {testimonials[testimonialIdx].name}
+                  </span>
+                  <span className="font-body text-white/45 text-xs tracking-wide">
+                    {testimonials[testimonialIdx].role}
+                  </span>
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -374,12 +434,18 @@ export default function CommunityPage() {
         {/* ── CTA ──────────────────────────────────────── */}
         <motion.div
           className="mt-16 sm:mt-20 border-t border-white/20 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
-          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.3, duration: 0.6 }}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.3, duration: 0.6 }}
         >
           <div className="flex flex-col gap-1">
-            <p className="font-body text-white/45 text-xs tracking-widest uppercase">Ready to belong?</p>
+            <p className="font-body text-white/45 text-xs tracking-widest uppercase">
+              Ready to belong?
+            </p>
             <p className="font-heading text-white font-black text-2xl sm:text-3xl leading-tight">
-              Everyone has a seat<br />at this table.
+              Everyone has a seat
+              <br />
+              at this table.
             </p>
           </div>
           <div className="flex gap-3 flex-wrap">

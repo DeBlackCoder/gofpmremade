@@ -18,8 +18,9 @@ export default function HeroTour() {
         {
           element: "[data-tour='brand']",
           popover: {
-            title: "Welcome",
-            description: "You're at Assemblies Of God Church — a Spirit-filled community in Port Harcourt.",
+            title: "Home",
+            description:
+              "You're at Assemblies Of God Church — a Spirit-filled community in Port Harcourt.",
             side: "bottom",
             align: "start",
           },
@@ -28,7 +29,8 @@ export default function HeroTour() {
           element: "[data-tour='watch-live']",
           popover: {
             title: "Watch Live",
-            description: "Join our Sunday services and Bible studies live from anywhere in the world.",
+            description:
+              "Join our Sunday services and Bible studies live from anywhere in the world.",
             side: "bottom",
             align: "end",
           },
@@ -37,7 +39,8 @@ export default function HeroTour() {
           element: "[data-tour='heading']",
           popover: {
             title: "Our Heart",
-            description: "Everything we do flows from this — loving God and serving people.",
+            description:
+              "Everything we do flows from this — loving God and serving people.",
             side: "bottom",
             align: "start",
           },
@@ -46,7 +49,8 @@ export default function HeroTour() {
           element: "[data-tour='latest-sermons']",
           popover: {
             title: "Latest Sermons",
-            description: "Read our most recent messages. Each one is written to be read slowly and taken to heart.",
+            description:
+              "Read our most recent messages. Each one is written to be read slowly and taken to heart.",
             side: "top",
             align: "start",
           },
@@ -55,7 +59,8 @@ export default function HeroTour() {
           element: "[data-tour='nav']",
           popover: {
             title: "Explore",
-            description: "Navigate to any part of the site — Community, Events, Give, Sermons, and more.",
+            description:
+              "Navigate to any part of the site — Community, Events, Give, Sermons, and more.",
             side: "top",
             align: "start",
           },
@@ -64,7 +69,8 @@ export default function HeroTour() {
           element: "[data-tour='daily-quote']",
           popover: {
             title: "Word for Today",
-            description: "A fresh pastoral quote every day to encourage and ground you in the Word.",
+            description:
+              "A fresh pastoral quote every day to encourage and ground you in the Word.",
             side: "top",
             align: "end",
           },

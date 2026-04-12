@@ -2,11 +2,7 @@
  * TanStack Query hooks — aligned with `/api/v1` backend
  */
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/lib/constants/config";
 import { authApi } from "@/lib/api/endpoints/auth";
 import { membersApi } from "@/lib/api/endpoints/members";
@@ -123,6 +119,7 @@ export const useEvents = (page: number = 1) => {
     queryKey: [...QUERY_KEYS.EVENTS, page],
     queryFn: () => eventsApi.listEvents(page),
     staleTime: 5 * 60 * 1000,
+    refetchOnMount: "always",
   });
 };
 
@@ -306,7 +303,6 @@ export const useVerifyPaymentMutation = () => {
   });
 };
 
-
 // ============================================================================
 // Ministries
 // ============================================================================
@@ -398,8 +394,7 @@ export const useLivestream = (_id?: string) => {
 export const useCreateLivestreamMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (payload: unknown) =>
-      livestreamApi.create(payload as never),
+    mutationFn: (payload: unknown) => livestreamApi.create(payload as never),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LIVESTREAM });
     },
@@ -409,7 +404,7 @@ export const useCreateLivestreamMutation = () => {
 export const useStartLivestream = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => livestreamApi.goLive(id),
+    mutationFn: () => livestreamApi.goLive(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LIVESTREAM });
     },
@@ -419,7 +414,7 @@ export const useStartLivestream = () => {
 export const useEndLivestream = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => livestreamApi.end(id),
+    mutationFn: () => livestreamApi.end(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.LIVESTREAM });
     },
@@ -608,6 +603,15 @@ export const useAdminMembers = (
   });
 };
 
+export const useAdminMember = (id?: string) => {
+  return useQuery({
+    queryKey: [...QUERY_KEYS.ADMIN, "members", id],
+    queryFn: () => adminApi.getMember(id as string),
+    enabled: !!id && typeof window !== "undefined",
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
 export const useAdminGiving = (page: number = 1, limit: number = 25) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.ADMIN, "giving", page, limit],
@@ -624,7 +628,10 @@ export const useAdminGivingSummary = () => {
   });
 };
 
-export const useAdminPrayerRequests = (page: number = 1, limit: number = 25) => {
+export const useAdminPrayerRequests = (
+  page: number = 1,
+  limit: number = 25,
+) => {
   return useQuery({
     queryKey: [...QUERY_KEYS.ADMIN, "prayer-requests", page, limit],
     queryFn: () => adminApi.listPrayerRequests(page, limit),
@@ -648,7 +655,10 @@ export const useUpdatePrayerRequestStatusMutation = () => {
 export const useSystemHealth = () => {
   return useQuery({
     queryKey: [...QUERY_KEYS.ADMIN, "health"],
-    queryFn: async () => ({ status: "UP", lastCheck: new Date().toISOString() }),
+    queryFn: async () => ({
+      status: "UP",
+      lastCheck: new Date().toISOString(),
+    }),
     staleTime: 60 * 1000,
   });
 };

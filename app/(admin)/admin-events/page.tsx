@@ -10,18 +10,21 @@ import {
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
 import { apiClient } from "@/lib/api/client";
+import { API_BASE_URL, COOKIE_TOKEN_NAME } from "@/lib/constants/config";
+import { cookieUtil, localStorageUtil } from "@/lib/utils/storage";
 
-interface ChurchEvent {
+type ChurchEvent = {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   date: string;
   time: string;
   location: string;
-  category: string;
-}
+  category: "SERVICE" | "PRAYER" | "YOUTH" | "OUTREACH" | "OTHER";
+  imageUrl?: string;
+};
 
-const categories = ["service", "prayer", "youth", "outreach", "other"] as const;
+const categories = ["SERVICE", "PRAYER", "YOUTH", "OUTREACH", "OTHER"] as const;
 
 const empty = {
   title: "",
@@ -29,7 +32,8 @@ const empty = {
   date: "",
   time: "",
   location: "",
-  category: "service" as const,
+  category: "SERVICE" as const,
+  imageUrl: "",
 };
 
 export default function AdminEventsPage() {
@@ -38,9 +42,13 @@ export default function AdminEventsPage() {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
-    apiClient.get<ChurchEvent[]>("/admin/events").then(setEvents);
+    apiClient
+      .get<ChurchEvent[]>("/admin/events")
+      .then(setEvents)
+      .catch(() => setEvents([]));
   }, []);
 
   function handleChange(
@@ -55,15 +63,67 @@ export default function AdminEventsPage() {
     e.preventDefault();
     setSaving(true);
     setError("");
-    const res = await apiClient.post<ChurchEvent>("/admin/events", form);
-    if (res?.id) {
-      setEvents((p) => [res, ...p]);
+
+    let imageUrl = form.imageUrl;
+
+    if (imageFile) {
+      try {
+        imageUrl = await uploadEventImage(imageFile);
+      } catch (uploadError: unknown) {
+        setError(
+          uploadError instanceof Error
+            ? uploadError.message
+            : "Failed to upload event image.",
+        );
+        setSaving(false);
+        return;
+      }
+    }
+
+    try {
+      const created = await apiClient.post<ChurchEvent>("/admin/events", {
+        ...form,
+        imageUrl,
+      });
+      setEvents((p) => [created, ...p].filter(Boolean));
       setForm(empty);
+      setImageFile(null);
       setShowForm(false);
-    } else {
+    } catch {
       setError("Failed to save event.");
     }
     setSaving(false);
+  }
+
+  async function uploadEventImage(file: File): Promise<string> {
+    const authState = localStorageUtil.getJSON<{
+      tokens?: { accessToken?: string };
+    }>("auth-store");
+    const accessToken =
+      cookieUtil.get(COOKIE_TOKEN_NAME) || authState?.tokens?.accessToken;
+
+    if (!accessToken) {
+      throw new Error("Authentication required to upload image.");
+    }
+
+    const payload = new FormData();
+    payload.append("file", file);
+
+    const response = await fetch(`${API_BASE_URL}/admin/events/upload-image`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: payload,
+    });
+
+    const json = (await response.json()) as { url?: string; message?: string };
+
+    if (!response.ok || !json.url) {
+      throw new Error(json.message || "Failed to upload image");
+    }
+
+    return json.url;
   }
 
   async function handleDelete(id: string) {
@@ -138,7 +198,7 @@ export default function AdminEventsPage() {
                   <SelectContent>
                     {categories.map((c) => (
                       <SelectItem key={c} value={c} className="capitalize">
-                        {c}
+                        {c.toLowerCase()}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -198,6 +258,23 @@ export default function AdminEventsPage() {
               />
             </div>
 
+            <div className="flex flex-col gap-1">
+              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
+                Event image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                className={`${inputClass} file:mr-3 file:border-0 file:bg-white/15 file:px-3 file:py-1.5 file:text-xs file:text-white`}
+              />
+              {imageFile && (
+                <p className="font-body text-white/45 text-xs">
+                  Selected: {imageFile.name}
+                </p>
+              )}
+            </div>
+
             {error && <p className="font-body text-red-400 text-xs">{error}</p>}
 
             <div className="flex items-center gap-3">
@@ -241,8 +318,8 @@ export default function AdminEventsPage() {
                 <span className="font-body text-white font-semibold text-sm">
                   {ev.title}
                 </span>
-                <span className="font-body text-[9px] tracking-widest uppercase px-1.5 py-0.5 bg-white/10 text-white/50 border border-white/15 capitalize">
-                  {ev.category}
+                <span className="font-body text-[9px] tracking-widest uppercase px-1.5 py-0.5 bg-white/10 text-white/50 border border-white/15">
+                  {ev.category.toLowerCase()}
                 </span>
               </div>
               <span className="font-body text-white/40 text-xs">
@@ -253,10 +330,20 @@ export default function AdminEventsPage() {
                   {ev.description}
                 </span>
               )}
+              {ev.imageUrl && (
+                <a
+                  href={ev.imageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-body text-white/40 text-xs mt-0.5 underline underline-offset-2 hover:text-white"
+                >
+                  View image
+                </a>
+              )}
             </div>
             <button
               onClick={() => handleDelete(ev.id)}
-              className="font-body text-white/25 text-xs hover:text-red-400 transition-colors flex-shrink-0 cursor-pointer"
+              className="font-body text-white/25 text-xs hover:text-red-400 transition-colors shrink-0 cursor-pointer"
             >
               Delete
             </button>
