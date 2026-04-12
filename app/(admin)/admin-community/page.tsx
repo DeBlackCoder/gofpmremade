@@ -1,19 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { apiClient } from "@/lib/api/client";
-
-type GroupTag = "Men" | "Women" | "Youth" | "Families" | "All Ages";
-
-interface CommunityGroup {
-  id: string;
-  name: string;
-  tag: GroupTag;
-  meets: string;
-  leader: string;
-  bio?: string;
-  spots?: number | null;
-}
+import type { CommunityGroup, GroupTag } from "@/lib/community-data";
+import { ministriesApi } from "@/lib/api/endpoints/ministries";
+import type { MinistryGroup } from "@/lib/types/resources";
 
 const tags: GroupTag[] = ["Men", "Women", "Youth", "Families", "All Ages"];
 const empty = {
@@ -25,6 +15,35 @@ const empty = {
   spots: "",
 };
 
+function tagToBackend(
+  tag: GroupTag,
+): "MEN" | "WOMEN" | "YOUTH" | "FAMILIES" | "ALL_AGES" {
+  const mapping: Record<
+    GroupTag,
+    "MEN" | "WOMEN" | "YOUTH" | "FAMILIES" | "ALL_AGES"
+  > = {
+    Men: "MEN",
+    Women: "WOMEN",
+    Youth: "YOUTH",
+    Families: "FAMILIES",
+    "All Ages": "ALL_AGES",
+  };
+
+  return mapping[tag];
+}
+
+function backendToTag(tag: string): GroupTag {
+  const mapping: Record<string, GroupTag> = {
+    MEN: "Men",
+    WOMEN: "Women",
+    YOUTH: "Youth",
+    FAMILIES: "Families",
+    ALL_AGES: "All Ages",
+  };
+
+  return mapping[tag] || "All Ages";
+}
+
 export default function AdminCommunityPage() {
   const [groups, setGroups] = useState<CommunityGroup[]>([]);
   const [form, setForm] = useState(empty);
@@ -34,7 +53,16 @@ export default function AdminCommunityPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    apiClient.get<CommunityGroup[]>("/admin/community").then(setGroups);
+    ministriesApi
+      .list(1, 100)
+      .then((payload) => {
+        const groups = (payload?.data ?? []).map((group: MinistryGroup) => ({
+          ...group,
+          tag: backendToTag(group.tag),
+        }));
+        setGroups(groups);
+      })
+      .catch(() => setGroups([]));
   }, []);
 
   function handleChange(
@@ -62,17 +90,29 @@ export default function AdminCommunityPage() {
     e.preventDefault();
     setSaving(true);
     setError("");
-    const method = editing ? "PUT" : "POST";
-    const payload = { ...form, id: editing ?? undefined };
-    const response =
-      method === "PUT"
-        ? await apiClient.put("/admin/community", payload)
-        : await apiClient.post("/admin/community", payload);
-    if (response) {
-      const updated = await apiClient.get<CommunityGroup[]>("/admin/community");
-      setGroups(updated);
+    const payload = {
+      name: form.name,
+      tag: tagToBackend(form.tag),
+      meets: form.meets,
+      leader: form.leader,
+      bio: form.bio,
+      spots: form.spots ? Number(form.spots) : null,
+    };
+    try {
+      if (editing) {
+        await ministriesApi.update(editing, payload);
+      } else {
+        await ministriesApi.create(payload);
+      }
+
+      const updated = await ministriesApi.list(1, 100);
+      const nextGroups = (updated?.data ?? []).map((group: MinistryGroup) => ({
+        ...group,
+        tag: backendToTag(group.tag),
+      }));
+      setGroups(nextGroups);
       cancel();
-    } else {
+    } catch {
       setError("Failed to save.");
     }
     setSaving(false);
@@ -80,7 +120,7 @@ export default function AdminCommunityPage() {
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this group?")) return;
-    await apiClient.delete("/admin/community", { body: { id } });
+    await ministriesApi.delete(id);
     setGroups((p) => p.filter((g) => g.id !== id));
   }
 
