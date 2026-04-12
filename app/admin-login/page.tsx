@@ -2,17 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/stores/authStore";
 import { getDailyPhoto } from "@/lib/church-photos";
 import Link from "next/link";
+import { useAuthStore } from "@/lib/stores/authStore";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const bgUrl = getDailyPhoto(11);
   const login = useAuthStore((s) => s.login);
-  const isAdmin = useAuthStore((s) => s.isAdmin);
-  const clearAuth = useAuthStore((s) => s.clearAuth);
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -25,14 +22,14 @@ export default function AdminLoginPage() {
 
     try {
       await login({ email, password });
-      if (!isAdmin()) {
-        await clearAuth();
-        setError("You do not have permission to access admin.");
-        return;
+      const role = useAuthStore.getState().user?.role;
+      if (role === "ADMIN" || role === "PASTOR") {
+        router.push("/admin-dashboard");
+      } else {
+        setError("This account does not have admin access.");
       }
-      router.push("/admin-dashboard");
-    } catch (err: unknown) {
-      setError((err as Error)?.message || "Invalid password");
+    } catch {
+      setError("Invalid credentials.");
     } finally {
       setLoading(false);
     }
@@ -40,6 +37,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="relative min-h-screen bg-black flex items-center justify-center px-6">
+      {/* Fixed background */}
       <div
         className="page-bg"
         style={
@@ -57,7 +55,7 @@ export default function AdminLoginPage() {
             Admin
           </h1>
           <p className="font-body text-white/40 text-sm mt-1">
-            Enter your password to access the dashboard.
+            Sign in with your admin credentials.
           </p>
         </div>
 
@@ -71,10 +69,11 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="admin@yourchurch.com"
+              placeholder="you@example.com"
               className="bg-white/5 border border-white/15 px-3 py-2.5 font-body text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/40 transition-colors"
             />
           </div>
+
           <div className="flex flex-col gap-1.5">
             <label className="font-body text-white/40 text-[10px] tracking-widest uppercase">
               Password
@@ -99,13 +98,6 @@ export default function AdminLoginPage() {
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
-
-          <Link
-            href="/register"
-            className="font-body text-white/35 text-xs hover:text-white/70 transition-colors"
-          >
-            Create member account →
-          </Link>
         </form>
 
         <Link

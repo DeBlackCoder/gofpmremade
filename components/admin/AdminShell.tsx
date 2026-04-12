@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useAuthStore } from "@/lib/stores/authStore";
 
 const navItems = [
   {
@@ -100,31 +99,6 @@ const navItems = [
     ),
   },
   {
-    label: "Transactions",
-    sub: "Gives & payments",
-    href: "/admin-transactions",
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-        <rect
-          x="1.5"
-          y="2.5"
-          width="13"
-          height="11"
-          rx="1.5"
-          stroke="currentColor"
-          strokeWidth="1.2"
-          fill="none"
-        />
-        <path
-          d="M1.5 6.5h13M4.5 10h3"
-          stroke="currentColor"
-          strokeWidth="1.2"
-          strokeLinecap="round"
-        />
-      </svg>
-    ),
-  },
-  {
     label: "Community",
     sub: "Groups & members",
     href: "/admin-community",
@@ -212,7 +186,6 @@ export default function AdminShell({
   const router = useRouter();
   const [open, setOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const logout = useAuthStore((s) => s.logout);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1024);
@@ -247,7 +220,7 @@ export default function AdminShell({
   }
 
   async function handleLogout() {
-    await logout();
+    await fetch("/api/admin/logout", { method: "POST" });
     router.push("/");
   }
 
