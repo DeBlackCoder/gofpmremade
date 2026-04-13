@@ -84,6 +84,13 @@ export default function LiveServicePage() {
     liveSettings?.description ||
     "Join us live for worship, the Word, and fellowship.";
 
+  const [copied, setCopied] = useState(false);
+
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
   const [messages, setMessages] = useState<ChatMsg[]>(seedMessages);
   const [draft, setDraft] = useState("");
   const [chatName, setChatName] = useState("");
@@ -248,16 +255,9 @@ export default function LiveServicePage() {
                   variant="outline"
                   size="sm"
                   className="border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-5"
-                  onClick={() => {
-                    const url = window.location.href;
-                    if (navigator.share) {
-                      navigator.share({ title: serviceTitle, url });
-                    } else {
-                      navigator.clipboard.writeText(url);
-                    }
-                  }}
+                  onClick={copyLink}
                 >
-                  Share
+                  {copied ? "Copied!" : "Share"}
                 </Button>
                 <Button
                   variant="ghost"

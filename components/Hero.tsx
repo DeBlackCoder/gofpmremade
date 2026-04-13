@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { sermons } from "@/lib/sermons-data";
-import HeroTour from "@/components/HeroTour";
 import { getDailyPhoto } from "@/lib/church-photos";
 
 const navLinks = [
@@ -72,7 +71,6 @@ export default function Hero() {
   return (
     <>
       <section className="relative w-full h-svh min-h-150">
-        <HeroTour />
 
         {/* Fixed background */}
         <motion.div
@@ -352,11 +350,11 @@ export default function Hero() {
         <div className="max-w-7xl mx-auto px-6 py-8 sm:px-10 sm:py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
           <div className="flex items-center gap-4">
             <Image
-              src="/logo.jpeg"
+              src="/logo.png"
               alt="Assemblies Of God Church logo"
               width={48}
               height={48}
-              className="h-12 w-12 rounded-md object-contain border border-white/20 bg-white/5 p-1.5 shrink-0"
+              // className="h-12 w-12 rounded-md object-contain border border-white/20 bg-white/5 p-1.5 shrink-0"
             />
             <div className="flex flex-col gap-1">
               <span className="font-body text-white text-sm tracking-widest uppercase">
