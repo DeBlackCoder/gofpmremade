@@ -1,16 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { useMinistries } from "@/lib/hooks/queries";
-import { useUiStore } from "@/lib/stores/uiStore";
-
-// ─── Background ──────────────────────────────────────────────────────────────
-
-const BG_URL =
-  "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1800&q=90";
+import { getDailyPhoto } from "@/lib/church-photos";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -19,7 +12,7 @@ type MinistryTag = "Worship" | "Outreach" | "Care" | "Children" | "Media";
 interface Ministry {
   id: string;
   name: string;
-  tag: string;
+  tag: MinistryTag;
   leader: string;
   meets: string;
   bio: string;
@@ -27,7 +20,8 @@ interface Ministry {
 }
 
 // ─── Data ────────────────────────────────────────────────────────────────────
-const tagFilters: (MinistryTag | "All")[] = [
+
+const tagFilters: ("All" | MinistryTag)[] = [
   "All",
   "Worship",
   "Outreach",
@@ -44,7 +38,7 @@ const tagColors: Record<MinistryTag, string> = {
   Media: "bg-teal-500/20 text-teal-200",
 };
 
-const tagActiveBg: Record<MinistryTag | "All", string> = {
+const tagActiveBg: Record<"All" | MinistryTag, string> = {
   All: "bg-white text-black",
   Worship: "bg-violet-400 text-violet-950",
   Outreach: "bg-amber-400 text-amber-950",
@@ -52,6 +46,72 @@ const tagActiveBg: Record<MinistryTag | "All", string> = {
   Children: "bg-sky-400 text-sky-950",
   Media: "bg-teal-400 text-teal-950",
 };
+
+const ministries: Ministry[] = [
+  {
+    id: "1",
+    name: "Praise & Worship Team",
+    tag: "Worship",
+    leader: "Deacon Samuel Eze",
+    meets: "Saturdays 4 PM",
+    bio: "Our worship team leads the congregation into the presence of God every Sunday. We welcome singers, instrumentalists, and sound technicians who have a heart for worship.",
+    spots: null,
+  },
+  {
+    id: "2",
+    name: "Street Evangelism",
+    tag: "Outreach",
+    leader: "Sis. Grace Nwosu",
+    meets: "Last Saturday of the month",
+    bio: "We take the Gospel to the streets, markets, and campuses of Port Harcourt. No experience needed — just a willing heart and a pair of comfortable shoes.",
+    spots: 8,
+  },
+  {
+    id: "3",
+    name: "Pastoral Care Team",
+    tag: "Care",
+    leader: "Pastor Ruth Adeyemi",
+    meets: "Wednesdays 5 PM",
+    bio: "We visit the sick, support the grieving, and walk alongside members going through difficult seasons. Training is provided for all new volunteers.",
+    spots: null,
+  },
+  {
+    id: "4",
+    name: "Children's Church",
+    tag: "Children",
+    leader: "Bro. Emeka Obi",
+    meets: "Sundays 8 AM & 10:30 AM",
+    bio: "We create a safe, fun, and Spirit-filled environment for children ages 3–12 to encounter God. Teachers, helpers, and creatives are all welcome.",
+    spots: 5,
+  },
+  {
+    id: "5",
+    name: "Media & Tech Ministry",
+    tag: "Media",
+    leader: "Bro. Chidi Nkemdirim",
+    meets: "Sundays from 7 AM",
+    bio: "From live streaming to graphic design, our media team ensures every service reaches beyond the four walls of the church. Designers, videographers, and developers welcome.",
+    spots: null,
+  },
+  {
+    id: "6",
+    name: "Prison Outreach",
+    tag: "Outreach",
+    leader: "Deacon Philip Okafor",
+    meets: "Second Friday of the month",
+    bio: "We minister to inmates at correctional facilities in Rivers State — bringing hope, the Word, and practical support to those who need it most.",
+    spots: null,
+  },
+  {
+    id: "7",
+    name: "Prayer Intercessors",
+    tag: "Worship",
+    leader: "Sis. Blessing Amadi",
+    meets: "Tuesdays & Fridays 6 AM",
+    bio: "The engine room of the church. Our intercessors carry the church, the city, and the nations before the throne of God. All are welcome to join.",
+    spots: null,
+  },
+];
 
 const stats = [
   { value: "7", label: "Active ministries" },
@@ -63,45 +123,36 @@ const stats = [
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function MinistryPage() {
-  const [activeTag, setActiveTag] = useState<string | "All">("All");
+  const bgUrl = getDailyPhoto(5);
+  const [activeTag, setActiveTag] = useState<"All" | MinistryTag>("All");
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const { data: ministriesData, isLoading, error } = useMinistries();
-  const addToast = useUiStore((s) => s.addToast);
-
-  if (error) {
-    addToast({ type: "error", message: "Failed to load ministries" });
-  }
-
-  const ministries = ministriesData?.data || [];
 
   const filtered =
     activeTag === "All"
       ? ministries
-      : (ministries as any[]).filter((m) => m.tag === activeTag || (m.tag as string).toUpperCase() === activeTag.toUpperCase());
+      : ministries.filter((m) => m.tag === activeTag);
 
   return (
     <section className="relative w-full min-h-svh">
       {/* Background */}
       <motion.div
-        className="absolute inset-0"
+        className="page-bg"
+        style={{ "--bg-url": `url(${bgUrl})` } as React.CSSProperties}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.6 }}
-      >
-        <Image
-          src={BG_URL}
-          alt="Church ministry"
-          fill
-          priority
-          quality={90}
-          className="object-cover object-center"
-        />
-      </motion.div>
-      <div className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 z-10" />
-      <div className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent z-10" />
+      />
+      <div
+        className="fixed inset-0 bg-gradient-to-r from-black/75 via-black/40 to-black/10 pointer-events-none"
+        style={{ zIndex: 0 }}
+      />
+      <div
+        className="fixed inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/60 to-transparent pointer-events-none"
+        style={{ zIndex: 0 }}
+      />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
         {/* Top bar */}
         <div className="flex items-center justify-between">
           <motion.p
@@ -236,9 +287,9 @@ export default function MinistryPage() {
                           {ministry.name}
                         </span>
                         <span
-                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${(tagColors as any)[ministry.tag] || "bg-white/10 text-white/50"}`}
+                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${tagColors[ministry.tag]}`}
                         >
-                          {ministry.tag as string}
+                          {ministry.tag}
                         </span>
                         {ministry.spots !== null && (
                           <span className="font-body text-[10px] tracking-widest uppercase px-2 py-0.5 bg-rose-500/20 text-rose-300">
@@ -247,7 +298,7 @@ export default function MinistryPage() {
                         )}
                       </div>
                       <span className="font-body text-white/45 text-xs">
-                        {ministry.meets || (ministry as any).schedule} · Led by {ministry.leader || (ministry as any).lead}
+                        {ministry.meets} · Led by {ministry.leader}
                       </span>
                     </div>
                     <span
@@ -271,7 +322,7 @@ export default function MinistryPage() {
                       >
                         <div className="pb-6 pr-8 flex flex-col gap-4 max-w-lg">
                           <p className="font-body text-white/70 text-sm leading-relaxed">
-                            {ministry.bio || (ministry as any).desc}
+                            {ministry.bio}
                           </p>
                           <div className="flex gap-3 flex-wrap">
                             <Button

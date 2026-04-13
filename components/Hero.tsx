@@ -15,6 +15,7 @@ const navLinks = [
   { label: "Events", href: "/events" },
   { label: "Contact", href: "/contact" },
   { label: "Sermons", href: "/sermons" },
+  { label: "Projects", href: "/project" },
   { label: "Location", href: "/location" },
 ];
 
@@ -98,12 +99,12 @@ export default function Hero() {
             <div className="flex items-center justify-between gap-4 lg:contents">
               <motion.div className="flex items-center gap-3" data-tour="brand">
                 <Image
-                  src="/logo.jpeg"
+                  src="/logo.png"
                   alt="Assemblies Of God Church logo"
                   width={60}
                   height={60}
                   priority
-                  className="h-16 w-16 rounded-md object-contain border border-white/15 bg-white/5 p-1.5"
+                  // className="h-16 w-16 rounded-md object-contain border border-white/15 bg-white/5 p-1.5"
                 />
                 <p className="font-body text-white/70 text-xs tracking-widest uppercase">
                   Assemblies Of God Church
@@ -211,7 +212,7 @@ export default function Hero() {
 
           {/* Latest Sermons */}
           <motion.div
-            className="mt-8 sm:mt-10"
+            className="mt-16 sm:mt-20"
             data-tour="latest-sermons"
             initial="hidden"
             animate="show"
@@ -288,7 +289,7 @@ export default function Hero() {
           >
             {/* Daily quote */}
             <motion.div
-              className="hidden md:flex flex-col items-end gap-1.5 max-w-sm pb-1 border-t border-white/15 pt-3"
+              className="flex flex-col items-end gap-1.5 max-w-sm pb-1 border-t border-white/15 pt-3"
               data-tour="daily-quote"
               variants={{
                 hidden: { opacity: 0, y: 10 },
@@ -313,7 +314,7 @@ export default function Hero() {
         </div>
       </section>
 
-      <section className="relative z-10 bg-black/92 border-t border-white/10">
+      <section className="relative z-10  border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-16 sm:px-10 sm:py-20">
           <div className="grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-10 lg:gap-16 items-start">
             <div>
@@ -347,7 +348,7 @@ export default function Hero() {
         </div>
       </section>
 
-      <footer className="relative z-10 bg-black border-t border-white/10">
+      <footer className="relative z-10  border-t border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-8 sm:px-10 sm:py-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
           <div className="flex items-center gap-4">
             <Image
