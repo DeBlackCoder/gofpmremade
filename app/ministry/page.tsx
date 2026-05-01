@@ -153,27 +153,6 @@ export default function MinistryPage() {
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <motion.p
-            className="font-body text-white/70 text-xs tracking-widest uppercase"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Assemblies Of God Church
-          </motion.p>
-          <motion.a
-            href="/"
-            className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            ← Return home
-          </motion.a>
-        </div>
-
         {/* Heading */}
         <motion.h1
           className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
@@ -210,11 +189,23 @@ export default function MinistryPage() {
             and your story become part of something greater than yourself.
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-px border border-white/15 bg-white/15">
+          <div
+            className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-px"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "16px",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+              overflow: "hidden",
+            }}
+          >
             {stats.map((s, i) => (
               <motion.div
                 key={s.label}
-                className="flex flex-col gap-0.5 px-4 py-4 bg-black/30 backdrop-blur-sm"
+                className="flex flex-col gap-0.5 px-4 py-4"
+                style={{ background: "rgba(0,0,0,0.18)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}
@@ -371,7 +362,7 @@ export default function MinistryPage() {
             How it works
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px border border-white/15 bg-white/15">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               {
                 step: "01",
@@ -391,7 +382,15 @@ export default function MinistryPage() {
             ].map((item, i) => (
               <motion.div
                 key={item.step}
-                className="bg-black/35 backdrop-blur-sm px-6 py-7 flex flex-col gap-3 hover:bg-black/55 transition-colors duration-250"
+                className="flex flex-col gap-3 px-6 py-7"
+                style={{
+                  background: "rgba(255,255,255,0.07)",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  borderRadius: "14px",
+                  boxShadow: "0 2px 16px rgba(0,0,0,0.2)",
+                }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.28 + i * 0.08, duration: 0.5 }}
@@ -412,7 +411,16 @@ export default function MinistryPage() {
 
         {/* ── CTA ──────────────────────────────────────── */}
         <motion.div
-          className="mt-16 sm:mt-20 border-t border-white/20 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
+          className="mt-16 sm:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
+          style={{
+            background: "rgba(255,255,255,0.06)",
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
+            padding: "2rem",
+          }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.3, duration: 0.6 }}

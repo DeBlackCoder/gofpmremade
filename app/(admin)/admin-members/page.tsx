@@ -19,7 +19,7 @@ export default function AdminMembersPage() {
   const totalPages = Math.max(1, Math.ceil(total / 25));
 
   return (
-    <div className="flex flex-col min-h-screen px-6 py-8 sm:px-10 sm:py-10 max-w-6xl mx-auto">
+    <div className="flex flex-col min-h-screen px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10 max-w-6xl mx-auto">
       <div className="mb-8">
         <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">
           Admin

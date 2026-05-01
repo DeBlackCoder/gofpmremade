@@ -52,27 +52,6 @@ export default function ProjectDetailPage({
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <motion.p
-            className="font-body text-white/70 text-xs tracking-widest uppercase"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Assemblies Of God Church
-          </motion.p>
-          <motion.a
-            href="/project"
-            className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            ← All projects
-          </motion.a>
-        </div>
-
         {/* Not found */}
         {!project && (
           <motion.div
@@ -129,105 +108,104 @@ export default function ProjectDetailPage({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.65, duration: 0.7 }}
             >
-              {project.images.length === 1 ? (
-                /* Single image — full width */
-                <div className="relative w-full aspect-[16/7] overflow-hidden border border-white/15">
-                  <Image
-                    src={project.images[0]}
-                    alt={project.title}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              ) : (
-                /* Multi-image — featured + side stack */
-                <div className="grid grid-cols-1 sm:grid-cols-[2fr_1fr] gap-1.5">
-                  {/* Featured */}
-                  <div
-                    className={`relative overflow-hidden border cursor-pointer transition-opacity duration-200 hover:opacity-90 ${
-                      activeImg === 0 ? "border-white/50" : "border-white/15"
-                    }`}
-                    style={{ aspectRatio: "4/3" }}
-                    onClick={() => setActiveImg(0)}
-                  >
-                    <Image
-                      src={project.images[0]}
-                      alt={`${project.title} — 1`}
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                    {activeImg === 0 && (
-                      <div className="absolute inset-0 ring-2 ring-inset ring-white/40 pointer-events-none" />
-                    )}
-                  </div>
+              {/* Hero — active image */}
+              <div
+                className="relative w-full overflow-hidden border border-white/15 cursor-pointer"
+                style={{ aspectRatio: "16/7" }}
+                onClick={() =>
+                  setActiveImg((prev) => (prev + 1) % project.images.length)
+                }
+              >
+                <Image
+                  src={project.images[activeImg]}
+                  alt={`${project.title} — ${activeImg + 1}`}
+                  fill
+                  className="object-cover transition-opacity duration-300"
+                  priority
+                  sizes="(max-width: 640px) 100vw, 90vw"
+                />
+                {/* tap-to-advance hint on mobile */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+                <span
+                  className="absolute bottom-3 right-3 font-body text-white/80 text-[10px] tracking-widest uppercase px-2 py-1"
+                  style={{
+                    background: "rgba(0,0,0,0.45)",
+                    backdropFilter: "blur(10px)",
+                    WebkitBackdropFilter: "blur(10px)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: "8px",
+                  }}
+                >
+                  {activeImg + 1} / {project.images.length}
+                </span>
+              </div>
 
-                  {/* Side stack */}
-                  <div className="flex flex-col gap-1.5">
-                    {project.images.slice(1).map((src, i) => {
-                      const idx = i + 1;
-                      const isLast = idx === project.images.length - 1 && project.images.length > 3;
-                      return (
-                        <div
-                          key={idx}
-                          className={`relative overflow-hidden border cursor-pointer transition-opacity duration-200 hover:opacity-90 flex-1 ${
-                            activeImg === idx ? "border-white/50" : "border-white/15"
-                          }`}
-                          style={{ minHeight: 0 }}
-                          onClick={() => setActiveImg(idx)}
-                        >
-                          <Image
-                            src={src}
-                            alt={`${project.title} — ${idx + 1}`}
-                            fill
-                            className="object-cover"
-                          />
-                          {activeImg === idx && (
-                            <div className="absolute inset-0 ring-2 ring-inset ring-white/40 pointer-events-none" />
-                          )}
-                          {isLast && project.images.length > 3 && (
-                            <div className="absolute inset-0 bg-black/55 flex items-center justify-center">
-                              <span className="font-heading text-white font-black text-xl">
-                                +{project.images.length - 3}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+              {/* Thumbnail strip — all images always visible */}
+              {project.images.length > 1 && (
+                <div
+                  className="mt-1.5 grid gap-1.5"
+                  style={{
+                    gridTemplateColumns: `repeat(${project.images.length}, 1fr)`,
+                  }}
+                >
+                  {project.images.map((src, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImg(idx)}
+                      className={`relative overflow-hidden border transition-all duration-200 focus:outline-none ${
+                        activeImg === idx
+                          ? "border-white/60 opacity-100"
+                          : "border-white/10 opacity-50 hover:opacity-80"
+                      }`}
+                      style={{ aspectRatio: "4/3" }}
+                      aria-label={`View image ${idx + 1}`}
+                    >
+                      <Image
+                        src={src}
+                        alt={`${project.title} thumbnail ${idx + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 33vw, 20vw"
+                      />
+                      {activeImg === idx && (
+                        <div className="absolute inset-0 ring-1 ring-inset ring-white/40 pointer-events-none" />
+                      )}
+                    </button>
+                  ))}
                 </div>
               )}
-
-              {/* Counter */}
-              <p className="mt-2 font-body text-white/30 text-[10px] tracking-widest uppercase text-right">
-                {activeImg + 1} / {project.images.length}
-              </p>
             </motion.div>
 
             {/* Meta + Body */}
             <motion.div
-              className="mt-10 sm:mt-14 grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-10 lg:gap-16"
+              className="mt-10 sm:mt-14 grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-6 lg:gap-8"
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.75, duration: 0.7 }}
             >
               {/* Left — meta */}
-              <div className="flex flex-col gap-5">
+              <div
+                className="flex flex-col gap-0"
+                style={{
+                  background: "rgba(255,255,255,0.07)",
+                  backdropFilter: "blur(16px)",
+                  WebkitBackdropFilter: "blur(16px)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: "16px",
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
+                  overflow: "hidden",
+                }}
+              >
                 {[
                   { label: "Year", value: project.year },
                   { label: "Project lead", value: project.lead },
                   ...(project.goal
                     ? [{ label: "Funding goal", value: project.goal }]
                     : []),
-                  ...(project.raised
-                    ? [{ label: "Raised so far", value: project.raised }]
-                    : []),
                 ].map((item, i) => (
                   <motion.div
                     key={item.label}
-                    className="flex flex-col border-t border-white/20 pt-4"
+                    className="flex flex-col px-5 py-4 border-b border-white/10"
                     initial={{ opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.9 + i * 0.08, duration: 0.5 }}
@@ -241,51 +219,46 @@ export default function ProjectDetailPage({
                   </motion.div>
                 ))}
 
-                {/* Progress bar */}
-                {project.goal && project.raised && (
-                  <motion.div
-                    className="flex flex-col gap-2 pt-2"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1.1, duration: 0.6 }}
-                  >
-                    <div className="w-full h-1.5 bg-white/15 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-white/70 rounded-full"
-                        style={{
-                          width: `${Math.min(
-                            100,
-                            Math.round(
-                              (parseFloat(project.raised.replace(/[^\d.]/g, "")) /
-                                parseFloat(project.goal.replace(/[^\d.]/g, ""))) *
-                                100,
-                            ),
-                          )}%`,
-                        }}
-                      />
-                    </div>
-                    <span className="font-body text-white/40 text-[10px] tracking-widest uppercase">
-                      {Math.min(
-                        100,
-                        Math.round(
-                          (parseFloat(project.raised.replace(/[^\d.]/g, "")) /
-                            parseFloat(project.goal.replace(/[^\d.]/g, ""))) *
-                            100,
-                        ),
-                      )}
-                      % funded
-                    </span>
-                  </motion.div>
-                )}
+                {/* Bank account details */}
+                <motion.div
+                  className="flex flex-col px-5 py-4 gap-1"
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.05, duration: 0.5 }}
+                >
+                  <span className="font-body text-white/45 text-xs tracking-widest uppercase mb-1">
+                    Project account
+                  </span>
+                  <span className="font-body text-white font-semibold text-sm sm:text-base tracking-widest">
+                    1229195658
+                  </span>
+                  <span className="font-body text-white/60 text-xs leading-relaxed">
+                    Zenith Bank
+                  </span>
+                  <span className="font-body text-white/50 text-[11px] leading-relaxed uppercase tracking-wide">
+                    Assemblies of God 2 Choba — Proj Account
+                  </span>
+                </motion.div>
               </div>
 
               {/* Right — body */}
-              <div className="flex flex-col gap-6">
+              <div
+                className="flex flex-col gap-6 px-6 py-6"
+                style={{
+                  background: "rgba(255,255,255,0.06)",
+                  backdropFilter: "blur(16px)",
+                  WebkitBackdropFilter: "blur(16px)",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  borderRadius: "16px",
+                  boxShadow: "0 4px 24px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.07)",
+                }}
+              >
                 <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed">
                   {project.body}
                 </p>
 
                 <div className="flex gap-3 flex-wrap pt-2">
+                  {/* Paystack giving button — disabled until payment integration is live
                   <Button
                     variant="outline"
                     className="border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none px-7"
@@ -293,6 +266,7 @@ export default function ProjectDetailPage({
                   >
                     <a href="/give">Support this project</a>
                   </Button>
+                  */}
                   <Button
                     variant="ghost"
                     className="text-white/55 hover:text-white hover:bg-transparent font-body tracking-wide rounded-none px-0 underline underline-offset-4"
@@ -306,7 +280,16 @@ export default function ProjectDetailPage({
 
             {/* Other projects */}
             <motion.div
-              className="mt-16 sm:mt-20 border-t border-white/20 pt-10"
+              className="mt-16 sm:mt-20 pt-8"
+              style={{
+                background: "rgba(255,255,255,0.05)",
+                backdropFilter: "blur(14px)",
+                WebkitBackdropFilter: "blur(14px)",
+                border: "1px solid rgba(255,255,255,0.09)",
+                borderRadius: "20px",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
+                padding: "2rem",
+              }}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2, duration: 0.7 }}
@@ -314,33 +297,53 @@ export default function ProjectDetailPage({
               <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-5">
                 Other projects
               </p>
-              <div className="flex flex-col">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {projects
                   .filter((p) => p.slug !== project.slug)
                   .slice(0, 4)
                   .map((p, i) => (
                     <motion.div
                       key={p.slug}
-                      className="border-t border-white/20"
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 1.28 + i * 0.06, duration: 0.4 }}
                     >
                       <Link
                         href={`/project/${p.slug}`}
-                        className="flex items-center justify-between gap-4 py-4 group"
+                        className="group flex flex-col overflow-hidden transition-all duration-300"
+                        style={{
+                          background: "rgba(255,255,255,0.07)",
+                          backdropFilter: "blur(12px)",
+                          WebkitBackdropFilter: "blur(12px)",
+                          border: "1px solid rgba(255,255,255,0.10)",
+                          borderRadius: "12px",
+                          boxShadow: "0 2px 12px rgba(0,0,0,0.2)",
+                        }}
                       >
-                        <div className="flex flex-col gap-0.5">
-                          <span className="font-body text-white font-semibold text-sm group-hover:text-white/80 transition-colors">
-                            {p.title}
-                          </span>
-                          <span className="font-body text-white/40 text-xs">
-                            {p.category} · {p.year}
+                        {/* Thumbnail */}
+                        <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16/9", borderRadius: "12px 12px 0 0" }}>
+                          <Image
+                            src={p.images[0]}
+                            alt={p.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                          />
+                          <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 transition-colors duration-300" />
+                        </div>
+                        <div className="flex items-center justify-between gap-2 px-3 py-3">
+                          <div className="flex flex-col gap-0.5 min-w-0">
+                            <span className="font-body text-white font-semibold text-xs leading-snug group-hover:text-white/80 transition-colors truncate">
+                              {p.title}
+                            </span>
+                            <span className="font-body text-white/40 text-[10px]">
+                              {p.category} · {p.year}
+                            </span>
+                          </div>
+                          <span className="text-white/30 group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 shrink-0 text-sm">
+                            →
                           </span>
                         </div>
-                        <span className="text-white/30 group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 shrink-0">
-                          →
-                        </span>
                       </Link>
                     </motion.div>
                   ))}

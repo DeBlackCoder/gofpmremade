@@ -21,7 +21,7 @@ export const projects: Project[] = [
     category: "Construction",
     status: "Ongoing",
     year: "2024",
-    lead: "Deacon Philip Okafor",
+    lead: "Engr. Emeka Nweke",
     summary: "Expanding our main auditorium to seat 2,000 worshippers and adding a dedicated children's wing.",
     body: "Our congregation has grown beyond the capacity of our current building. This project will double the seating in the main auditorium, add a dedicated children's wing with four classrooms, and upgrade our sound and lighting systems. Construction began in January 2024 and is expected to be completed by December 2025.",
     goal: "₦120,000,000",

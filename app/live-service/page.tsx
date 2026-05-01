@@ -131,26 +131,6 @@ export default function LiveServicePage() {
       <div className="fixed inset-x-0 bottom-0 h-48 bg-linear-to-t from-black/60 to-transparent z-10" />
 
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-        <div className="flex items-center justify-between gap-4">
-          <motion.p
-            className="font-body text-white/70 text-xs tracking-widest uppercase"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Assemblies Of God Church
-          </motion.p>
-          <motion.a
-            href="/"
-            className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            ← Return home
-          </motion.a>
-        </div>
-
         <motion.h1
           className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
           style={{ fontSize: "clamp(2.6rem, 10vw, 6rem)" }}
@@ -270,7 +250,14 @@ export default function LiveServicePage() {
               </div>
             </div>
 
-            <div className="border border-white/15 bg-black/25 backdrop-blur-sm p-4 sm:p-5">
+            <div className="p-4 sm:p-5" style={{
+              background: "rgba(255,255,255,0.07)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "16px",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
+            }}>
               <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-3">
                 Previous streams
               </p>
@@ -308,8 +295,16 @@ export default function LiveServicePage() {
           </div>
 
           <div
-            className="flex flex-col border border-white/15 backdrop-blur-md bg-white/5 overflow-hidden sticky top-4 self-start"
-            style={{ maxHeight: "560px" }}
+            className="flex flex-col overflow-hidden sticky top-4 self-start"
+            style={{
+              background: "rgba(255,255,255,0.07)",
+              backdropFilter: "blur(18px)",
+              WebkitBackdropFilter: "blur(18px)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "16px",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.28)",
+              maxHeight: "560px",
+            }}
           >
             <div className="px-4 py-3 border-b border-white/15 flex items-center justify-between">
               <span className="font-body text-white/60 text-xs tracking-widest uppercase">
@@ -390,7 +385,16 @@ export default function LiveServicePage() {
         </motion.div>
 
         <motion.div
-          className="mt-10 border-t border-white/20 pt-7 flex flex-col sm:flex-row sm:items-end justify-between gap-5"
+          className="mt-10 flex flex-col sm:flex-row sm:items-end justify-between gap-5"
+          style={{
+            background: "rgba(255,255,255,0.06)",
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
+            padding: "1.5rem 2rem",
+          }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.25, duration: 0.6 }}

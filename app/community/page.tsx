@@ -166,27 +166,6 @@ export default function CommunityPage() {
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <motion.p
-            className="font-body text-white/70 text-xs tracking-widest uppercase"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Assemblies Of God Church
-          </motion.p>
-          <motion.a
-            href="/"
-            className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            ← Return home
-          </motion.a>
-        </div>
-
         {/* Heading */}
         <motion.h1
           className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
@@ -224,20 +203,30 @@ export default function CommunityPage() {
             you in our community — a group, a table, a home.
           </p>
 
-          {/* Right — stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-px border border-white/15 bg-white/15">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-3">
             {stats.map((s, i) => (
               <motion.div
                 key={s.label}
-                className="flex flex-col gap-0.5 px-4 py-4 bg-black/30 backdrop-blur-sm"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}
+                className="flex flex-col gap-1 px-5 py-5 relative overflow-hidden group cursor-default"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  borderRadius: "16px",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
+                }}
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 1.0 + i * 0.1, duration: 0.5 }}
+                whileHover={{ scale: 1.05, y: -4 }}
               >
-                <span className="font-heading text-white font-black text-2xl sm:text-3xl leading-none">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="font-heading text-white font-black text-3xl sm:text-4xl leading-none relative z-10">
                   {s.value}
                 </span>
-                <span className="font-body text-white/45 text-[10px] tracking-widest uppercase mt-1">
+                <span className="font-body text-white/50 text-[10px] tracking-widest uppercase mt-1 relative z-10">
                   {s.label}
                 </span>
               </motion.div>
@@ -252,117 +241,155 @@ export default function CommunityPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.05, duration: 0.7 }}
         >
-          <div className="flex items-end justify-between mb-5 flex-wrap gap-4">
-            <h2 className="font-body text-white/45 text-xs tracking-widest uppercase">
-              Life groups
-            </h2>
-            {/* Tag filters */}
+          <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
+            <div>
+              <h2 className="font-body text-white/50 text-xs tracking-widest uppercase mb-1">
+                Life groups
+              </h2>
+              <p className="font-body text-white/40 text-xs">
+                {filtered.length} {filtered.length === 1 ? 'group' : 'groups'} available
+              </p>
+            </div>
+            {/* Enhanced Tag filters */}
             <div className="flex flex-wrap gap-2">
               {tagFilters.map((tag) => (
-                <button
+                <motion.button
                   key={tag}
                   onClick={() => {
                     setActiveTag(tag);
                     setExpandedId(null);
                   }}
-                  className={`font-body text-xs tracking-widest uppercase px-3 py-1 border transition-all duration-200 ${
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`font-body text-xs tracking-widest uppercase px-4 py-2 border transition-all duration-300 ${
                     activeTag === tag
-                      ? `${tagActiveBg[tag]} border-transparent`
-                      : "border-white/25 text-white/60 hover:border-white/50 hover:text-white bg-transparent"
+                      ? `${tagActiveBg[tag]} border-transparent shadow-lg`
+                      : "border-white/30 text-white/70 hover:border-white/60 hover:text-white bg-white/5 hover:bg-white/10"
                   }`}
+                  style={{ borderRadius: "8px" }}
                 >
                   {tag}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
 
-          {/* Groups accordion */}
-          <AnimatePresence mode="popLayout">
-            {filtered.map((group, i) => {
-              const isOpen = expandedId === group.id;
-              return (
-                <motion.div
-                  key={group.id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ delay: i * 0.04, duration: 0.3 }}
-                  className="border-t border-white/20"
-                >
-                  <button
-                    onClick={() => setExpandedId(isOpen ? null : group.id)}
-                    className="w-full text-left py-4 sm:py-5 grid grid-cols-[1fr_auto] gap-4 items-start group"
+          {/* Enhanced Groups accordion */}
+          <div className="space-y-3">
+            <AnimatePresence mode="popLayout">
+              {filtered.map((group, i) => {
+                const isOpen = expandedId === group.id;
+                return (
+                  <motion.div
+                    key={group.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ delay: i * 0.05, duration: 0.3 }}
+                    className="relative overflow-hidden"
+                    style={{
+                      background: isOpen 
+                        ? "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%)"
+                        : "rgba(255,255,255,0.04)",
+                      backdropFilter: "blur(16px)",
+                      WebkitBackdropFilter: "blur(16px)",
+                      border: `1px solid ${isOpen ? "rgba(255,255,255,0.20)" : "rgba(255,255,255,0.10)"}`,
+                      borderRadius: "16px",
+                      boxShadow: isOpen 
+                        ? "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)"
+                        : "0 2px 12px rgba(0,0,0,0.2)",
+                    }}
+                    whileHover={{ scale: 1.01 }}
                   >
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
-                          {group.name}
-                        </span>
-                        <span
-                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${tagColors[group.tag]}`}
-                        >
-                          {group.tag}
-                        </span>
-                        {group.spots !== null && (
-                          <span className="font-body text-[10px] tracking-widest uppercase px-2 py-0.5 bg-rose-500/20 text-rose-300">
-                            {group.spots} spots left
-                          </span>
-                        )}
-                      </div>
-                      <span className="font-body text-white/45 text-xs">
-                        {group.meets} · Led by {group.leader}
-                      </span>
-                    </div>
-                    <span
-                      className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 transition-all duration-300"
-                      style={{
-                        transform: isOpen ? "rotate(45deg)" : "rotate(0deg)",
-                        display: "inline-block",
-                      }}
+                    <button
+                      onClick={() => setExpandedId(isOpen ? null : group.id)}
+                      className="w-full text-left p-5 sm:p-6 grid grid-cols-[1fr_auto] gap-4 items-start group"
                     >
-                      +
-                    </span>
-                  </button>
-
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="overflow-hidden"
-                      >
-                        <div className="pb-6 pr-8 flex flex-col gap-4 max-w-lg">
-                          <p className="font-body text-white/70 text-sm leading-relaxed">
-                            {group.bio}
-                          </p>
-                          <div className="flex gap-3 flex-wrap">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="border-white/40 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none text-xs px-5"
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-body text-white font-bold text-base sm:text-lg group-hover:text-white/90 transition-colors">
+                            {group.name}
+                          </span>
+                          <span
+                            className={`font-body text-[10px] tracking-widest uppercase px-2.5 py-1 ${tagColors[group.tag]}`}
+                            style={{ borderRadius: "6px" }}
+                          >
+                            {group.tag}
+                          </span>
+                          {group.spots !== null && (
+                            <motion.span
+                              className="font-body text-[10px] tracking-widest uppercase px-2.5 py-1 bg-rose-500/25 text-rose-200 border border-rose-400/30"
+                              style={{ borderRadius: "6px" }}
+                              initial={{ scale: 0.9 }}
+                              animate={{ scale: 1 }}
+                              transition={{ repeat: Infinity, duration: 2, repeatType: "reverse" }}
                             >
-                              Join this group
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-white/55 hover:text-white hover:bg-transparent font-body text-xs tracking-wide rounded-none px-0 underline underline-offset-4"
-                            >
-                              Learn more
-                            </Button>
-                          </div>
+                              {group.spots} spots left
+                            </motion.span>
+                          )}
                         </div>
+                        <div className="flex items-center gap-3 text-white/50 text-xs">
+                          <span className="font-body">{group.meets}</span>
+                          <span className="text-white/30">·</span>
+                          <span className="font-body">{group.leader}</span>
+                        </div>
+                      </div>
+                      <motion.div
+                        className="w-10 h-10 flex items-center justify-center border border-white/30 group-hover:border-white/60 transition-all duration-300"
+                        style={{
+                          borderRadius: "10px",
+                          background: isOpen ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.05)",
+                        }}
+                        animate={{ rotate: isOpen ? 45 : 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <span className="font-body text-white/70 text-xl">
+                          +
+                        </span>
                       </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+                    </button>
+
+                    <AnimatePresence>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3, ease: "easeInOut" }}
+                          className="overflow-hidden border-t border-white/10"
+                        >
+                          <div className="p-5 sm:p-6 pt-4 flex flex-col gap-5 bg-black/10">
+                            <p className="font-body text-white/75 text-sm leading-relaxed max-w-2xl">
+                              {group.bio}
+                            </p>
+                            <div className="flex gap-3 flex-wrap">
+                              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-white/50 text-white bg-white/10 hover:bg-white hover:text-black font-body font-semibold tracking-wide rounded-xl text-xs px-6 py-5 transition-all duration-300"
+                                >
+                                  Join this group
+                                </Button>
+                              </motion.div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-white/60 hover:text-white hover:bg-transparent font-body text-xs tracking-wide rounded-none px-0 underline underline-offset-4"
+                              >
+                                Learn more →
+                              </Button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
 
           {filtered.length === 0 && (
             <motion.p
@@ -375,93 +402,179 @@ export default function CommunityPage() {
           )}
         </motion.div>
 
-        {/* ── Testimonials ─────────────────────────────── */}
+        {/* Enhanced Testimonials */}
         <motion.div
-          className="mt-16 sm:mt-20 border-t border-white/20 pt-10"
+          className="mt-16 sm:mt-20 p-7 sm:p-10 relative overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: "24px",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)",
+          }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.7 }}
         >
-          <h2 className="font-body text-white/45 text-xs tracking-widest uppercase mb-8">
-            Stories from our community
-          </h2>
+          <motion.div
+            className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+          
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="font-body text-white/50 text-xs tracking-widest uppercase">
+                Stories from our community
+              </h2>
+              <div className="flex items-center gap-2">
+                {testimonials.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setTestimonialIdx(idx)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      idx === testimonialIdx
+                        ? "bg-white w-8"
+                        : "bg-white/30 hover:bg-white/50"
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
 
-          <div className="relative max-w-xl">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={testimonialIdx}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.35 }}
-                className="flex flex-col gap-4"
-              >
-                <p className="font-heading text-white font-black text-xl sm:text-2xl leading-snug">
-                  &quot;{testimonials[testimonialIdx].quote}&quot;
-                </p>
-                <div className="flex flex-col">
-                  <span className="font-body text-white font-semibold text-sm">
-                    {testimonials[testimonialIdx].name}
-                  </span>
-                  <span className="font-body text-white/45 text-xs tracking-wide">
-                    {testimonials[testimonialIdx].role}
-                  </span>
-                </div>
-              </motion.div>
-            </AnimatePresence>
+            <div className="relative max-w-2xl">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={testimonialIdx}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -30 }}
+                  transition={{ duration: 0.4 }}
+                  className="flex flex-col gap-6"
+                >
+                  <div className="relative">
+                    <svg
+                      className="absolute -top-2 -left-2 text-white/10"
+                      width="40"
+                      height="40"
+                      viewBox="0 0 40 40"
+                      fill="currentColor"
+                    >
+                      <path d="M10 20c0-5.523 4.477-10 10-10v10H10zm20 0c0-5.523 4.477-10 10-10v10H30z" />
+                    </svg>
+                    <p className="font-heading text-white font-black text-xl sm:text-2xl lg:text-3xl leading-snug pl-8">
+                      {testimonials[testimonialIdx].quote}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4 pl-8">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-white/20 to-white/5 border border-white/20 flex items-center justify-center">
+                      <span className="font-heading text-white font-bold text-lg">
+                        {testimonials[testimonialIdx].name.charAt(0)}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-body text-white font-bold text-sm">
+                        {testimonials[testimonialIdx].name}
+                      </span>
+                      <span className="font-body text-white/50 text-xs tracking-wide">
+                        {testimonials[testimonialIdx].role}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
 
-            {/* Nav */}
-            <div className="mt-6 flex items-center gap-4">
-              <button
-                onClick={prev}
-                className="font-body text-white/50 text-sm tracking-wide hover:text-white transition-colors border border-white/25 hover:border-white/60 w-8 h-8 flex items-center justify-center"
-              >
-                ←
-              </button>
-              <button
-                onClick={next}
-                className="font-body text-white/50 text-sm tracking-wide hover:text-white transition-colors border border-white/25 hover:border-white/60 w-8 h-8 flex items-center justify-center"
-              >
-                →
-              </button>
-              <span className="font-body text-white/30 text-xs tracking-widest">
-                {testimonialIdx + 1} / {testimonials.length}
-              </span>
+              {/* Enhanced Nav */}
+              <div className="mt-8 flex items-center gap-3">
+                <motion.button
+                  onClick={prev}
+                  whileHover={{ scale: 1.1, x: -2 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="font-body text-white/60 hover:text-white transition-colors border-2 border-white/30 hover:border-white/60 w-10 h-10 flex items-center justify-center"
+                  style={{ borderRadius: "10px" }}
+                >
+                  ←
+                </motion.button>
+                <motion.button
+                  onClick={next}
+                  whileHover={{ scale: 1.1, x: 2 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="font-body text-white/60 hover:text-white transition-colors border-2 border-white/30 hover:border-white/60 w-10 h-10 flex items-center justify-center"
+                  style={{ borderRadius: "10px" }}
+                >
+                  →
+                </motion.button>
+                <span className="font-body text-white/40 text-xs tracking-widest ml-2">
+                  {testimonialIdx + 1} of {testimonials.length}
+                </span>
+              </div>
             </div>
           </div>
         </motion.div>
 
-        {/* ── CTA ──────────────────────────────────────── */}
+        {/* Enhanced CTA */}
         <motion.div
-          className="mt-16 sm:mt-20 border-t border-white/20 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
+          className="mt-16 sm:mt-20 flex flex-col sm:flex-row sm:items-end justify-between gap-8 p-8 sm:p-10 relative overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)",
+            backdropFilter: "blur(24px)",
+            WebkitBackdropFilter: "blur(24px)",
+            border: "1px solid rgba(255,255,255,0.18)",
+            borderRadius: "24px",
+            boxShadow: "0 12px 48px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
+          }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.3, duration: 0.6 }}
+          whileHover={{ scale: 1.01 }}
         >
-          <div className="flex flex-col gap-1">
-            <p className="font-body text-white/45 text-xs tracking-widest uppercase">
+          <motion.div
+            className="absolute -bottom-10 -right-10 w-48 h-48 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+          
+          <div className="flex flex-col gap-2 relative z-10">
+            <p className="font-body text-white/50 text-xs tracking-widest uppercase">
               Ready to belong?
             </p>
-            <p className="font-heading text-white font-black text-2xl sm:text-3xl leading-tight">
+            <p className="font-heading text-white font-black text-3xl sm:text-4xl leading-tight">
               Everyone has a seat
               <br />
               at this table.
             </p>
           </div>
-          <div className="flex gap-3 flex-wrap">
-            <Button
-              variant="outline"
-              className="border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none px-7"
-              asChild
-            >
-              <a href="/contact">Get in touch</a>
-            </Button>
+          <div className="flex gap-4 flex-wrap relative z-10">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="outline"
+                className="border-2 border-white/60 text-white bg-white/10 hover:bg-white hover:text-black font-body font-semibold tracking-wide rounded-xl px-8 py-6 text-base transition-all duration-300 shadow-lg hover:shadow-xl"
+                asChild
+              >
+                <a href="/contact">Get in touch</a>
+              </Button>
+            </motion.div>
             <Button
               variant="ghost"
-              className="text-white/55 hover:text-white hover:bg-transparent font-body tracking-wide rounded-none px-0 underline underline-offset-4"
+              className="text-white/60 hover:text-white hover:bg-transparent font-body tracking-wide rounded-none px-0 underline underline-offset-4 text-base"
               asChild
             >
-              <a href="/events">See upcoming events</a>
+              <a href="/events">See upcoming events →</a>
             </Button>
           </div>
         </motion.div>

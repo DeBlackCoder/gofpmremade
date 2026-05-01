@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "@/lib/providers";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: {
@@ -51,7 +52,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Providers>
-          <div className="site-wrapper flex flex-col flex-1">{children}</div>
+          <div className="site-wrapper flex flex-col flex-1">
+            <Navbar />
+            {children}
+          </div>
         </Providers>
       </body>
     </html>
