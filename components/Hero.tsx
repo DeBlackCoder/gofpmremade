@@ -123,6 +123,16 @@ export default function Hero() {
               </motion.span>
             </motion.h1>
 
+            {/* Welcome text */}
+            <motion.p
+              className="mt-4 font-heading text-white/50 font-black text-lg sm:text-xl tracking-tight"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.88, duration: 0.7 }}
+            >
+              You are welcome.
+            </motion.p>
+
             {/* Tagline — glass pill */}
             <motion.div
               className="mt-6 self-start"
