@@ -58,7 +58,7 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     const stored = localStorage.getItem("admin-site-settings");
-    if (stored) setSettings(JSON.parse(stored));
+    if (stored) setSettings(JSON.parse(stored) as SiteSettings);
   }, []);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {

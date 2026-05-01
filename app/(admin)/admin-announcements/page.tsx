@@ -54,7 +54,7 @@ export default function AdminAnnouncementsPage() {
   }
 
   useEffect(() => {
-    fetchAll();
+    void fetchAll();
   }, []);
 
   function handleChange(

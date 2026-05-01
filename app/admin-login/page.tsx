@@ -53,7 +53,7 @@ export default function AdminLoginPage() {
       role: "ADMIN",
       isActive: true,
       createdAt: new Date().toISOString(),
-    } as any);
+    } as import("@/lib/types/auth").User);
     useAuthStore.getState().setTokens("dev-token", "dev-refresh");
     router.push("/admin-dashboard");
   }

@@ -35,7 +35,7 @@ export const membersApi = {
   },
 
   // Single-church setup: no branch segmentation.
-  getByBranch: async (_branchId: string): Promise<{ data: PublicUser[] }> => {
+  getByBranch: async (_branchId?: string): Promise<{ data: PublicUser[] }> => {
     const res =
       await apiClient.get<ApiResponse<MemberListResult>>("/members?page=1");
     const payload = unwrap(res);

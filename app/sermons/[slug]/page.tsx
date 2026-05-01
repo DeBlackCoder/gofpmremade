@@ -7,6 +7,22 @@ import { Button } from "@/components/ui/button";
 import { useSermons, useSearchSermons } from "@/lib/hooks/queries";
 import { getDailyPhoto } from "@/lib/church-photos";
 
+interface Sermon {
+  slug: string;
+  title: string;
+  pastor?: string;
+  excerpt?: string;
+  body?: string;
+  audioUrl?: string;
+  date?: string;
+  createdAt?: string;
+  preachedAt?: string;
+  podcastYoutube?: string;
+  videoUrl?: string;
+  scripture?: string;
+  tags?: string[];
+}
+
 export default function SermonDetailPage({
   params,
 }: {
@@ -18,11 +34,11 @@ export default function SermonDetailPage({
   const { data: pageData, isLoading } = useSermons(1);
   const { data: searchData } = useSearchSermons(slug);
 
-  const all = pageData?.data || [];
-  const searched = searchData?.data || [];
-  const sermon =
-    searched.find((s: any) => s.slug === slug) ||
-    all.find((s: any) => s.slug === slug) ||
+  const all: Sermon[] = pageData?.data || [];
+  const searched: Sermon[] = searchData?.data || [];
+  const sermon: Sermon | null =
+    searched.find((s) => s.slug === slug) ||
+    all.find((s) => s.slug === slug) ||
     null;
 
   return (
@@ -42,12 +58,12 @@ export default function SermonDetailPage({
           <p className="font-body text-white/70 text-xs tracking-widest uppercase">
             Assemblies Of God Church
           </p>
-          <a
+          <Link
             href="/sermons"
             className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
           >
             ← All sermons
-          </a>
+          </Link>
         </div>
 
         {isLoading && (
@@ -74,7 +90,7 @@ export default function SermonDetailPage({
           <div className="mt-10 max-w-3xl">
             <p className="font-body text-white/35 text-[10px] tracking-widest uppercase">
               {new Date(
-                (sermon as any).preachedAt || sermon.date || sermon.createdAt,
+                sermon.preachedAt || sermon.date || sermon.createdAt || "",
               ).toLocaleDateString()}
             </p>
             <h1
@@ -95,14 +111,14 @@ export default function SermonDetailPage({
             )}
 
             <div className="mt-8 flex gap-3 flex-wrap">
-              {(sermon.podcastYoutube || (sermon as any).videoUrl) && (
+              {(sermon.podcastYoutube || sermon.videoUrl) && (
                 <Button
                   variant="outline"
                   className="border-white/30 text-white rounded-none h-9 px-4 text-xs font-body tracking-wide hover:bg-white hover:text-black transition-all"
                   asChild
                 >
                   <a
-                    href={sermon.podcastYoutube || (sermon as any).videoUrl}
+                    href={sermon.podcastYoutube || sermon.videoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

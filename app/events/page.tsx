@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useEvents, useRegisterForEventMutation } from "@/lib/hooks/queries";
@@ -290,11 +291,13 @@ export default function EventsPage() {
                                 href={event.imageUrl}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="block max-w-lg"
+                                className="block max-w-lg relative"
                               >
-                                <img
+                                <Image
                                   src={event.imageUrl}
                                   alt={event.title}
+                                  width={640}
+                                  height={256}
                                   className="w-full max-h-64 object-cover border border-white/20"
                                 />
                               </a>

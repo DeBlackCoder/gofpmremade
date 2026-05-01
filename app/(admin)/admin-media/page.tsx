@@ -57,9 +57,9 @@ export default function AdminMediaPage() {
   // Load from localStorage (since backend may be offline)
   useEffect(() => {
     const saved = localStorage.getItem("admin-media-settings");
-    if (saved) setSettings(JSON.parse(saved));
+    if (saved) setSettings(JSON.parse(saved) as MediaSettings);
     const savedVideos = localStorage.getItem("admin-manual-videos");
-    if (savedVideos) setVideos(JSON.parse(savedVideos));
+    if (savedVideos) setVideos(JSON.parse(savedVideos) as ManualVideo[]);
   }, []);
 
   function saveSettings(e: React.FormEvent) {
@@ -157,7 +157,7 @@ export default function AdminMediaPage() {
           <div className="flex flex-col gap-1">
             <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
               YouTube Channel URL{" "}
-              <span className="normal-case opacity-50">(for "View channel" link)</span>
+              <span className="normal-case opacity-50">(for &quot;View channel&quot; link)</span>
             </label>
             <input
               value={settings.youtubeChannelUrl}

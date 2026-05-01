@@ -3,7 +3,7 @@
  */
 
 import { ApiErrorResponse, ApiError } from "@/lib/types/common";
-import { ERROR_CODES, HTTP_STATUS } from "@/lib/constants/config";
+import { HTTP_STATUS } from "@/lib/constants/config";
 
 export class ApiClientError extends Error {
   constructor(
@@ -69,9 +69,9 @@ function isApiErrorResponse(value: unknown): value is ApiErrorResponse {
     value !== null &&
     "error" in value &&
     "status" in value &&
-    typeof (value as any).error === "object" &&
-    "code" in (value as any).error &&
-    "message" in (value as any).error
+    typeof (value as Record<string, unknown>).error === "object" &&
+    "code" in ((value as Record<string, unknown>).error as object) &&
+    "message" in ((value as Record<string, unknown>).error as object)
   );
 }
 

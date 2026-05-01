@@ -250,7 +250,6 @@ export const useSubmitPrayerMutation = () => {
 };
 
 export const useSubmitTestimonyMutation = () => {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: import("@/lib/types/resources").TestimonyInput) =>
       prayerApi.submitTestimony(input),
@@ -382,7 +381,7 @@ export const useLivestreamSchedule = () => {
 };
 
 /** @deprecated Prefer useLivestreamActive */
-export const useLivestream = (_id?: string) => {
+export const useLivestream = () => {
   return useQuery({
     queryKey: QUERY_KEYS.LIVESTREAM,
     queryFn: () => livestreamApi.getActive(),

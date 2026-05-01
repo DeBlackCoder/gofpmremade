@@ -33,7 +33,7 @@ async function fetchCount(url: string): Promise<number | null> {
   }
 }
 
-async function fetchPodcastCount(rssUrl: string): Promise<number | null> {
+async function fetchPodcastCount(): Promise<number | null> {
   try {
     const res = await fetch(`/api/podcast-feed`, { signal: AbortSignal.timeout(5000) });
     if (!res.ok) return null;
@@ -125,7 +125,7 @@ export default function DashboardPage() {
         fetchCount(`${API}/admin/community`),
         fetchCount(`${API}/admin/members`),
         fetchCount(`${API}/admin/contacts`),
-        fetchPodcastCount(""),
+        fetchPodcastCount(),
         fetchYouTubeCount(),
       ]);
 

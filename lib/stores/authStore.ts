@@ -5,7 +5,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { cookieUtil, localStorageUtil } from "@/lib/utils/storage";
+import { cookieUtil } from "@/lib/utils/storage";
 import { authApi } from "@/lib/api/endpoints/auth";
 import {
   COOKIE_TOKEN_NAME,
@@ -56,10 +56,11 @@ export const useAuthStore = create<AuthStore>()(
           // Also store in cookies
           cookieUtil.set(COOKIE_TOKEN_NAME, result.accessToken);
           cookieUtil.set(COOKIE_REFRESH_TOKEN_NAME, result.refreshToken);
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const err = error as { message?: string };
           set({
             isLoading: false,
-            error: error.message || "Login failed",
+            error: err.message || "Login failed",
           });
           throw error;
         }
@@ -73,10 +74,11 @@ export const useAuthStore = create<AuthStore>()(
             user,
             isLoading: false,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
+          const err = error as { message?: string };
           set({
             isLoading: false,
-            error: error.message || "Registration failed",
+            error: err.message || "Registration failed",
           });
           throw error;
         }
@@ -116,8 +118,9 @@ export const useAuthStore = create<AuthStore>()(
           // Update cookies
           cookieUtil.set(COOKIE_TOKEN_NAME, result.accessToken);
           cookieUtil.set(COOKIE_REFRESH_TOKEN_NAME, result.refreshToken);
-        } catch (error: any) {
-          set({ error: error.message });
+        } catch (error: unknown) {
+          const err = error as { message?: string };
+          set({ error: err.message });
           get().clearAuth();
         }
       },

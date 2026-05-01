@@ -2,7 +2,7 @@
  * Storage utilities for localStorage and cookies
  */
 
-// @ts-ignore
+// @ts-expect-error — js-cookie has no bundled types in this setup
 import Cookies from "js-cookie";
 
 /**

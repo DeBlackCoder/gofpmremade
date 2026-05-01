@@ -15,6 +15,18 @@ import { useEffect } from "react";
 
 type Tab = "word" | "audio" | "video";
 
+interface SermonItem {
+  id: string;
+  slug?: string;
+  title: string;
+  pastor?: string;
+  author?: string;
+  excerpt?: string;
+  content?: string;
+  createdAt: string;
+  tags?: string[];
+}
+
 const tabs: { id: Tab; label: string }[] = [
   { id: "word", label: "The Word" },
   { id: "audio", label: "Audio Messages" },
@@ -39,7 +51,6 @@ export default function SermonsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("word");
 
   // ── The Word state ──
-  const [activeTag, setActiveTag] = useState<string>("All");
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const addToast = useUiStore((s) => s.addToast);
@@ -67,15 +78,18 @@ export default function SermonsPage() {
 
   useEffect(() => {
     if (activeTab !== "audio" || podcastFeed || podcastLoading) return;
+    let cancelled = false;
     setPodcastLoading(true);
     fetch("/api/podcast-feed")
       .then((r) => r.json())
-      .then((data) => {
+      .then((data: PodcastFeed & { error?: string }) => {
+        if (cancelled) return;
         if (data.error) throw new Error(data.error);
-        setPodcastFeed(data as PodcastFeed);
+        setPodcastFeed(data);
       })
-      .catch((e) => setPodcastError(e.message))
-      .finally(() => setPodcastLoading(false));
+      .catch((e: Error) => { if (!cancelled) setPodcastError(e.message); })
+      .finally(() => { if (!cancelled) setPodcastLoading(false); });
+    return () => { cancelled = true; };
   }, [activeTab, podcastFeed, podcastLoading]);
 
   return (
@@ -216,11 +230,11 @@ export default function SermonsPage() {
                           {featured.title}
                         </h2>
                         <p className="font-body text-white/55 text-sm leading-relaxed max-w-lg line-clamp-3">
-                          {featured.excerpt || (featured as any).content}
+                          {featured.excerpt || (featured as SermonItem).content}
                         </p>
                         <div className="flex items-center gap-3 mt-1">
                           <span className="font-body text-white/60 text-xs">
-                            {featured.pastor || (featured as any).author || "Pastor"}
+                            {featured.pastor || (featured as SermonItem).author || "Pastor"}
                           </span>
                           <span className="font-body text-white/25 text-xs">·</span>
                           <span className="font-body text-white/35 text-xs">5 min read</span>
@@ -278,11 +292,11 @@ export default function SermonsPage() {
                               {sermon.title}
                             </h3>
                             <p className="font-body text-white/45 text-xs leading-relaxed line-clamp-2 max-w-xl hidden sm:block">
-                              {sermon.excerpt || (sermon as any).content}
+                              {sermon.excerpt || (sermon as SermonItem).content}
                             </p>
                             <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                               <span className="font-body text-white/45 text-xs">
-                                {sermon.pastor || (sermon as any).author || "Pastor"}
+                                {sermon.pastor || (sermon as SermonItem).author || "Pastor"}
                               </span>
                               <span className="font-body text-white/20 text-xs">·</span>
                               <span className="font-body text-white/30 text-xs">5 min read</span>

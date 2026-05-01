@@ -77,7 +77,7 @@ export default function GivePage() {
   const [preset, setPreset] = useState<number | null>(null);
   const [customAmt, setCustomAmt] = useState("");
   const [fullName, setFullName] = useState(
-    user?.fullName || (user as any)?.name || "",
+    user?.fullName || (user as { name?: string })?.name || "",
   );
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState("");
@@ -166,18 +166,19 @@ export default function GivePage() {
             "Could not open payment checkout. Please confirm your payment method and try again.",
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { message?: string; details?: unknown };
       console.error("[GiveFlow] initiate:error", {
         method,
-        message: error?.message || "Unknown error",
-        details: error?.details || null,
+        message: err?.message || "Unknown error",
+        details: err?.details || null,
         apiBaseUrl: API_BASE_URL,
       });
       setStep("confirm");
       addToast({
         type: "error",
         message:
-          error?.message ||
+          err?.message ||
           "Failed to reach payment server. Check API URL / ngrok and try again.",
       });
     }
@@ -187,7 +188,7 @@ export default function GivePage() {
     setStep("amount");
     setPreset(null);
     setCustomAmt("");
-    setFullName(user?.fullName || (user as any)?.name || "");
+    setFullName(user?.fullName || (user as { name?: string })?.name || "");
     setEmail(user?.email || "");
     setPhone("");
     setNote("");
