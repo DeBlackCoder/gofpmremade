@@ -228,27 +228,6 @@ export default function GivePage() {
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <motion.p
-            className="font-body text-white/70 text-xs tracking-widest uppercase"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Assemblies Of God Church
-          </motion.p>
-          <motion.a
-            href="/"
-            className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            ← Return home
-          </motion.a>
-        </div>
-
         {/* Heading */}
         <motion.h1
           className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
@@ -282,39 +261,63 @@ export default function GivePage() {
           and beyond.
         </motion.p>
 
-        {/* Step indicator */}
+        {/* Enhanced Step indicator */}
         {step !== "done" && (
           <motion.div
-            className="mt-7 flex items-center gap-3"
+            className="mt-8 flex items-center gap-2 sm:gap-3"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.95, duration: 0.5 }}
           >
-            {(["amount", "details", "confirm"] as Step[]).map((s, i) => (
-              <div key={s} className="flex items-center gap-3">
-                <div
-                  className={`flex items-center gap-1.5 ${step === s ? "opacity-100" : "opacity-35"}`}
-                >
-                  <span
-                    className={`w-5 h-5 flex items-center justify-center border text-[10px] font-body font-semibold transition-colors ${
-                      step === s
-                        ? "border-white bg-white text-black"
-                        : "border-white/40 text-white/50"
+            {(["amount", "details", "confirm"] as Step[]).map((s, i) => {
+              const stepIndex = ["amount", "details", "confirm"].indexOf(step);
+              const currentIndex = ["amount", "details", "confirm"].indexOf(s);
+              const isCompleted = currentIndex < stepIndex;
+              const isCurrent = step === s;
+              
+              return (
+                <div key={s} className="flex items-center gap-2 sm:gap-3">
+                  <motion.div
+                    className={`flex items-center gap-2 transition-all duration-300 ${
+                      isCurrent ? "opacity-100 scale-105" : isCompleted ? "opacity-70" : "opacity-35"
                     }`}
+                    whileHover={{ scale: 1.05 }}
                   >
-                    {i + 1}
-                  </span>
-                  <span className="font-body text-white text-[10px] tracking-widest uppercase hidden sm:block">
-                    {s === "amount"
-                      ? "Amount"
-                      : s === "details"
-                        ? "Your details"
-                        : "Confirm"}
-                  </span>
+                    <span
+                      className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-xs font-body font-bold transition-all duration-300 ${
+                        isCurrent
+                          ? "border-2 border-white bg-white text-black shadow-lg shadow-white/20"
+                          : isCompleted
+                            ? "border-2 border-white/60 bg-white/20 text-white"
+                            : "border border-white/30 text-white/50"
+                      }`}
+                      style={{ borderRadius: "8px" }}
+                    >
+                      {isCompleted ? "✓" : i + 1}
+                    </span>
+                    <span className={`font-body text-[11px] tracking-widest uppercase hidden sm:block transition-colors ${
+                      isCurrent ? "text-white font-semibold" : "text-white/60"
+                    }`}>
+                      {s === "amount"
+                        ? "Amount"
+                        : s === "details"
+                          ? "Your details"
+                          : "Confirm"}
+                    </span>
+                  </motion.div>
+                  {i < 2 && (
+                    <div className="relative w-8 sm:w-12 h-0.5 bg-white/15">
+                      <motion.div
+                        className="absolute inset-y-0 left-0 bg-white/50"
+                        initial={{ width: "0%" }}
+                        animate={{ width: isCompleted ? "100%" : "0%" }}
+                        transition={{ duration: 0.4 }}
+                      />
+                    </div>
+                  )}
                 </div>
-                {i < 2 && <span className="w-6 h-px bg-white/20" />}
-              </div>
-            ))}
+              );
+            })}
           </motion.div>
         )}
 
@@ -338,32 +341,47 @@ export default function GivePage() {
                   transition={{ duration: 0.35 }}
                   className="flex flex-col gap-7"
                 >
-                  {/* Giving type */}
-                  <div className="flex flex-col gap-2">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                  {/* Enhanced Giving type buttons */}
+                  <div className="flex flex-col gap-3">
+                    <label className="font-body text-white/50 text-xs tracking-widest uppercase">
                       Giving type
                     </label>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                       {givingOptions.map((o) => (
-                        <button
+                        <motion.button
                           key={o.type}
                           onClick={() => setGivingType(o.type)}
-                          className={`font-body text-xs tracking-widest uppercase px-3 py-1.5 border transition-all duration-200 ${
+                          whileHover={{ scale: 1.02, y: -2 }}
+                          whileTap={{ scale: 0.98 }}
+                          className={`font-body text-xs tracking-widest uppercase px-4 py-3 border transition-all duration-300 ${
                             givingType === o.type
-                              ? "bg-white text-black border-transparent"
-                              : "border-white/25 text-white/60 hover:border-white/50 hover:text-white"
+                              ? "bg-white text-black border-white shadow-lg shadow-white/20"
+                              : "border-white/25 text-white/70 hover:border-white/50 hover:text-white hover:bg-white/5"
                           }`}
+                          style={{ borderRadius: "10px" }}
                         >
                           {o.type}
-                        </button>
+                        </motion.button>
                       ))}
                     </div>
-                    <p className="font-body text-white/45 text-xs leading-relaxed mt-1 max-w-sm">
-                      {selectedOption.description}{" "}
-                      <span className="italic text-white/30">
+                    <motion.div
+                      key={givingType}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="p-4 border-l-2 border-white/30"
+                      style={{
+                        background: "rgba(255,255,255,0.04)",
+                        borderRadius: "0 8px 8px 0",
+                      }}
+                    >
+                      <p className="font-body text-white/60 text-sm leading-relaxed">
+                        {selectedOption.description}
+                      </p>
+                      <p className="font-body text-white/35 text-xs italic mt-2">
                         {selectedOption.scripture}
-                      </span>
-                    </p>
+                      </p>
+                    </motion.div>
                   </div>
 
                   {/* Frequency */}
@@ -380,62 +398,91 @@ export default function GivePage() {
                     </p>
                   </div> */}
 
-                  {/* Preset amounts */}
-                  <div className="flex flex-col gap-2">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                  {/* Enhanced Preset amounts */}
+                  <div className="flex flex-col gap-3">
+                    <label className="font-body text-white/50 text-xs tracking-widest uppercase">
                       Select amount
                     </label>
-                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                    <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
                       {presetAmounts.map((a) => (
-                        <button
+                        <motion.button
                           key={a}
                           onClick={() => {
                             setPreset(a);
                             setCustomAmt("");
                           }}
-                          className={`font-body text-xs font-semibold py-2.5 border transition-all duration-200 ${
+                          whileHover={{ scale: 1.05, y: -3 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`font-body text-sm font-bold py-4 border-2 transition-all duration-300 relative overflow-hidden ${
                             preset === a
-                              ? "bg-white text-black border-transparent"
-                              : "border-white/25 text-white/70 hover:border-white/50 hover:text-white"
+                              ? "bg-white text-black border-white shadow-xl shadow-white/25"
+                              : "border-white/30 text-white/80 hover:border-white/60 hover:text-white hover:bg-white/10"
                           }`}
+                          style={{ borderRadius: "12px" }}
                         >
-                          ₦{a.toLocaleString()}
-                        </button>
+                          <span className="relative z-10">₦{a.toLocaleString()}</span>
+                          {preset === a && (
+                            <motion.div
+                              className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ duration: 0.3 }}
+                            />
+                          )}
+                        </motion.button>
                       ))}
                     </div>
                   </div>
 
-                  {/* Custom amount */}
-                  <div className="flex flex-col gap-2">
-                    <label className="font-body text-white/45 text-xs tracking-widest uppercase">
+                  {/* Enhanced Custom amount */}
+                  <div className="flex flex-col gap-3">
+                    <label className="font-body text-white/50 text-xs tracking-widest uppercase">
                       Or enter custom amount
                     </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 font-body text-white/40 text-sm">
+                    <div className="relative max-w-md">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 font-body text-white/50 text-lg font-semibold">
                         ₦
                       </span>
                       <Input
                         type="text"
                         inputMode="numeric"
-                        placeholder="0"
+                        placeholder="Enter amount"
                         value={customAmt}
                         onChange={(e) => {
                           setCustomAmt(e.target.value.replace(/\D/g, ""));
                           setPreset(null);
                         }}
-                        className={`${inputClass} pl-7 max-w-xs`}
+                        className="bg-white/10 border-2 border-white/25 text-white text-lg font-semibold placeholder:text-white/30 focus-visible:border-white/70 focus-visible:ring-0 focus-visible:bg-white/15 rounded-xl h-14 pl-10 transition-all duration-300"
                       />
+                      {customAmt && (
+                        <motion.button
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          onClick={() => setCustomAmt("")}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="10" r="8" fill="currentColor" opacity="0.2" />
+                            <path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                          </svg>
+                        </motion.button>
+                      )}
                     </div>
                   </div>
 
-                  <Button
-                    onClick={() => amount > 0 && setStep("details")}
-                    disabled={amount <= 0}
-                    variant="outline"
-                    className="self-start mt-2 border-white/50 text-white bg-transparent hover:bg-white hover:text-black font-body tracking-wide rounded-none px-8 disabled:opacity-30"
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                   >
-                    Continue →
-                  </Button>
+                    <Button
+                      onClick={() => amount > 0 && setStep("details")}
+                      disabled={amount <= 0}
+                      variant="outline"
+                      className="self-start mt-4 border-2 border-white/60 text-white bg-white/10 hover:bg-white hover:text-black font-body font-semibold tracking-wide rounded-xl px-10 py-6 text-base disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl"
+                    >
+                      Continue to details →
+                    </Button>
+                  </motion.div>
                 </motion.div>
               )}
 
@@ -510,7 +557,7 @@ export default function GivePage() {
                     />
                   </div>
 
-                  {/* Payment method */}
+                  {/* Payment method — disabled until Paystack/Flutterwave integration is live
                   <div className="flex flex-col gap-2 mt-2">
                     <label className="font-body text-white/45 text-xs tracking-widest uppercase">
                       Payment method
@@ -536,6 +583,7 @@ export default function GivePage() {
                       </p>
                     )}
                   </div>
+                  */}
 
                   <Button
                     onClick={() =>
@@ -568,18 +616,27 @@ export default function GivePage() {
                   </button>
 
                   {/* Summary card */}
-                  <div className="border border-white/15 backdrop-blur-sm bg-white/5 divide-y divide-white/10">
+                  <div className="divide-y divide-white/10" style={{
+                    background: "rgba(255,255,255,0.07)",
+                    backdropFilter: "blur(16px)",
+                    WebkitBackdropFilter: "blur(16px)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 24px rgba(0,0,0,0.28)",
+                    overflow: "hidden",
+                  }}>
                     {[
                       { label: "Amount", value: displayAmount },
                       { label: "Giving type", value: givingType },
                       // { label: "Frequency", value: frequency },
                       { label: "Name", value: fullName },
                       { label: "Email", value: email },
-                      {
-                        label: "Method",
-                        value:
-                          method === "PAYSTACK" ? "Paystack" : "Flutterwave",
-                      },
+                      // Method row hidden — Paystack/Flutterwave integration disabled
+                      // {
+                      //   label: "Method",
+                      //   value:
+                      //     method === "PAYSTACK" ? "Paystack" : "Flutterwave",
+                      // },
                       ...(note ? [{ label: "Note", value: note }] : []),
                     ].map(({ label, value }) => (
                       <div
@@ -699,69 +756,122 @@ export default function GivePage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 1.1, duration: 0.7 }}
           >
-            {/* Live amount display */}
+            {/* Enhanced Live amount display */}
             {step !== "done" && (
-              <div className="border-t border-white/20 pt-5">
-                <p className="font-body text-white/35 text-[10px] tracking-widests uppercase mb-1">
+              <motion.div
+                className="p-6"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)",
+                  backdropFilter: "blur(20px)",
+                  WebkitBackdropFilter: "blur(20px)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  borderRadius: "20px",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.15)",
+                }}
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                <p className="font-body text-white/40 text-[10px] tracking-widest uppercase mb-2">
                   Your gift
                 </p>
-                <p
+                <motion.p
+                  key={displayAmount}
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.3 }}
                   className="font-heading text-white font-black leading-none tracking-tight"
-                  style={{ fontSize: "clamp(2rem, 6vw, 3.5rem)" }}
+                  style={{ fontSize: "clamp(2.5rem, 7vw, 4rem)" }}
                 >
                   {displayAmount}
-                </p>
-                <p className="font-body text-white/40 text-xs mt-1">
-                  {frequency} · {givingType}
-                </p>
-              </div>
+                </motion.p>
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="px-2 py-1 bg-white/15 border border-white/20 font-body text-white/70 text-[10px] tracking-wider uppercase" style={{ borderRadius: "6px" }}>
+                    {frequency}
+                  </span>
+                  <span className="px-2 py-1 bg-white/15 border border-white/20 font-body text-white/70 text-[10px] tracking-wider uppercase" style={{ borderRadius: "6px" }}>
+                    {givingType}
+                  </span>
+                </div>
+              </motion.div>
             )}
 
-            {/* Scripture pull-quote */}
-            <div className="border-l-2 border-white/25 pl-4">
-              <p className="font-heading text-white/85 font-black text-lg sm:text-xl leading-snug italic">
+            {/* Enhanced Scripture pull-quote */}
+            <motion.div
+              className="pl-6 py-5 pr-5"
+              style={{
+                background: "linear-gradient(90deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+                backdropFilter: "blur(14px)",
+                WebkitBackdropFilter: "blur(14px)",
+                borderLeft: "3px solid rgba(255,255,255,0.35)",
+                borderRadius: "0 16px 16px 0",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
+              }}
+              whileHover={{ x: 4 }}
+              transition={{ duration: 0.3 }}
+            >
+              <p className="font-heading text-white/90 font-black text-lg sm:text-xl leading-snug italic">
                 &quot;Each of you should give what you have decided in your
                 heart to give, not reluctantly or under compulsion, for God
                 loves a cheerful giver.&quot;
               </p>
-              <p className="font-body text-white/35 text-xs mt-2 tracking-wide">
+              <p className="font-body text-white/40 text-xs mt-3 tracking-wide">
                 2 Corinthians 9:7
               </p>
-            </div>
+            </motion.div>
 
-            {/* Impact breakdown */}
-            <div className="flex flex-col gap-0">
-              <p className="font-body text-white/35 text-[10px] tracking-widest uppercase mb-3">
+            {/* Enhanced Impact breakdown */}
+            <motion.div
+              className="flex flex-col gap-0"
+              style={{
+                background: "linear-gradient(135deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.05) 100%)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: "20px",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
+                padding: "1.25rem 1.5rem",
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.6 }}
+            >
+              <p className="font-body text-white/40 text-[10px] tracking-widest uppercase mb-4">
                 Where your giving goes
               </p>
               {[
-                { label: "Worship & ministry", pct: 35 },
-                { label: "Community outreach", pct: 25 },
-                { label: "Building & operations", pct: 20 },
-                { label: "Missions & evangelism", pct: 15 },
-                { label: "Welfare fund", pct: 5 },
-              ].map((item) => (
-                <div
+                { label: "Worship & ministry", pct: 35, color: "rgba(59, 130, 246, 0.6)" },
+                { label: "Community outreach", pct: 25, color: "rgba(16, 185, 129, 0.6)" },
+                { label: "Building & operations", pct: 20, color: "rgba(245, 158, 11, 0.6)" },
+                { label: "Missions & evangelism", pct: 15, color: "rgba(139, 92, 246, 0.6)" },
+                { label: "Welfare fund", pct: 5, color: "rgba(236, 72, 153, 0.6)" },
+              ].map((item, idx) => (
+                <motion.div
                   key={item.label}
-                  className="flex items-center gap-3 border-t border-white/15 py-2.5"
+                  className="flex items-center gap-3 border-t border-white/10 py-3"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1.3 + idx * 0.1, duration: 0.4 }}
                 >
-                  <span className="font-body text-white/55 text-xs flex-1">
+                  <span className="font-body text-white/65 text-xs flex-1">
                     {item.label}
                   </span>
-                  <div className="w-24 h-px bg-white/10 relative">
-                    <div
-                      className="absolute inset-y-0 left-0 bg-white/40"
-                      style={{ width: `${item.pct}%` }}
+                  <div className="w-28 h-1.5 bg-white/10 relative overflow-hidden" style={{ borderRadius: "4px" }}>
+                    <motion.div
+                      className="absolute inset-y-0 left-0"
+                      style={{ background: item.color, borderRadius: "4px" }}
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${item.pct}%` }}
+                      transition={{ delay: 1.4 + idx * 0.1, duration: 0.8, ease: "easeOut" }}
                     />
                   </div>
-                  <span className="font-body text-white/40 text-[10px] w-6 text-right">
+                  <span className="font-body text-white/50 text-xs font-semibold w-8 text-right">
                     {item.pct}%
                   </span>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
-            {/* Security note */}
+            {/* Security note — hidden until Paystack/Flutterwave integration is live
             <div className="flex items-start gap-2 border border-white/10 px-3 py-3 bg-white/5">
               <svg
                 width="14"
@@ -779,6 +889,7 @@ export default function GivePage() {
                 payments are processed through Paystack or Flutterwave.
               </p>
             </div>
+            */}
           </motion.div>
         </motion.div>
 

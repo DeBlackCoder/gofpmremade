@@ -89,27 +89,6 @@ export default function ContactPage() {
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col px-6 py-6 sm:px-10 sm:py-8">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <motion.p
-            className="font-body text-white/70 text-xs tracking-widest uppercase"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Assemblies Of God Church
-          </motion.p>
-          <motion.a
-            href="/"
-            className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            ← Return home
-          </motion.a>
-        </div>
-
         {/* Heading */}
         <motion.h1
           className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
@@ -187,7 +166,14 @@ export default function ContactPage() {
           </div>
 
           {/* Right — form */}
-          <div className="backdrop-blur-md bg-white/10 border border-white/15 rounded-2xl p-6 sm:p-8">
+          <div className="p-6 sm:p-8" style={{
+            background: "rgba(255,255,255,0.08)",
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
+          }}>
             {status === "sent" ? (
               <motion.div
                 className="flex flex-col gap-3 py-8"

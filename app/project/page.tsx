@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { getDailyPhoto } from "@/lib/church-photos";
 import { projects, type ProjectCategory } from "@/lib/projects-data";
 
@@ -72,27 +73,6 @@ export default function ProjectsPage() {
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <motion.p
-            className="font-body text-white/70 text-xs tracking-widest uppercase"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Assemblies Of God Church
-          </motion.p>
-          <motion.a
-            href="/"
-            className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            ← Return home
-          </motion.a>
-        </div>
-
         {/* Heading */}
         <motion.h1
           className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"
@@ -129,11 +109,25 @@ export default function ProjectsPage() {
             which we put our faith to work.
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-px border border-white/15 bg-white/15">
+          <div
+            className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-px"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              borderRadius: "16px",
+              border: "1px solid rgba(255,255,255,0.12)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+              overflow: "hidden",
+            }}
+          >
             {stats.map((s, i) => (
               <motion.div
                 key={s.label}
-                className="flex flex-col gap-0.5 px-4 py-4 bg-black/30 backdrop-blur-sm"
+                className="flex flex-col gap-0.5 px-4 py-4"
+                style={{
+                  background: "rgba(0,0,0,0.18)",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
+                }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 1.0 + i * 0.08, duration: 0.5 }}
@@ -149,14 +143,14 @@ export default function ProjectsPage() {
           </div>
         </motion.div>
 
-        {/* ── Projects list ─────────────────────────────── */}
+        {/* ── Projects grid ─────────────────────────────── */}
         <motion.div
           className="mt-12 sm:mt-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.05, duration: 0.7 }}
         >
-          <div className="flex items-end justify-between mb-5 flex-wrap gap-4">
+          <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
             <h2 className="font-body text-white/45 text-xs tracking-widest uppercase">
               Projects
             </h2>
@@ -180,49 +174,90 @@ export default function ProjectsPage() {
           </div>
 
           <AnimatePresence mode="popLayout">
-            {filtered.map((project, i) => (
-              <motion.div
-                key={project.slug}
-                layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ delay: i * 0.04, duration: 0.3 }}
-                className="border-t border-white/20"
-              >
-                <Link
-                  href={`/project/${project.slug}`}
-                  className="w-full text-left py-4 sm:py-5 grid grid-cols-[1fr_auto] gap-4 items-start group flex"
+            <motion.div
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5"
+            >
+              {filtered.map((project, i) => (
+                <motion.div
+                  key={project.slug}
+                  layout
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.97 }}
+                  transition={{ delay: i * 0.05, duration: 0.35 }}
                 >
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-body text-white font-semibold text-sm sm:text-base group-hover:text-white/80 transition-colors">
-                        {project.title}
-                      </span>
-                      <span
-                        className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${categoryColors[project.category]}`}
-                      >
-                        {project.category}
-                      </span>
-                      <span
-                        className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${statusColors[project.status]}`}
-                      >
-                        {project.status}
-                      </span>
+                  <Link
+                    href={`/project/${project.slug}`}
+                    className="group flex flex-col transition-all duration-300 overflow-hidden"
+                    style={{
+                      background: "rgba(255,255,255,0.07)",
+                      backdropFilter: "blur(16px)",
+                      WebkitBackdropFilter: "blur(16px)",
+                      border: "1px solid rgba(255,255,255,0.12)",
+                      borderRadius: "16px",
+                      boxShadow: "0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    {/* Image strip — all images shown */}
+                    <div className="grid grid-cols-3 gap-px bg-white/10 h-36 sm:h-40">
+                      {project.images.map((src, idx) => (
+                        <div key={idx} className="relative overflow-hidden">
+                          <Image
+                            src={src}
+                            alt={`${project.title} photo ${idx + 1}`}
+                            fill
+                            sizes="(max-width: 640px) 33vw, (max-width: 1024px) 22vw, 14vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          {/* dim overlay */}
+                          <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
+                        </div>
+                      ))}
                     </div>
-                    <span className="font-body text-white/45 text-xs">
-                      {project.year} · Led by {project.lead}
-                    </span>
-                    <p className="font-body text-white/55 text-xs leading-relaxed mt-1 max-w-lg">
-                      {project.summary}
-                    </p>
-                  </div>
-                  <span className="font-body text-white/40 text-lg mt-0.5 group-hover:text-white/70 group-hover:translate-x-1 transition-all duration-300 inline-block shrink-0">
-                    →
-                  </span>
-                </Link>
-              </motion.div>
-            ))}
+
+                    {/* Card body */}
+                    <div className="flex flex-col gap-2 p-4">
+                      {/* Badges */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span
+                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${categoryColors[project.category]}`}
+                        >
+                          {project.category}
+                        </span>
+                        <span
+                          className={`font-body text-[10px] tracking-widest uppercase px-2 py-0.5 ${statusColors[project.status]}`}
+                        >
+                          {project.status}
+                        </span>
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="font-body text-white font-semibold text-sm sm:text-base leading-snug group-hover:text-white/80 transition-colors">
+                        {project.title}
+                      </h3>
+
+                      {/* Meta */}
+                      <span className="font-body text-white/40 text-xs">
+                        {project.year} · {project.lead}
+                      </span>
+
+                      {/* Summary */}
+                      <p className="font-body text-white/55 text-xs leading-relaxed line-clamp-2">
+                        {project.summary}
+                      </p>
+
+                      {/* CTA arrow */}
+                      <div className="flex justify-end mt-1">
+                        <span className="font-body text-white/30 text-sm group-hover:text-white/70 group-hover:translate-x-1 transition-all duration-300 inline-block">
+                          →
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </motion.div>
           </AnimatePresence>
 
           {filtered.length === 0 && (
@@ -238,7 +273,16 @@ export default function ProjectsPage() {
 
         {/* ── CTA ──────────────────────────────────────── */}
         <motion.div
-          className="mt-16 sm:mt-20 border-t border-white/20 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
+          className="mt-16 sm:mt-20 pt-8 flex flex-col sm:flex-row sm:items-end justify-between gap-6"
+          style={{
+            background: "rgba(255,255,255,0.06)",
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: "20px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
+            padding: "2rem",
+          }}
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.3, duration: 0.6 }}

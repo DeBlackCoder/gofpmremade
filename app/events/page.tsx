@@ -113,27 +113,6 @@ export default function EventsPage() {
 
       {/* Content */}
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
-        {/* Top bar */}
-        <div className="flex items-center justify-between">
-          <motion.p
-            className="font-body text-white/70 text-xs tracking-widest uppercase"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            Assemblies Of God Church
-          </motion.p>
-          <motion.a
-            href="/"
-            className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-          >
-            ← Return home
-          </motion.a>
-        </div>
-
         {/* Heading */}
         <motion.h1
           className="font-heading mt-4 sm:mt-6 text-white font-black leading-[0.92] tracking-tight"

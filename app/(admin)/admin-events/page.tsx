@@ -135,7 +135,7 @@ export default function AdminEventsPage() {
     "bg-white/5 border border-white/15 px-3 py-2.5 font-body text-white text-sm placeholder:text-white/25 focus:outline-none focus:border-white/40 transition-colors w-full";
 
   return (
-    <div className="flex flex-col min-h-screen px-6 py-8 sm:px-10 sm:py-10 max-w-5xl mx-auto">
+    <div className="flex flex-col min-h-screen px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10 max-w-5xl mx-auto">
       <div className="mb-10 flex items-center justify-between">
         <div>
           <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">
