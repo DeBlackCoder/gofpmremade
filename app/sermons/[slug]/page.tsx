@@ -6,22 +6,7 @@ import { use } from "react";
 import { Button } from "@/components/ui/button";
 import { useSermons, useSearchSermons } from "@/lib/hooks/queries";
 import { getDailyPhoto } from "@/lib/church-photos";
-
-interface Sermon {
-  slug: string;
-  title: string;
-  pastor?: string;
-  excerpt?: string;
-  body?: string;
-  audioUrl?: string;
-  date?: string;
-  createdAt?: string;
-  preachedAt?: string;
-  podcastYoutube?: string;
-  videoUrl?: string;
-  scripture?: string;
-  tags?: string[];
-}
+import type { Sermon } from "@/lib/types/resources";
 
 export default function SermonDetailPage({
   params,
