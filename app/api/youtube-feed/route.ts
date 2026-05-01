@@ -21,7 +21,7 @@ export interface YouTubeFeed {
 // ─── XML helpers ──────────────────────────────────────────────────────────────
 
 function getTagText(xml: string, tag: string): string {
-  // Handles namespaced tags like yt:videoId, media:title
+  // Properly escape special regex chars (including the colon in yt:videoId, media:title etc.)
   const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const re = new RegExp(`<${escaped}[^>]*>([\\s\\S]*?)<\\/${escaped}>`, "i");
   const m = xml.match(re);
@@ -88,7 +88,7 @@ export async function GET() {
 
   try {
     const res = await fetch(feedUrl, {
-      next: { revalidate: 1800 }, // cache 30 min, auto-refresh
+      next: { revalidate: 300 }, // cache 5 min
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; ChurchSite/1.0)",
         Accept: "application/atom+xml, application/xml, text/xml, */*",
@@ -117,7 +117,7 @@ export async function GET() {
 
     return NextResponse.json(feed, {
       headers: {
-        "Cache-Control": "public, s-maxage=1800, stale-while-revalidate=3600",
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
       },
     });
   } catch (err: unknown) {
