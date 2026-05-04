@@ -12,7 +12,8 @@
     "db:test": "tsx scripts/test-mongodb-connection.ts",
     "db:migrate": "tsx scripts/migrate-all-to-mongodb.ts",
     "db:test-operations": "tsx scripts/test-sermon-operations.ts",
-    "db:verify": "tsx scripts/verify-migration-status.ts"
+    "db:verify": "tsx scripts/verify-migration-status.ts",
+    "seo:validate": "tsx scripts/validate-seo.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.28.0",
