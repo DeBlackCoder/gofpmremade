@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readSermons } from "@/lib/db/storage";
+import { readSermons } from "@/lib/db/json-storage";
 
 /**
  * GET /api/v1/sermons
  * 
  * Public endpoint to retrieve sermons with pagination
- * Uses adaptive storage (JSON in dev, MongoDB in production)
+ * Uses JSON file storage
  * 
  * Query parameters:
  * - page: Page number (default: 1)
@@ -22,14 +22,21 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const skip = (page - 1) * limit;
 
-    console.log(`[/api/v1/sermons] Reading sermons (page=${page}, limit=${limit})...`);
+    console.log(`[/api/v1/sermons] Reading sermons from JSON file (page=${page}, limit=${limit})...`);
     
-    // Read all sermons (storage adapter handles JSON vs MongoDB)
+    // Read all sermons from JSON file
     const allSermons = await readSermons();
     console.log(`[/api/v1/sermons] ✓ Read ${allSermons.length} total sermons`);
     
+    // Sort by date (newest first)
+    const sortedSermons = allSermons.sort((a, b) => {
+      const dateA = a.dateISO || a.date;
+      const dateB = b.dateISO || b.date;
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    });
+    
     // Apply pagination
-    const paginatedSermons = allSermons.slice(skip, skip + limit);
+    const paginatedSermons = sortedSermons.slice(skip, skip + limit);
     const total = allSermons.length;
     
     console.log(`[/api/v1/sermons] ✓ Returning ${paginatedSermons.length} sermons for page ${page}`);
