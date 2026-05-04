@@ -1,26 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import fs from "fs";
-import path from "path";
-
-interface AdminCredentials {
-  email: string;
-  password: string;
-}
-
-function readCredentials(): AdminCredentials {
-  const filePath = path.join(process.cwd(), "data/admin-credentials.json");
-  const raw = fs.readFileSync(filePath, "utf-8");
-  return JSON.parse(raw) as AdminCredentials;
-}
+import { getAdminCredentials } from "@/lib/db/admin-storage";
 
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json() as { email: string; password: string };
 
-  let credentials: AdminCredentials;
+  let credentials;
   try {
-    credentials = readCredentials();
+    credentials = await getAdminCredentials();
   } catch {
+    return NextResponse.json({ error: "Admin credentials not configured." }, { status: 500 });
+  }
+
+  if (!credentials) {
     return NextResponse.json({ error: "Admin credentials not configured." }, { status: 500 });
   }
 

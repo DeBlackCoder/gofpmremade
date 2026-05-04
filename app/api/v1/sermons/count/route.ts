@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { countSermons } from "@/lib/db/json-storage";
+import { countSermons } from "@/lib/db/mongodb-storage";
 
 /**
  * GET /api/v1/sermons/count

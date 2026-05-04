@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:test": "tsx scripts/test-mongodb-connection.ts",
+    "db:migrate": "tsx scripts/migrate-all-to-mongodb.ts",
+    "db:test-operations": "tsx scripts/test-sermon-operations.ts",
+    "db:verify": "tsx scripts/verify-migration-status.ts"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.28.0",

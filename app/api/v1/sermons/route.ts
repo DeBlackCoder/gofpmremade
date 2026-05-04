@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readSermons } from "@/lib/db/json-storage";
+import { readSermons } from "@/lib/db/mongodb-storage";
 
 /**
  * GET /api/v1/sermons
  * 
  * Public endpoint to retrieve sermons with pagination
- * Uses JSON file storage
+ * Uses MongoDB storage
  * 
  * Query parameters:
  * - page: Page number (default: 1)
@@ -22,9 +22,9 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
     const skip = (page - 1) * limit;
 
-    console.log(`[/api/v1/sermons] Reading sermons from JSON file (page=${page}, limit=${limit})...`);
+    console.log(`[/api/v1/sermons] Reading sermons from MongoDB (page=${page}, limit=${limit})...`);
     
-    // Read all sermons from JSON file
+    // Read all sermons from MongoDB
     const allSermons = await readSermons();
     console.log(`[/api/v1/sermons] ✓ Read ${allSermons.length} total sermons`);
     

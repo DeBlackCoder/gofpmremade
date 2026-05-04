@@ -178,7 +178,7 @@ export default function AdminMediaManagerPage() {
               {sermons.length} sermons · {hiddenSermonIds.size} hidden
             </p>
             <a
-              href="/admin-sermons"
+              href="/admin/sermons"
               className="font-body text-white/50 text-xs hover:text-white transition-colors"
             >
               Manage sermons →
@@ -272,7 +272,7 @@ export default function AdminMediaManagerPage() {
 
           {sermons.length === 0 && (
             <p className="font-body text-white/25 text-sm py-8 text-center">
-              No sermons found. <a href="/admin-sermons" className="underline hover:text-white">Add your first sermon</a>
+              No sermons found. <a href="/admin/sermons" className="underline hover:text-white">Add your first sermon</a>
             </p>
           )}
         </div>
@@ -357,7 +357,7 @@ export default function AdminMediaManagerPage() {
 
           {(!podcastFeed || podcastFeed.episodes.length === 0) && (
             <p className="font-body text-white/25 text-sm py-8 text-center">
-              No audio episodes found. Check your RSS feed settings in <a href="/admin-media" className="underline hover:text-white">Media Settings</a>.
+              No audio episodes found. Check your RSS feed settings in <a href="/admin/media" className="underline hover:text-white">Media Settings</a>.
             </p>
           )}
         </div>
@@ -445,7 +445,7 @@ export default function AdminMediaManagerPage() {
 
           {(!youtubeFeed || youtubeFeed.videos.length === 0) && (
             <p className="font-body text-white/25 text-sm py-8 text-center">
-              No videos found. Check your YouTube channel settings in <a href="/admin-media" className="underline hover:text-white">Media Settings</a>.
+              No videos found. Check your YouTube channel settings in <a href="/admin/media" className="underline hover:text-white">Media Settings</a>.
             </p>
           )}
         </div>

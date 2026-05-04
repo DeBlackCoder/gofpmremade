@@ -1,18 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import fs from "fs";
-import path from "path";
-
-interface AdminCredentials {
-  email: string;
-  password: string;
-}
-
-const CREDS_PATH = path.join(process.cwd(), "data/admin-credentials.json");
-
-function readCredentials(): AdminCredentials {
-  return JSON.parse(fs.readFileSync(CREDS_PATH, "utf-8")) as AdminCredentials;
-}
+import { getAdminCredentials, updateAdminCredentials } from "@/lib/db/admin-storage";
 
 export async function POST(req: NextRequest) {
   // Check session
@@ -27,10 +15,14 @@ export async function POST(req: NextRequest) {
     newPassword: string;
   };
 
-  let credentials: AdminCredentials;
+  let credentials;
   try {
-    credentials = readCredentials();
+    credentials = await getAdminCredentials();
   } catch {
+    return NextResponse.json({ error: "Could not read credentials." }, { status: 500 });
+  }
+
+  if (!credentials) {
     return NextResponse.json({ error: "Could not read credentials." }, { status: 500 });
   }
 
@@ -43,8 +35,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const updated: AdminCredentials = { ...credentials, password: newPassword };
-    fs.writeFileSync(CREDS_PATH, JSON.stringify(updated, null, 2), "utf-8");
+    await updateAdminCredentials({ ...credentials, password: newPassword });
     return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Could not save new password." }, { status: 500 });

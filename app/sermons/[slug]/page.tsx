@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { use } from "react";
 import { Button } from "@/components/ui/button";
-import { useSermons, useSearchSermons } from "@/lib/hooks/queries";
+import { useSermons } from "@/lib/hooks/queries";
 import { getDailyPhoto } from "@/lib/church-photos";
 import type { Sermon } from "@/lib/types/resources";
 
@@ -17,14 +17,9 @@ export default function SermonDetailPage({
   const bgUrl = getDailyPhoto();
 
   const { data: pageData, isLoading } = useSermons(1);
-  const { data: searchData } = useSearchSermons(slug);
 
   const all: Sermon[] = pageData?.data || [];
-  const searched: Sermon[] = searchData?.data || [];
-  const sermon: Sermon | null =
-    searched.find((s) => s.slug === slug) ||
-    all.find((s) => s.slug === slug) ||
-    null;
+  const sermon: Sermon | null = all.find((s) => s.slug === slug) || null;
 
   return (
     <section className="relative w-full min-h-svh">

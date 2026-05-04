@@ -12,7 +12,7 @@ const navItems = [
   {
     label: "Dashboard",
     sub: "Overview & stats",
-    href: "/admin-dashboard",
+    href: "/admin",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" opacity=".8" />
@@ -25,7 +25,7 @@ const navItems = [
   {
     label: "Sermons",
     sub: "Create & manage",
-    href: "/admin-sermons",
+    href: "/admin/sermons",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M2 2h12v10H2z" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -36,7 +36,7 @@ const navItems = [
   {
     label: "Events",
     sub: "Upcoming & past",
-    href: "/admin-events",
+    href: "/admin/events",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <rect x="1" y="3" width="14" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -47,7 +47,7 @@ const navItems = [
   {
     label: "Community",
     sub: "Groups & members",
-    href: "/admin-community",
+    href: "/admin/community",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <circle cx="5" cy="6" r="2" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -59,7 +59,7 @@ const navItems = [
   {
     label: "Messages",
     sub: "Contact responses",
-    href: "/admin-contacts",
+    href: "/admin/contacts",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M1 3h14v9a1 1 0 01-1 1H2a1 1 0 01-1-1V3z" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -70,7 +70,7 @@ const navItems = [
   {
     label: "Announcements",
     sub: "Publish & manage",
-    href: "/admin-announcements",
+    href: "/admin/announcements",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <path d="M2 8c0-1.1.9-2 2-2h1V5a3 3 0 016 0v1h1a2 2 0 012 2v3a2 2 0 01-2 2H4a2 2 0 01-2-2V8z" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -82,7 +82,7 @@ const navItems = [
   {
     label: "Live",
     sub: "Stream settings",
-    href: "/admin-live",
+    href: "/admin/live",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <circle cx="8" cy="8" r="2.5" fill="currentColor" />
@@ -94,7 +94,7 @@ const navItems = [
   {
     label: "Media",
     sub: "Audio & video",
-    href: "/admin-media",
+    href: "/admin/media",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -105,7 +105,7 @@ const navItems = [
   {
     label: "Media Manager",
     sub: "Hide/show content",
-    href: "/admin-media-manager",
+    href: "/admin/media-manager",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <rect x="1" y="2" width="14" height="3" rx="0.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -120,7 +120,7 @@ const navItems = [
   {
     label: "Projects",
     sub: "Manage projects",
-    href: "/admin-projects",
+    href: "/admin/projects",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <rect x="1" y="4" width="14" height="9" rx="1" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -132,7 +132,7 @@ const navItems = [
   {
     label: "Monthly Programs",
     sub: "1st & last day",
-    href: "/admin-monthly-programs",
+    href: "/admin/monthly-programs",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <rect x="1" y="3" width="14" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -145,7 +145,7 @@ const navItems = [
   {
     label: "Pastor",
     sub: "Lead pastor info",
-    href: "/admin-pastor",
+    href: "/admin/pastor",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <circle cx="8" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
@@ -157,7 +157,7 @@ const navItems = [
   {
     label: "Settings",
     sub: "Site & church info",
-    href: "/admin-settings",
+    href: "/admin/settings",
     icon: (
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
         <circle cx="8" cy="8" r="2" stroke="currentColor" strokeWidth="1.2" fill="none" />

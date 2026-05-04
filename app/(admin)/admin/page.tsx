@@ -117,28 +117,28 @@ function StatusDot({ status }: { status: StatCard["status"] }) {
 // ─── Quick actions ────────────────────────────────────────────────────────────
 
 const quickActions = [
-  { label: "New sermon", href: "/admin-sermons", desc: "Add a written message" },
-  { label: "New event", href: "/admin-events", desc: "Schedule an event" },
-  { label: "Live stream", href: "/admin-live", desc: "Start or configure stream" },
-  { label: "Media settings", href: "/admin-media", desc: "Update RSS & YouTube" },
-  { label: "Projects", href: "/admin-projects", desc: "Add or edit projects" },
-  { label: "Site settings", href: "/admin-settings", desc: "Church info & times" },
-  { label: "Community", href: "/admin-community", desc: "Manage life groups" },
-  { label: "Messages", href: "/admin-contacts", desc: "View contact messages" },
+  { label: "New sermon", href: "/admin/sermons", desc: "Add a written message" },
+  { label: "New event", href: "/admin/events", desc: "Schedule an event" },
+  { label: "Live stream", href: "/admin/live", desc: "Start or configure stream" },
+  { label: "Media settings", href: "/admin/media", desc: "Update RSS & YouTube" },
+  { label: "Projects", href: "/admin/projects", desc: "Add or edit projects" },
+  { label: "Site settings", href: "/admin/settings", desc: "Church info & times" },
+  { label: "Community", href: "/admin/community", desc: "Manage life groups" },
+  { label: "Messages", href: "/admin/contacts", desc: "View contact messages" },
 ];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
   const [stats, setStats] = useState<StatCard[]>([
-    { label: "Sermons", value: "…", href: "/admin-sermons", status: "loading" },
-    { label: "Audio messages", value: "…", href: "/admin-media", status: "loading" },
-    { label: "Videos", value: "…", href: "/admin-media", status: "loading" },
-    { label: "Events", value: "…", href: "/admin-events", status: "loading" },
-    { label: "Community groups", value: "…", href: "/admin-community", status: "loading" },
-    { label: "Projects", value: "…", href: "/admin-projects", status: "loading" },
-    { label: "Members", value: "…", href: "/admin-members", status: "loading" },
-    { label: "Messages", value: "…", href: "/admin-contacts", status: "loading" },
+    { label: "Sermons", value: "…", href: "/admin/sermons", status: "loading" },
+    { label: "Audio messages", value: "…", href: "/admin/media", status: "loading" },
+    { label: "Videos", value: "…", href: "/admin/media", status: "loading" },
+    { label: "Events", value: "…", href: "/admin/events", status: "loading" },
+    { label: "Community groups", value: "…", href: "/admin/community", status: "loading" },
+    { label: "Projects", value: "…", href: "/admin/projects", status: "loading" },
+    { label: "Members", value: "…", href: "/admin/members", status: "loading" },
+    { label: "Messages", value: "…", href: "/admin/contacts", status: "loading" },
   ]);
 
   useEffect(() => {
@@ -188,14 +188,14 @@ export default function DashboardPage() {
           label: "Sermons",
           value: sermonsCount ?? 0,
           sub: "written messages",
-          href: "/admin-sermons",
+          href: "/admin/sermons",
           status: sermonsCount !== null ? "live" : "offline",
         },
         {
           label: "Audio messages",
           value: audioCount ?? "—",
           sub: audioCount !== null ? "from Spotify RSS" : "RSS unavailable",
-          href: "/admin-media",
+          href: "/admin/media",
           status: audioCount !== null ? "live" : "offline",
         },
         {
@@ -210,42 +210,42 @@ export default function DashboardPage() {
             : manualVideos > 0
               ? `${manualVideos} manual`
               : "channel feed offline",
-          href: "/admin-media",
+          href: "/admin/media",
           status: videoCount !== null ? "live" : manualVideos > 0 ? "local" : "offline",
         },
         {
           label: "Events",
           value: eventsCount ?? 0,
           sub: "upcoming & past",
-          href: "/admin-events",
+          href: "/admin/events",
           status: eventsCount !== null ? "live" : "offline",
         },
         {
           label: "Community groups",
           value: communityCount ?? 0,
           sub: "life groups",
-          href: "/admin-community",
+          href: "/admin/community",
           status: communityCount !== null ? "live" : "offline",
         },
         {
           label: "Projects",
           value: projectsCount,
           sub: "local data",
-          href: "/admin-projects",
+          href: "/admin/projects",
           status: "local",
         },
         {
           label: "Members",
           value: membersCount ?? 0,
           sub: "registered",
-          href: "/admin-members",
+          href: "/admin/members",
           status: membersCount !== null ? "live" : "offline",
         },
         {
           label: "Messages",
           value: contactsCount ?? 0,
           sub: "prayer requests",
-          href: "/admin-contacts",
+          href: "/admin/contacts",
           status: contactsCount !== null ? "live" : "offline",
         },
       ]);

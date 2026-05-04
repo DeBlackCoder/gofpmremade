@@ -17,14 +17,16 @@ import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 type Tab = "word" | "audio" | "video";
 
 interface SermonItem {
-  id: string;
-  slug?: string;
+  id?: string;
+  slug: string;
   title: string;
   pastor?: string;
   author?: string;
+  date?: string;
+  dateISO?: string;
   excerpt?: string;
   content?: string;
-  createdAt: string;
+  createdAt?: string;
   tags?: string[];
 }
 
@@ -238,7 +240,7 @@ export default function SermonsPage() {
                     Featured
                   </p>
                   <Link
-                    href={`/sermons/${featured.id}`}
+                    href={`/sermons/${featured.slug}`}
                     className="group block p-5 sm:p-6"
                     style={glass}
                   >
@@ -249,7 +251,7 @@ export default function SermonsPage() {
                             Latest sermon
                           </span>
                           <span className="font-body text-white/30 text-[10px]">
-                            {new Date(featured.createdAt).toLocaleDateString()}
+                            {featured.date || new Date(featured.dateISO || featured.createdAt || Date.now()).toLocaleDateString()}
                           </span>
                         </div>
                         <h2
@@ -289,7 +291,7 @@ export default function SermonsPage() {
                   <AnimatePresence mode="popLayout">
                     {filtered.map((sermon, i) => (
                       <motion.div
-                        key={sermon.id}
+                        key={sermon.slug}
                         layout
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -297,17 +299,17 @@ export default function SermonsPage() {
                         transition={{ delay: i * 0.04, duration: 0.3 }}
                       >
                         <Link
-                          href={`/sermons/${sermon.id}`}
+                          href={`/sermons/${sermon.slug}`}
                           className="group flex items-start gap-5 sm:gap-8 py-5 border-t border-white/20 hover:border-white/40 transition-colors"
                         >
                           <div className="hidden sm:flex flex-col items-center w-10 flex-shrink-0 pt-0.5 leading-none">
                             <span className="font-body text-white/30 text-[9px] tracking-widest uppercase">
-                              {new Date(sermon.createdAt)
+                              {new Date(sermon.dateISO || sermon.createdAt || sermon.date || Date.now())
                                 .toLocaleString("en", { month: "short" })
                                 .toUpperCase()}
                             </span>
                             <span className="font-heading text-white font-black text-2xl leading-none mt-0.5">
-                              {new Date(sermon.createdAt)
+                              {new Date(sermon.dateISO || sermon.createdAt || sermon.date || Date.now())
                                 .getDate()
                                 .toString()
                                 .padStart(2, "0")}

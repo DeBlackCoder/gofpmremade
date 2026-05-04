@@ -1,33 +1,39 @@
-/**
- * Middleware configuration for Next.js
- * Protects admin routes and handles authentication
- */
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-
-export function proxy(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isAdminLogin = pathname === "/admin-login";
-  const isAdminArea = pathname.startsWith("/admin-") && !isAdminLogin;
 
-  const session = request.cookies.get("admin_session")?.value;
-  const isAuthenticated = session === "authenticated";
+  console.log('[PROXY] Request to:', pathname);
 
-  // Protect admin routes
-  if (isAdminArea && !isAuthenticated) {
-    return NextResponse.redirect(new URL("/admin-login", request.url));
-  }
-
-  // Redirect authenticated users away from login page
-  if (isAdminLogin && isAuthenticated) {
-    return NextResponse.redirect(new URL("/admin-dashboard", request.url));
+  // Check if the request is for an admin route (but not /admin-login)
+  const isAdminRoute = pathname.startsWith('/admin') && pathname !== '/admin-login';
+  
+  if (isAdminRoute) {
+    console.log('[PROXY] Admin route detected:', pathname);
+    
+    // Check for admin session cookie
+    const adminSession = request.cookies.get('admin_session');
+    console.log('[PROXY] Session cookie:', adminSession?.value);
+    
+    // If no session or not authenticated, redirect to login
+    if (!adminSession || adminSession.value !== 'authenticated') {
+      console.log('[PROXY] No valid session, redirecting to login');
+      const loginUrl = new URL('/admin-login', request.url);
+      // Add the original URL as a redirect parameter
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    console.log('[PROXY] Session valid, allowing access');
   }
 
   return NextResponse.next();
 }
 
-// Configure matcher for routes to protect
+// Configure which routes the proxy should run on
 export const config = {
-  matcher: ["/admin-login", "/admin-:path*"],
+  matcher: [
+    '/admin/:path*',
+  ],
 };

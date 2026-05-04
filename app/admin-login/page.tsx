@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getDailyPhoto } from "@/lib/church-photos";
 import Link from "next/link";
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect') || '/admin';
   const bgUrl = getDailyPhoto(11);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,7 +34,8 @@ export default function AdminLoginPage() {
         return;
       }
 
-      router.push("/admin-dashboard");
+      // Redirect to the original page or dashboard
+      router.push(redirect);
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -62,6 +65,11 @@ export default function AdminLoginPage() {
           <p className="font-body text-white/40 text-sm mt-1">
             Sign in with your admin credentials.
           </p>
+          {searchParams.get('redirect') && (
+            <p className="font-body text-yellow-400/80 text-xs mt-2 px-3 py-2 bg-yellow-400/10 border border-yellow-400/20 rounded">
+              Please login to access admin pages
+            </p>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -112,5 +120,17 @@ export default function AdminLoginPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="relative min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white/40 text-sm">Loading...</div>
+      </div>
+    }>
+      <AdminLoginForm />
+    </Suspense>
   );
 }
