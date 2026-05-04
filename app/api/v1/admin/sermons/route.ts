@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { readSermons, createSermon, updateSermon, deleteSermon, getSermonBySlug } from "@/lib/db/json-storage";
-import type { Sermon } from "@/lib/types/resources";
+import type { Sermon } from "@/lib/types/sermon";
 import { validateSermon } from "@/lib/utils/sermon-validation";
 
 /**
