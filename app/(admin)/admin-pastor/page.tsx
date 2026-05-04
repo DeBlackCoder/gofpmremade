@@ -68,22 +68,54 @@ export default function AdminPastorPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Check file type
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file");
+    // Validate file type - accept all common image formats
+    const validImageTypes = [
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/svg+xml',
+      'image/bmp',
+      'image/tiff',
+      'image/heic',
+      'image/heif'
+    ];
+
+    const isValidType = validImageTypes.includes(file.type.toLowerCase()) || file.type.startsWith("image/");
+    
+    if (!isValidType) {
+      alert(`Please select a valid image file.\nSelected: ${file.type || 'unknown type'}\nSupported: JPG, PNG, GIF, WebP, SVG, BMP, TIFF, HEIC`);
+      e.target.value = ''; // Reset input
       return;
     }
 
-    // Check file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image size should be less than 5MB");
+    // Check file size (max 10MB for better compatibility)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      alert(`Image size should be less than 10MB.\nYour file: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+      e.target.value = ''; // Reset input
       return;
     }
 
-    // Create preview
+    // Create preview with error handling
     const reader = new FileReader();
+    
+    reader.onloadstart = () => {
+      // Optional: Show loading state
+      console.log(`Loading ${type} image...`);
+    };
+
     reader.onloadend = () => {
       const base64String = reader.result as string;
+      
+      // Validate the result
+      if (!base64String || !base64String.startsWith('data:image')) {
+        alert('Failed to read image file. Please try again.');
+        e.target.value = ''; // Reset input
+        return;
+      }
+
       if (type === "pastor") {
         setPastorImagePreview(base64String);
         setSettings((p) => ({ ...p, pastorPhotoUrl: base64String }));
@@ -91,7 +123,16 @@ export default function AdminPastorPage() {
         setWifeImagePreview(base64String);
         setSettings((p) => ({ ...p, pastorWifePhotoUrl: base64String }));
       }
+      
+      console.log(`✓ ${type} image loaded successfully`);
     };
+
+    reader.onerror = () => {
+      alert('Error reading image file. Please try a different image.');
+      e.target.value = ''; // Reset input
+      console.error('FileReader error:', reader.error);
+    };
+
     reader.readAsDataURL(file);
   }
 
@@ -219,7 +260,7 @@ export default function AdminPastorPage() {
                   />
                 </label>
                 <p className="font-body text-white/30 text-xs">
-                  Or paste image URL below. Max 5MB. JPG, PNG, WebP.
+                  Or paste image URL below. Max 10MB. All image formats supported.
                 </p>
               </div>
             </div>
@@ -312,7 +353,7 @@ export default function AdminPastorPage() {
                   />
                 </label>
                 <p className="font-body text-white/30 text-xs">
-                  Or paste image URL below. Max 5MB. JPG, PNG, WebP.
+                  Or paste image URL below. Max 10MB. All image formats supported.
                 </p>
               </div>
             </div>
