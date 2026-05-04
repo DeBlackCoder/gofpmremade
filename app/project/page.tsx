@@ -1,11 +1,12 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getDailyPhoto } from "@/lib/church-photos";
-import { projects, type ProjectCategory } from "@/lib/projects-data";
+import { projects as defaultProjects, type ProjectCategory, type Project } from "@/lib/projects-data";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -34,23 +35,32 @@ const statusColors: Record<string, string> = {
   Upcoming:  "bg-blue-500/20 text-blue-300",
 };
 
-const stats = [
-  { value: "6", label: "Active projects" },
-  { value: "500+", label: "Families helped" },
-  { value: "₦120M+", label: "Invested" },
-  { value: "∞", label: "Impact" },
-];
-
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function ProjectsPage() {
   const bgUrl = getDailyPhoto(7);
   const [activeFilter, setActiveFilter] = useState<Filter>("All");
+  
+  // Use reactive localStorage hook for projects
+  const [savedProjects] = useLocalStorage<Project[]>("admin-projects", defaultProjects);
+  const [projects, setProjects] = useState<Project[]>(defaultProjects);
+  
+  useEffect(() => {
+    setProjects(savedProjects);
+  }, [savedProjects]);
 
   const filtered =
     activeFilter === "All"
       ? projects
       : projects.filter((p) => p.category === activeFilter);
+
+  // Dynamic stats based on actual projects
+  const stats = [
+    { value: projects.length.toString(), label: "Active projects" },
+    { value: "500+", label: "Families helped" },
+    { value: "₦120M+", label: "Invested" },
+    { value: "∞", label: "Impact" },
+  ];
 
   return (
     <section className="relative w-full min-h-svh">
@@ -239,7 +249,7 @@ export default function ProjectsPage() {
 
                       {/* Meta */}
                       <span className="font-body text-white/40 text-xs">
-                        {project.year} · {project.lead}
+                        {project.year}
                       </span>
 
                       {/* Summary */}

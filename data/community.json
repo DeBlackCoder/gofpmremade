@@ -32,7 +32,25 @@
     "tag": "Families",
     "meets": "2nd & 4th Sundays, 12:30 PM",
     "leader": "Pastor & Mrs. Nwosu",
-    "bio": "For married couples and parents navigating faith and family through a Biblical lens.",
+    "bio": "For married couples and parents navigating faith and family. We discuss practical topics — raising children, healthy marriages, finances — all through a Biblical lens.",
     "spots": 6
+  },
+  {
+    "id": "grp-005",
+    "name": "Young Adults Fellowship",
+    "tag": "Youth",
+    "meets": "Wednesdays, 7:00 PM",
+    "leader": "Sis. Chiamaka Eze",
+    "bio": "A community for 20s and 30s wrestling with faith, career, and identity. We study the Bible, eat together, and lean on each other as we figure life out.",
+    "spots": null
+  },
+  {
+    "id": "grp-006",
+    "name": "Senior Saints",
+    "tag": "All Ages",
+    "meets": "Tuesdays, 10:00 AM",
+    "leader": "Elder Thomas Briggs",
+    "bio": "A fellowship for our beloved elders — a place of prayer, wisdom-sharing, and mutual care. We also coordinate pastoral visits for members who cannot attend in person.",
+    "spots": null
   }
 ]

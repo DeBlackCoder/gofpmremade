@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { getDailyPhoto } from "@/lib/church-photos";
 
@@ -126,6 +126,35 @@ export default function MinistryPage() {
   const bgUrl = getDailyPhoto(5);
   const [activeTag, setActiveTag] = useState<"All" | MinistryTag>("All");
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [settings, setSettings] = useState<any>(null);
+
+  // Load settings from localStorage on client side only
+  useEffect(() => {
+    const stored = localStorage.getItem("admin-site-settings");
+    const defaultPastorSettings = {
+      pastorName: "Rev. Emmanuel Okafor",
+      pastorWifeName: "Mrs. Grace Okafor",
+      pastorPhotoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=faces",
+      pastorWifePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces",
+      pastorHidden: false,
+    };
+    
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Merge with defaults to ensure pastor fields exist
+      const merged = {
+        ...parsed,
+        pastorName: parsed.pastorName ?? defaultPastorSettings.pastorName,
+        pastorWifeName: parsed.pastorWifeName ?? defaultPastorSettings.pastorWifeName,
+        pastorPhotoUrl: parsed.pastorPhotoUrl ?? defaultPastorSettings.pastorPhotoUrl,
+        pastorWifePhotoUrl: parsed.pastorWifePhotoUrl ?? defaultPastorSettings.pastorWifePhotoUrl,
+        pastorHidden: parsed.pastorHidden ?? defaultPastorSettings.pastorHidden,
+      };
+      setSettings(merged);
+    } else {
+      setSettings(defaultPastorSettings);
+    }
+  }, []);
 
   const filtered =
     activeTag === "All"
@@ -220,6 +249,275 @@ export default function MinistryPage() {
             ))}
           </div>
         </motion.div>
+
+        {/* ── Current Pastor ── */}
+        {!settings?.pastorHidden && (settings?.pastorName || settings?.pastorWifeName) && (
+          <motion.div
+            className="mt-12 sm:mt-14"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.7 }}
+          >
+            <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-5">
+              Our Leadership
+            </p>
+            <motion.div
+              className="relative overflow-hidden p-8 sm:p-10"
+              style={{
+                background: "linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(255, 255, 255, 0.25)",
+                borderRadius: "24px",
+                boxShadow: "0 12px 48px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255,255,255,0.12)",
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.15, duration: 0.5 }}
+              whileHover={{ scale: 1.01, y: -4 }}
+            >
+              {/* Decorative gradient orb */}
+              <motion.div
+                className="absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br from-white/20 to-transparent rounded-full blur-3xl pointer-events-none"
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.5, 0.3]
+                }}
+                transition={{ 
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              />
+
+              {/* Badge */}
+              <div className="flex items-center justify-between mb-6">
+                <span
+                  className="font-body text-[10px] tracking-widest uppercase px-3 py-1.5"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.2)",
+                    color: "rgb(255, 255, 255)",
+                    border: "1px solid rgba(255, 255, 255, 0.3)",
+                    borderRadius: "8px",
+                  }}
+                >
+                  Current Pastor
+                </span>
+                <span className="w-2.5 h-2.5 rounded-full bg-white shadow-lg" />
+              </div>
+
+              {/* Content - Portrait Cards */}
+              <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {/* Pastor Card */}
+                {settings.pastorName && (
+                  <motion.div
+                    className="flex flex-col items-center text-center p-6"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.12)",
+                      backdropFilter: "blur(16px)",
+                      WebkitBackdropFilter: "blur(16px)",
+                      border: "1px solid rgba(255, 255, 255, 0.3)",
+                      borderRadius: "20px",
+                      boxShadow: "0 8px 24px rgba(255, 255, 255, 0.2)",
+                    }}
+                    whileHover={{ scale: 1.02, y: -4 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Photo */}
+                    {settings.pastorPhotoUrl ? (
+                      <div
+                        className="w-64 h-80 sm:w-80 sm:h-96 overflow-hidden mb-4"
+                        style={{
+                          border: "3px solid rgba(255, 255, 255, 0.5)",
+                          borderRadius: "16px",
+                          boxShadow: "0 8px 24px rgba(255, 255, 255, 0.4)",
+                        }}
+                      >
+                        <img 
+                          src={settings.pastorPhotoUrl} 
+                          alt={settings.pastorName}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            if (e.currentTarget.nextElementSibling) {
+                              (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                            }
+                          }}
+                        />
+                        <div
+                          className="w-full h-full items-center justify-center hidden"
+                          style={{
+                            background: "rgba(255, 255, 255, 0.2)",
+                          }}
+                        >
+                          <svg 
+                            width="48" 
+                            height="48" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="2" 
+                            className="text-white"
+                          >
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                          </svg>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        className="w-64 h-80 sm:w-80 sm:h-96 flex items-center justify-center mb-4"
+                        style={{
+                          background: "rgba(255, 255, 255, 0.2)",
+                          border: "3px solid rgba(255, 255, 255, 0.5)",
+                          borderRadius: "16px",
+                        }}
+                      >
+                        <svg 
+                          width="48" 
+                          height="48" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          className="text-white"
+                        >
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                          <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                      </div>
+                    )}
+                    
+                    {/* Info */}
+                    <span className="font-body text-white text-[10px] tracking-widest uppercase mb-2">
+                      Lead Pastor
+                    </span>
+                    <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">
+                      {settings.pastorName}
+                    </h3>
+                  </motion.div>
+                )}
+
+                {/* Pastor's Wife Card */}
+                {settings.pastorWifeName && (
+                  <motion.div
+                    className="flex flex-col items-center text-center p-6"
+                    style={{
+                      background: "rgba(255, 255, 255, 0.10)",
+                      backdropFilter: "blur(16px)",
+                      WebkitBackdropFilter: "blur(16px)",
+                      border: "1px solid rgba(255, 255, 255, 0.25)",
+                      borderRadius: "20px",
+                      boxShadow: "0 8px 24px rgba(255, 255, 255, 0.15)",
+                    }}
+                    whileHover={{ scale: 1.02, y: -4 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Photo */}
+                    {settings.pastorWifePhotoUrl ? (
+                      <div
+                        className="w-64 h-80 sm:w-80 sm:h-96 overflow-hidden mb-4"
+                        style={{
+                          border: "3px solid rgba(255, 255, 255, 0.4)",
+                          borderRadius: "16px",
+                          boxShadow: "0 8px 24px rgba(255, 255, 255, 0.3)",
+                        }}
+                      >
+                        <img 
+                          src={settings.pastorWifePhotoUrl} 
+                          alt={settings.pastorWifeName}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            if (e.currentTarget.nextElementSibling) {
+                              (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                            }
+                          }}
+                        />
+                        <div
+                          className="w-full h-full items-center justify-center hidden"
+                          style={{
+                            background: "rgba(255, 255, 255, 0.15)",
+                          }}
+                        >
+                          <svg 
+                            width="48" 
+                            height="48" 
+                            viewBox="0 0 24 24" 
+                            fill="none" 
+                            stroke="currentColor" 
+                            strokeWidth="2" 
+                            className="text-white"
+                          >
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                          </svg>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        className="w-64 h-80 sm:w-80 sm:h-96 flex items-center justify-center mb-4"
+                        style={{
+                          background: "rgba(255, 255, 255, 0.15)",
+                          border: "3px solid rgba(255, 255, 255, 0.4)",
+                          borderRadius: "16px",
+                        }}
+                      >
+                        <svg 
+                          width="48" 
+                          height="48" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          stroke="currentColor" 
+                          strokeWidth="2" 
+                          className="text-white"
+                        >
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                          <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                      </div>
+                    )}
+                    
+                    {/* Info */}
+                    <span className="font-body text-white text-[10px] tracking-widest uppercase mb-2">
+                      Pastor&apos;s Wife
+                    </span>
+                    <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight">
+                      {settings.pastorWifeName}
+                    </h3>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Info note */}
+              <div
+                className="inline-flex items-start gap-2 px-4 py-3 mt-6"
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: "12px",
+                }}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="text-white/40 mt-0.5 flex-shrink-0"
+                >
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                  <path d="M2 17l10 5 10-5"/>
+                  <path d="M2 12l10 5 10-5"/>
+                </svg>
+                <span className="font-body text-white/55 text-sm leading-relaxed">
+                  Leading our congregation with faith, wisdom, and compassion
+                </span>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
 
         {/* ── Ministries ────────────────────────────────── */}
         <motion.div

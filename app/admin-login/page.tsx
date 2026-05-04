@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { getDailyPhoto } from "@/lib/church-photos";
 import Link from "next/link";
-import { useAuthStore } from "@/lib/stores/authStore";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const bgUrl = getDailyPhoto(11);
-  const login = useAuthStore((s) => s.login);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,41 +19,25 @@ export default function AdminLoginPage() {
     setError("");
 
     try {
-      await login({ email, password });
-      const role = useAuthStore.getState().user?.role;
-      if (role === "ADMIN" || role === "PASTOR") {
-        router.push("/admin-dashboard");
-      } else {
-        setError("This account does not have admin access.");
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json() as { success?: boolean; error?: string };
+
+      if (!res.ok || !data.success) {
+        setError(data.error || "Invalid credentials.");
+        return;
       }
+
+      router.push("/admin-dashboard");
     } catch {
-      setError("Invalid credentials.");
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
-  }
-
-  const [isDev, setIsDev] = useState(false);
-
-  useEffect(() => {
-    setIsDev(
-      window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1",
-    );
-  }, []);
-
-  function handleDevBypass() {
-    // Inject a mock admin session directly into the store
-    useAuthStore.getState().setUser({
-      id: "dev-admin",
-      email: "dev@admin.local",
-      fullName: "Dev Admin",
-      role: "ADMIN",
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    } as import("@/lib/types/auth").User);
-    useAuthStore.getState().setTokens("dev-token", "dev-refresh");
-    router.push("/admin-dashboard");
   }
 
   return (
@@ -106,7 +88,6 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoFocus
               placeholder="••••••••"
               className="bg-white/5 border border-white/15 px-3 py-2.5 font-body text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-white/40 transition-colors"
             />
@@ -129,37 +110,6 @@ export default function AdminLoginPage() {
         >
           ← Return to site
         </Link>
-
-        {/* Dev bypass — localhost only */}
-        {isDev && (
-          <div
-            className="flex flex-col gap-2 p-4"
-            style={{
-              background: "rgba(255,200,0,0.06)",
-              border: "1px solid rgba(255,200,0,0.20)",
-              borderRadius: "10px",
-            }}
-          >
-            <p className="font-body text-yellow-400/70 text-[10px] tracking-widest uppercase">
-              Dev mode — backend offline?
-            </p>
-            <p className="font-body text-white/35 text-xs leading-relaxed">
-              Skip login and enter the admin dashboard with a mock session.
-            </p>
-            <button
-              type="button"
-              onClick={handleDevBypass}
-              className="self-start font-body text-xs font-semibold text-yellow-300 tracking-wide px-4 py-2 transition-colors hover:text-white"
-              style={{
-                background: "rgba(255,200,0,0.12)",
-                border: "1px solid rgba(255,200,0,0.25)",
-                borderRadius: "8px",
-              }}
-            >
-              Enter as Dev Admin →
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -16,8 +16,8 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    slug: "sanctuary-expansion",
-    title: "Sanctuary Expansion",
+    slug: "ongoing-church-project",
+    title: "Ongoing Church Project",
     category: "Construction",
     status: "Ongoing",
     year: "2024",

@@ -68,6 +68,30 @@ export const schemas = {
     address: z.string().optional(),
     phone: z.string().optional(),
   }),
+
+  // Sermon validation
+  sermonSchema: z.object({
+    slug: z.string().optional(),
+    title: z.string().min(1, "Title is required"),
+    subtitle: z.string().optional(),
+    series: z.string().optional(),
+    tag: z.enum(["Faith", "Family", "Prayer", "Identity", "Prophecy"], {
+      errorMap: () => ({ message: "Tag must be one of: Faith, Family, Prayer, Identity, Prophecy" }),
+    }),
+    date: z.string().min(1, "Date is required"),
+    dateISO: z.string().optional(),
+    pastor: z.string().min(1, "Pastor is required"),
+    pastorRole: z.string().optional(),
+    scripture: z.string().optional(),
+    excerpt: z.string().optional(),
+    body: z.string().optional(),
+    featured: z.boolean().optional(),
+    podcastLinks: z.object({
+      spotify: z.string().url("Invalid Spotify URL").optional(),
+      apple: z.string().url("Invalid Apple Podcasts URL").optional(),
+      youtube: z.string().url("Invalid YouTube URL").optional(),
+    }).optional(),
+  }),
 };
 
 // Export inferred types
@@ -77,3 +101,4 @@ export type EventRegistration = z.infer<typeof schemas.eventRegistrationSchema>;
 export type Prayer = z.infer<typeof schemas.prayerSchema>;
 export type Giving = z.infer<typeof schemas.givingSchema>;
 export type ProfileUpdate = z.infer<typeof schemas.profileUpdateSchema>;
+export type SermonInput = z.infer<typeof schemas.sermonSchema>;

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { YouTubeFeed, YouTubeVideo } from "@/app/api/youtube-feed/route";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -193,11 +194,24 @@ export default function YouTubeVideos() {
     return () => { cancelled = true; };
   }, []);
 
-  const visibleVideos = feed
-    ? showAll
-      ? feed.videos
-      : feed.videos.slice(0, INITIAL_COUNT)
-    : [];
+  // Filter out hidden videos using reactive localStorage hook
+  const [hiddenItems] = useLocalStorage<Array<{ id: string; type: string }>>("admin-hidden-media", []);
+  const [filteredVideos, setFilteredVideos] = useState<YouTubeVideo[]>([]);
+  
+  useEffect(() => {
+    if (!feed) {
+      setFilteredVideos([]);
+      return;
+    }
+    const hiddenVideoIds = new Set(
+      hiddenItems
+        .filter((item) => item.type === 'video')
+        .map((item) => item.id)
+    );
+    setFilteredVideos(feed.videos.filter(v => !hiddenVideoIds.has(v.videoId)));
+  }, [hiddenItems, feed]);
+  
+  const visibleVideos = showAll ? filteredVideos : filteredVideos.slice(0, INITIAL_COUNT);
 
   // ── Loading state ──
   if (loading) {
@@ -285,7 +299,7 @@ export default function YouTubeVideos() {
             {feed.channelName}
           </span>
           <span className="font-body text-white/35 text-xs">
-            {feed.videos.length} video{feed.videos.length !== 1 ? "s" : ""}
+            {filteredVideos.length} video{filteredVideos.length !== 1 ? "s" : ""}
           </span>
         </div>
         <a
@@ -316,14 +330,14 @@ export default function YouTubeVideos() {
       </div>
 
       {/* Show more / less */}
-      {feed.videos.length > INITIAL_COUNT && (
+      {filteredVideos.length > INITIAL_COUNT && (
         <button
           onClick={() => setShowAll((s) => !s)}
           className="self-start font-body text-white/50 text-xs tracking-widest uppercase hover:text-white transition-colors underline underline-offset-4"
         >
           {showAll
             ? "Show fewer videos"
-            : `Show all ${feed.videos.length} videos →`}
+            : `Show all ${filteredVideos.length} videos →`}
         </button>
       )}
     </div>

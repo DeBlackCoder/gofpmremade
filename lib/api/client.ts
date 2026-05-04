@@ -230,6 +230,7 @@ export class ApiClient {
           ...fetchOptions,
           headers,
           body: body ? JSON.stringify(body) : undefined,
+          credentials: "include", // Include cookies in requests for cookie-based authentication
         });
 
         // Handle 401 - token expired
@@ -239,6 +240,7 @@ export class ApiClient {
               ...fetchOptions,
               headers,
               body: body ? JSON.stringify(body) : undefined,
+              credentials: "include", // Include cookies in retry requests
             }),
           );
         }
@@ -322,8 +324,12 @@ export class ApiClient {
   /**
    * DELETE request
    */
-  delete<T = unknown>(endpoint: string, options?: RequestOptions) {
-    return this.request<T>(endpoint, { ...options, method: "DELETE" });
+  delete<T = unknown>(
+    endpoint: string,
+    body?: unknown,
+    options?: RequestOptions,
+  ) {
+    return this.request<T>(endpoint, { ...options, method: "DELETE", body });
   }
 }
 

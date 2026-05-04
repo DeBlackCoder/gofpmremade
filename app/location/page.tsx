@@ -1,12 +1,22 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getDailyPhoto } from "@/lib/church-photos";
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-const serviceTimes = [
+interface ServiceTime {
+  day: string;
+  shortDay: string;
+  times: string[];
+  note: string;
+  accent: string;
+  dot: string;
+}
+
+// Default service times (fallback)
+const defaultServiceTimes: ServiceTime[] = [
   {
     day: "Sunday",
     shortDay: "SUN",
@@ -32,6 +42,45 @@ const serviceTimes = [
     dot: "bg-violet-400",
   },
 ];
+
+// Color schemes for different days
+const dayStyles: Record<string, { accent: string; dot: string; note: string }> = {
+  Sunday: {
+    accent: "from-amber-500/20 to-amber-500/5",
+    dot: "bg-amber-400",
+    note: "Children's Church available",
+  },
+  Monday: {
+    accent: "from-rose-500/20 to-rose-500/5",
+    dot: "bg-rose-400",
+    note: "Join us for worship",
+  },
+  Tuesday: {
+    accent: "from-blue-500/20 to-blue-500/5",
+    dot: "bg-blue-400",
+    note: "Join us for worship",
+  },
+  Wednesday: {
+    accent: "from-sky-500/20 to-sky-500/5",
+    dot: "bg-sky-400",
+    note: "Bible study & prayer",
+  },
+  Thursday: {
+    accent: "from-purple-500/20 to-purple-500/5",
+    dot: "bg-purple-400",
+    note: "Join us for worship",
+  },
+  Friday: {
+    accent: "from-violet-500/20 to-violet-500/5",
+    dot: "bg-violet-400",
+    note: "Open to all members",
+  },
+  Saturday: {
+    accent: "from-emerald-500/20 to-emerald-500/5",
+    dot: "bg-emerald-400",
+    note: "Join us for worship",
+  },
+};
 
 const details = [
   {
@@ -108,6 +157,121 @@ const MAPS_URL =
 export default function LocationPage() {
   const bgUrl = getDailyPhoto(6);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [serviceTimes, setServiceTimes] = useState<ServiceTime[]>(defaultServiceTimes);
+  const [settings, setSettings] = useState<any>(null);
+
+  // Load settings from localStorage on client side only
+  useEffect(() => {
+    const stored = localStorage.getItem("admin-site-settings");
+    const defaultPastorSettings = {
+      pastorName: "Rev. Emmanuel Okafor",
+      pastorWifeName: "Mrs. Grace Okafor",
+      pastorPhotoUrl: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=faces",
+      pastorWifePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces",
+      pastorHidden: false,
+    };
+    
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Merge with defaults to ensure pastor fields exist
+      const merged = {
+        ...parsed,
+        pastorName: parsed.pastorName ?? defaultPastorSettings.pastorName,
+        pastorWifeName: parsed.pastorWifeName ?? defaultPastorSettings.pastorWifeName,
+        pastorPhotoUrl: parsed.pastorPhotoUrl ?? defaultPastorSettings.pastorPhotoUrl,
+        pastorWifePhotoUrl: parsed.pastorWifePhotoUrl ?? defaultPastorSettings.pastorWifePhotoUrl,
+        pastorHidden: parsed.pastorHidden ?? defaultPastorSettings.pastorHidden,
+      };
+      setSettings(merged);
+    } else {
+      setSettings(defaultPastorSettings);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!settings) {
+      setServiceTimes(defaultServiceTimes);
+      return;
+    }
+
+    const times: ServiceTime[] = [];
+
+    // Helper to get short day name
+    const getShortDay = (day: string) => day.substring(0, 3).toUpperCase();
+
+    // Sunday
+    if (!settings.sundayHidden && (settings.sundayTime1 || settings.sundayTime2)) {
+      const sundayTimes = [settings.sundayTime1, settings.sundayTime2].filter(Boolean);
+      times.push({
+        day: "Sunday",
+        shortDay: getShortDay("Sunday"),
+        times: sundayTimes,
+        ...dayStyles.Sunday,
+      });
+    }
+
+    // Monday
+    if (!settings.mondayHidden && settings.mondayTime) {
+      times.push({
+        day: "Monday",
+        shortDay: getShortDay("Monday"),
+        times: [settings.mondayTime],
+        ...dayStyles.Monday,
+      });
+    }
+
+    // Tuesday
+    if (!settings.tuesdayHidden && settings.tuesdayTime) {
+      times.push({
+        day: "Tuesday",
+        shortDay: getShortDay("Tuesday"),
+        times: [settings.tuesdayTime],
+        ...dayStyles.Tuesday,
+      });
+    }
+
+    // Wednesday
+    if (!settings.wednesdayHidden && settings.wednesdayTime) {
+      times.push({
+        day: "Wednesday",
+        shortDay: getShortDay("Wednesday"),
+        times: [settings.wednesdayTime],
+        ...dayStyles.Wednesday,
+      });
+    }
+
+    // Thursday
+    if (!settings.thursdayHidden && settings.thursdayTime) {
+      times.push({
+        day: "Thursday",
+        shortDay: getShortDay("Thursday"),
+        times: [settings.thursdayTime],
+        ...dayStyles.Thursday,
+      });
+    }
+
+    // Friday
+    if (!settings.fridayHidden && settings.fridayTime) {
+      times.push({
+        day: "Friday",
+        shortDay: getShortDay("Friday"),
+        times: [settings.fridayTime],
+        ...dayStyles.Friday,
+      });
+    }
+
+    // Saturday
+    if (!settings.saturdayHidden && settings.saturdayTime) {
+      times.push({
+        day: "Saturday",
+        shortDay: getShortDay("Saturday"),
+        times: [settings.saturdayTime],
+        ...dayStyles.Saturday,
+      });
+    }
+
+    setServiceTimes(times.length > 0 ? times : defaultServiceTimes);
+  }, [settings]);
 
   return (
     <section className="relative w-full min-h-svh">
@@ -166,9 +330,9 @@ export default function LocationPage() {
           transition={{ delay: 0.9, duration: 0.7 }}
         >
           <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-5">
-            Service times
+            Weekly Service times
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className={`grid grid-cols-1 gap-4 ${serviceTimes.length === 1 ? 'sm:grid-cols-1 max-w-md' : serviceTimes.length === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-3'}`}>
             {serviceTimes.map((s, i) => (
               <motion.div
                 key={s.day}
@@ -323,57 +487,232 @@ export default function LocationPage() {
 
           {/* Map */}
           <motion.div
-            className="relative overflow-hidden"
+            className="relative overflow-hidden group"
             style={{
-              border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: "20px",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-              minHeight: "360px",
+              background: "linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 100%)",
+              border: "2px solid rgba(255,255,255,0.18)",
+              borderRadius: "24px",
+              boxShadow: "0 12px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15)",
+              minHeight: "480px",
             }}
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.15, duration: 0.7 }}
+            whileHover={{ scale: 1.01 }}
           >
-            {/* Map header bar */}
-            <div
-              className="flex items-center justify-between px-5 py-3 absolute top-0 left-0 right-0 z-10"
+            {/* Animated gradient overlay on edges */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none z-[5]"
               style={{
-                background: "rgba(0,0,0,0.55)",
-                backdropFilter: "blur(16px)",
-                WebkitBackdropFilter: "blur(16px)",
-                borderBottom: "1px solid rgba(255,255,255,0.10)",
+                background: "radial-gradient(circle at 50% 50%, transparent 40%, rgba(0,0,0,0.3) 100%)",
+                borderRadius: "24px",
               }}
+              animate={{
+                opacity: [0.3, 0.5, 0.3],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+
+            {/* Decorative corner accents */}
+            <div className="absolute top-0 left-0 w-24 h-24 pointer-events-none z-[5]">
+              <div
+                className="absolute top-0 left-0 w-full h-full"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 70%)",
+                  borderRadius: "24px 0 0 0",
+                }}
+              />
+            </div>
+            <div className="absolute bottom-0 right-0 w-24 h-24 pointer-events-none z-[5]">
+              <div
+                className="absolute bottom-0 right-0 w-full h-full"
+                style={{
+                  background: "linear-gradient(315deg, rgba(255,255,255,0.15) 0%, transparent 70%)",
+                  borderRadius: "0 0 24px 0",
+                }}
+              />
+            </div>
+
+            {/* Enhanced map header bar */}
+            <motion.div
+              className="flex items-center justify-between px-6 py-4 absolute top-0 left-0 right-0 z-10"
+              style={{
+                background: "linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 100%)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                borderBottom: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "24px 24px 0 0",
+              }}
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 1.3, duration: 0.5 }}
             >
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="font-body text-white/70 text-xs tracking-widest uppercase">
-                  AG Church · Choba 2
-                </span>
+              <div className="flex items-center gap-3">
+                {/* Animated location pin icon */}
+                <motion.div
+                  className="relative"
+                  animate={{
+                    y: [0, -3, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-400">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  <motion.span
+                    className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [1, 0, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                </motion.div>
+                <div className="flex flex-col">
+                  <span className="font-body text-white font-semibold text-sm tracking-wide">
+                    AG Church · Choba 2
+                  </span>
+                  <span className="font-body text-white/50 text-[10px] tracking-widest uppercase">
+                    Port Harcourt, Rivers State
+                  </span>
+                </div>
               </div>
-              <a
+              <motion.a
                 href={MAPS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-body text-white/50 text-xs tracking-wide hover:text-white transition-colors flex items-center gap-1.5"
+                className="font-body text-white/60 text-xs tracking-wide hover:text-white transition-colors flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                Open in Maps
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <span className="hidden sm:inline">Open in Maps</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                   <polyline points="15 3 21 3 21 9"/>
                   <line x1="10" y1="14" x2="21" y2="3"/>
                 </svg>
-              </a>
+              </motion.a>
+            </motion.div>
+
+            {/* Map container with enhanced styling */}
+            <div
+              className="relative w-full h-full overflow-hidden"
+              style={{
+                borderRadius: "24px",
+                minHeight: "480px",
+              }}
+            >
+              <iframe
+                title="Church location map"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2237.3!2d6.9008766!3d4.8832034!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1069dbcb5d6ca3f3%3A0xd53fd6de46d82c1b!2sAssemblies%20Of%20God%20Church%20Choba%202!5e0!3m2!1sen!2sng!4v1"
+                width="100%"
+                height="100%"
+                style={{
+                  border: 0,
+                  display: "block",
+                  minHeight: "480px",
+                  filter: "brightness(0.95) contrast(1.05) saturate(1.1)",
+                }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
             </div>
-            <iframe
-              title="Church location map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2237.3!2d6.9008766!3d4.8832034!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1069dbcb5d6ca3f3%3A0xd53fd6de46d82c1b!2sAssemblies%20Of%20God%20Church%20Choba%202!5e0!3m2!1sen!2sng!4v1"
-              width="100%"
-              height="100%"
-              style={{ border: 0, display: "block", minHeight: "360px" }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+
+            {/* Bottom info bar with quick actions */}
+            <motion.div
+              className="flex items-center justify-between px-6 py-3 absolute bottom-0 left-0 right-0 z-10"
+              style={{
+                background: "linear-gradient(0deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.45) 100%)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                borderTop: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "0 0 24px 24px",
+              }}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 1.4, duration: 0.5 }}
+            >
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-8 h-8 flex items-center justify-center"
+                  style={{
+                    background: "rgba(255,255,255,0.10)",
+                    border: "1px solid rgba(255,255,255,0.15)",
+                    borderRadius: "8px",
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/70">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+                <span className="font-body text-white/60 text-xs">
+                  Interactive map · Zoom & pan enabled
+                </span>
+              </div>
+              <motion.button
+                onClick={() => window.open(MAPS_URL, '_blank')}
+                className="flex items-center gap-2 px-4 py-2 font-body text-white text-xs font-semibold tracking-wide transition-all"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%)",
+                  border: "1px solid rgba(255,255,255,0.20)",
+                  borderRadius: "8px",
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  background: "linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.15) 100%)",
+                }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                Navigate
+              </motion.button>
+            </motion.div>
+
+            {/* Floating distance badge */}
+            <motion.div
+              className="absolute top-20 right-6 z-10 px-4 py-2"
+              style={{
+                background: "linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.15) 100%)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                border: "1px solid rgba(16, 185, 129, 0.3)",
+                borderRadius: "12px",
+                boxShadow: "0 4px 16px rgba(16, 185, 129, 0.2)",
+              }}
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 1.5, duration: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-300">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span className="font-body text-emerald-200 text-xs font-semibold">
+                  ~5 min drive
+                </span>
+              </div>
+            </motion.div>
           </motion.div>
         </motion.div>
 

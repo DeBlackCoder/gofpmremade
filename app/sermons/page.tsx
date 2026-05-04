@@ -10,6 +10,7 @@ import PodcastEpisodes from "@/components/PodcastEpisodes";
 import YouTubeVideos from "@/components/YouTubeVideos";
 import type { PodcastFeed } from "@/app/api/podcast-feed/route";
 import { useEffect } from "react";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -55,6 +56,17 @@ export default function SermonsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const addToast = useUiStore((s) => s.addToast);
 
+  // ── Hidden items (blocklist) ──
+  const [hiddenItems] = useLocalStorage<Array<{ id: string; type: string }>>("admin-hidden-media", []);
+  const [hiddenSermonIds, setHiddenSermonIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const sermonIds = new Set(
+      hiddenItems.filter((item) => item.type === 'sermon').map((item) => item.id)
+    );
+    setHiddenSermonIds(sermonIds);
+  }, [hiddenItems]);
+
   const {
     data: searchResults,
     isLoading: isSearching,
@@ -68,8 +80,14 @@ export default function SermonsPage() {
   const displaySermons = searchTerm
     ? searchResults?.data || []
     : paginatedSermons?.data || [];
-  const featured = displaySermons.length > 0 ? displaySermons[0] : null;
-  const filtered = displaySermons;
+  
+  // Filter out hidden sermons
+  const filtered = displaySermons.filter((sermon) => {
+    const sermonId = sermon.id || (sermon as any)._id || (sermon as any).slug;
+    return !hiddenSermonIds.has(sermonId);
+  });
+  
+  const featured = filtered.length > 0 ? filtered[0] : null;
 
   // ── Audio state — fetch podcast feed client-side ──
   const [podcastFeed, setPodcastFeed] = useState<PodcastFeed | null>(null);

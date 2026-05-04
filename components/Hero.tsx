@@ -3,9 +3,291 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { sermons } from "@/lib/sermons-data";
+import { useState, useEffect } from "react";
 import { getDailyPhoto } from "@/lib/church-photos";
 import AnnouncementModal from "@/components/AnnouncementModal";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface Sermon {
+  _id: string;
+  title: string;
+  pastor: string;
+  scripture: string;
+  date: string;
+  slug?: string;
+}
+
+// ─── Service Times Component ──────────────────────────────────────────────────
+
+interface SiteSettings {
+  sundayHidden?: boolean;
+  sundayTime1?: string;
+  sundayTime2?: string;
+  mondayHidden?: boolean;
+  mondayTime?: string;
+  tuesdayHidden?: boolean;
+  tuesdayTime?: string;
+  wednesdayHidden?: boolean;
+  wednesdayTime?: string;
+  thursdayHidden?: boolean;
+  thursdayTime?: string;
+  fridayHidden?: boolean;
+  fridayTime?: string;
+  saturdayHidden?: boolean;
+  saturdayTime?: string;
+}
+
+function ServiceTimes() {
+  const [serviceDays, setServiceDays] = useState<Array<{ day: string; time: string }>>([]);
+  const [settings] = useLocalStorage<SiteSettings | null>("admin-site-settings", null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
+    if (!settings) {
+      // Default service times
+      setServiceDays([
+        { day: "Sunday", time: "8:00 AM & 10:30 AM" },
+        { day: "Wednesday", time: "6:00 PM" },
+        { day: "Friday", time: "6:00 AM Prayer" },
+      ]);
+      return;
+    }
+
+    const days: Array<{ day: string; time: string }> = [];
+
+    // Sunday
+    if (!settings.sundayHidden && (settings.sundayTime1 || settings.sundayTime2)) {
+      const times = [settings.sundayTime1, settings.sundayTime2].filter(Boolean).join(" & ");
+      days.push({ day: "Sunday", time: times });
+    }
+
+    // Monday
+    if (!settings.mondayHidden && settings.mondayTime) {
+      days.push({ day: "Monday", time: settings.mondayTime });
+    }
+
+    // Tuesday
+    if (!settings.tuesdayHidden && settings.tuesdayTime) {
+      days.push({ day: "Tuesday", time: settings.tuesdayTime });
+    }
+
+    // Wednesday
+    if (!settings.wednesdayHidden && settings.wednesdayTime) {
+      days.push({ day: "Wednesday", time: settings.wednesdayTime });
+    }
+
+    // Thursday
+    if (!settings.thursdayHidden && settings.thursdayTime) {
+      days.push({ day: "Thursday", time: settings.thursdayTime });
+    }
+
+    // Friday
+    if (!settings.fridayHidden && settings.fridayTime) {
+      days.push({ day: "Friday", time: settings.fridayTime });
+    }
+
+    // Saturday
+    if (!settings.saturdayHidden && settings.saturdayTime) {
+      days.push({ day: "Saturday", time: settings.saturdayTime });
+    }
+
+    setServiceDays(days);
+  }, [settings, mounted]);
+
+  if (!mounted || serviceDays.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-wrap gap-3">
+      {serviceDays.map((s) => (
+        <div
+          key={s.day}
+          className="flex flex-col gap-0.5 px-4 py-3"
+          style={{
+            background: "rgba(255,255,255,0.06)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: "12px",
+          }}
+        >
+          <span className="font-body text-white font-semibold text-xs tracking-wide">
+            {s.day}
+          </span>
+          <span className="font-body text-white/50 text-xs">
+            {s.time}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Monthly Programs Component ───────────────────────────────────────────────
+
+interface MonthlyProgram {
+  id: string;
+  day: string; // Dynamic day (e.g., "1st Sunday", "Last Friday", "15th")
+  title: string;
+  time: string;
+  description: string;
+  notes: string;
+}
+
+const defaultMonthlyPrograms: MonthlyProgram[] = [
+  {
+    id: "first-day-default",
+    day: "1st Sunday",
+    title: "First Sunday Communion Service",
+    time: "10:30 AM",
+    description: "Holy Communion service with special worship and prayer",
+    notes: "All members are encouraged to attend",
+  },
+  {
+    id: "last-day-default",
+    day: "Last Day",
+    title: "Thanksgiving Service",
+    time: "6:00 PM",
+    description: "Monthly thanksgiving and testimony service",
+    notes: "Bring your testimonies to share",
+  },
+];
+
+function MonthlyPrograms() {
+  const [programs] = useLocalStorage<MonthlyProgram[]>("admin-monthly-programs", defaultMonthlyPrograms);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
+  if (!programs || programs.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="relative z-10 border-t border-white/10">
+      <div className="max-w-7xl mx-auto px-6 py-12 sm:px-10 sm:py-16">
+        <motion.p
+          className="font-body text-white/40 text-xs tracking-widest uppercase mb-6"
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          Monthly Special Programs
+        </motion.p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {programs.map((program, i) => (
+            <motion.div
+              key={program.id}
+              className="relative overflow-hidden p-6"
+              style={{
+                background: "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%)",
+                backdropFilter: "blur(20px)",
+                WebkitBackdropFilter: "blur(20px)",
+                border: "1px solid rgba(139, 92, 246, 0.2)",
+                borderRadius: "20px",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1, duration: 0.5 }}
+            >
+              {/* Badge */}
+              <div className="flex items-center justify-between mb-4">
+                <span
+                  className="font-body text-[10px] tracking-widest uppercase px-3 py-1"
+                  style={{
+                    background: "rgba(139, 92, 246, 0.2)",
+                    color: "rgb(196, 181, 253)",
+                    border: "1px solid rgba(139, 92, 246, 0.3)",
+                    borderRadius: "8px",
+                  }}
+                >
+                  {program.day}
+                </span>
+                <span className="w-2.5 h-2.5 rounded-full shadow-lg bg-violet-400" />
+              </div>
+
+              {/* Title & Time */}
+              <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight mb-2">
+                {program.title}
+              </h3>
+              <div className="flex items-center gap-2 mb-4">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="text-white/50"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span className="font-body text-white/70 text-sm font-medium">
+                  {program.time}
+                </span>
+              </div>
+
+              {/* Description */}
+              <p className="font-body text-white/70 text-sm leading-relaxed mb-4">
+                {program.description}
+              </p>
+
+              {/* Notes */}
+              {program.notes && (
+                <div
+                  className="inline-flex items-start gap-2 px-3 py-2"
+                  style={{
+                    background: "rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.12)",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="text-white/40 mt-0.5 flex-shrink-0"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="16" x2="12" y2="12" />
+                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                  </svg>
+                  <span className="font-body text-white/50 text-xs italic leading-relaxed">
+                    {program.notes}
+                  </span>
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── Quick Links & Daily Quotes ───────────────────────────────────────────────
 
 const quickLinks = [
   { label: "Plan a visit", href: "/location" },
@@ -56,6 +338,27 @@ function getDailyQuote() {
 export default function Hero() {
   const bgUrl = getDailyPhoto(0);
   const dailyQuote = getDailyQuote();
+  const [recentSermons, setRecentSermons] = useState<Sermon[]>([]);
+  const [loadingSermons, setLoadingSermons] = useState(true);
+
+  useEffect(() => {
+    async function fetchSermons() {
+      try {
+        const response = await fetch("/api/v1/sermons?limit=3");
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.data) {
+            setRecentSermons(result.data.data || []);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch sermons:", error);
+      } finally {
+        setLoadingSermons(false);
+      }
+    }
+    fetchSermons();
+  }, []);
 
   return (
     <>
@@ -237,31 +540,41 @@ export default function Hero() {
                     View all →
                   </Link>
                 </div>
-                {sermons.slice(0, 3).map((sermon, i) => (
-                  <motion.div
-                    key={sermon.slug}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1.3 + i * 0.1, duration: 0.5 }}
-                  >
-                    <Link
-                      href={`/sermons/${sermon.slug}`}
-                      className="group flex items-center justify-between gap-4 py-2.5 border-t border-white/10 hover:border-white/25 transition-colors"
+                {loadingSermons ? (
+                  <div className="py-8 text-center">
+                    <span className="font-body text-white/40 text-xs">Loading sermons...</span>
+                  </div>
+                ) : recentSermons.length === 0 ? (
+                  <div className="py-8 text-center">
+                    <span className="font-body text-white/40 text-xs">No sermons available</span>
+                  </div>
+                ) : (
+                  recentSermons.map((sermon, i) => (
+                    <motion.div
+                      key={sermon.slug}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 1.3 + i * 0.1, duration: 0.5 }}
                     >
-                      <div className="flex flex-col gap-0.5 min-w-0">
-                        <span className="font-body text-white/85 font-semibold text-xs truncate group-hover:text-white transition-colors">
-                          {sermon.title}
+                      <Link
+                        href={`/sermons/${sermon.slug || sermon._id}`}
+                        className="group flex items-center justify-between gap-4 py-2.5 border-t border-white/10 hover:border-white/25 transition-colors"
+                      >
+                        <div className="flex flex-col gap-0.5 min-w-0">
+                          <span className="font-body text-white/85 font-semibold text-xs truncate group-hover:text-white transition-colors">
+                            {sermon.title}
+                          </span>
+                          <span className="font-body text-white/35 text-[10px] italic">
+                            {sermon.scripture} · {sermon.pastor}
+                          </span>
+                        </div>
+                        <span className="text-white/25 group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 shrink-0 text-sm">
+                          →
                         </span>
-                        <span className="font-body text-white/35 text-[10px] italic">
-                          {sermon.scripture} · {sermon.pastor}
-                        </span>
-                      </div>
-                      <span className="text-white/25 group-hover:text-white/60 group-hover:translate-x-1 transition-all duration-300 shrink-0 text-sm">
-                        →
-                      </span>
-                    </Link>
-                  </motion.div>
-                ))}
+                      </Link>
+                    </motion.div>
+                  ))
+                )}
               </div>
             </motion.div>
 
@@ -450,38 +763,17 @@ export default function Hero() {
                 You are always welcome.
               </p>
             </div>
-            <div className="flex flex-wrap gap-3">
-              {[
-                { day: "Sunday", time: "8:00 AM & 10:30 AM" },
-                { day: "Wednesday", time: "6:00 PM" },
-                { day: "Friday", time: "6:00 AM Prayer" },
-              ].map((s) => (
-                <div
-                  key={s.day}
-                  className="flex flex-col gap-0.5 px-4 py-3"
-                  style={{
-                    background: "rgba(255,255,255,0.06)",
-                    backdropFilter: "blur(12px)",
-                    WebkitBackdropFilter: "blur(12px)",
-                    border: "1px solid rgba(255,255,255,0.10)",
-                    borderRadius: "12px",
-                  }}
-                >
-                  <span className="font-body text-white font-semibold text-xs tracking-wide">
-                    {s.day}
-                  </span>
-                  <span className="font-body text-white/50 text-xs">
-                    {s.time}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <ServiceTimes />
           </div>
         </div>
       </section>
 
+      {/* ── Monthly Programs ───────────────────────────── */}
+      <MonthlyPrograms />
+
       {/* ── Footer ───────────────────────────────────── */}
-      <footer className="relative z-10 border-t border-white/10">        <div className="max-w-7xl mx-auto px-6 py-8 sm:px-10 sm:py-10">
+      <footer className="relative z-10 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-8 sm:px-10 sm:py-10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             {/* Brand */}
             <div className="flex items-center gap-4">

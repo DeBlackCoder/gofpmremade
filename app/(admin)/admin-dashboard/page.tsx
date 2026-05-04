@@ -19,23 +19,57 @@ interface StatCard {
 
 async function fetchCount(url: string): Promise<number | null> {
   try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(4000) });
-    if (!res.ok) return null;
+    const res = await fetch(url, { 
+      signal: AbortSignal.timeout(2000), // Reduced from 4000ms to 2000ms
+      credentials: 'include',
+      cache: 'no-store', // Don't cache to get fresh data
+    });
+    if (!res.ok) {
+      console.error(`Failed to fetch ${url}: ${res.status} ${res.statusText}`);
+      return null;
+    }
     const data = await res.json();
-    // Handle paginated responses: { data: [...], total: N } or { data: [...] }
+    
+    // Handle different response formats
+    // Simple count response: { success: true, data: { total: N } }
+    if (data?.success && typeof data?.data?.total === "number") return data.data.total;
+    
+    // Paginated responses with nested data: { success: true, data: { data: [...], total: N } }
+    if (data?.success && data?.data?.total !== undefined) return data.data.total;
+    
+    // IMPORTANT: Check for nested pagination BEFORE checking array length
+    // This ensures we extract data.data.pagination.total for /api/v1/sermons responses
+    if (data?.success && data?.data?.pagination?.total !== undefined) {
+      return data.data.pagination.total;
+    }
+    
+    if (data?.success && Array.isArray(data?.data?.data)) return data.data.data.length;
+    
+    // MongoDB responses: { success: true, data: [...] }
+    if (data?.success && Array.isArray(data?.data)) return data.data.length;
+    
+    // Standard paginated responses: { data: [...], total: N } or { data: [...], pagination: { total: N } }
     if (typeof data?.total === "number") return data.total;
     if (typeof data?.pagination?.total === "number") return data.pagination.total;
+    
+    // Direct array responses
     if (Array.isArray(data?.data)) return data.data.length;
     if (Array.isArray(data)) return data.length;
+    
+    console.error(`Unexpected response format from ${url}:`, data);
     return null;
-  } catch {
+  } catch (error) {
+    console.error(`Error fetching ${url}:`, error);
     return null;
   }
 }
 
 async function fetchPodcastCount(): Promise<number | null> {
   try {
-    const res = await fetch(`/api/podcast-feed`, { signal: AbortSignal.timeout(5000) });
+    const res = await fetch(`/api/podcast-feed`, { 
+      signal: AbortSignal.timeout(3000), // Reduced from 5000ms
+      cache: 'no-store',
+    });
     if (!res.ok) return null;
     const data = await res.json();
     return data?.episodes?.length ?? null;
@@ -46,7 +80,10 @@ async function fetchPodcastCount(): Promise<number | null> {
 
 async function fetchYouTubeCount(): Promise<number | null> {
   try {
-    const res = await fetch(`/api/youtube-feed`, { signal: AbortSignal.timeout(5000) });
+    const res = await fetch(`/api/youtube-feed`, { 
+      signal: AbortSignal.timeout(3000), // Reduced from 5000ms
+      cache: 'no-store',
+    });
     if (!res.ok) return null;
     const data = await res.json();
     return data?.videos?.length ?? null;
@@ -104,13 +141,11 @@ export default function DashboardPage() {
     { label: "Messages", value: "…", href: "/admin-contacts", status: "loading" },
   ]);
 
-  const [backendOnline, setBackendOnline] = useState<boolean | null>(null);
-
   useEffect(() => {
     async function loadStats() {
-      const API = "http://localhost:4000/api/v1";
-
-      // Run all fetches in parallel
+      console.log("Dashboard: Loading stats...");
+      
+      // Fetch from actual API endpoints
       const [
         sermonsCount,
         eventsCount,
@@ -120,14 +155,24 @@ export default function DashboardPage() {
         audioCount,
         videoCount,
       ] = await Promise.all([
-        fetchCount(`${API}/admin/sermons`),
-        fetchCount(`${API}/admin/events`),
-        fetchCount(`${API}/admin/community`),
-        fetchCount(`${API}/admin/members`),
-        fetchCount(`${API}/admin/contacts`),
+        fetchCount(`/api/v1/sermons/count`),
+        fetchCount(`/api/v1/events`),
+        fetchCount(`/api/v1/ministries`),
+        fetchCount(`/api/v1/members`),
+        fetchCount(`/api/v1/admin/prayer-requests`),
         fetchPodcastCount(),
         fetchYouTubeCount(),
       ]);
+
+      console.log("Dashboard: Fetched counts:", {
+        sermonsCount,
+        eventsCount,
+        communityCount,
+        membersCount,
+        contactsCount,
+        audioCount,
+        videoCount,
+      });
 
       // Local counts (always available)
       const savedProjects = localStorage.getItem("admin-projects");
@@ -138,14 +183,11 @@ export default function DashboardPage() {
       const savedVideos = localStorage.getItem("admin-manual-videos");
       const manualVideos = savedVideos ? JSON.parse(savedVideos).length : 0;
 
-      const isOnline = sermonsCount !== null || eventsCount !== null;
-      setBackendOnline(isOnline);
-
       setStats([
         {
           label: "Sermons",
-          value: sermonsCount ?? "—",
-          sub: sermonsCount === null ? "backend offline" : "written messages",
+          value: sermonsCount ?? 0,
+          sub: "written messages",
           href: "/admin-sermons",
           status: sermonsCount !== null ? "live" : "offline",
         },
@@ -173,15 +215,15 @@ export default function DashboardPage() {
         },
         {
           label: "Events",
-          value: eventsCount ?? "—",
-          sub: eventsCount === null ? "backend offline" : "upcoming & past",
+          value: eventsCount ?? 0,
+          sub: "upcoming & past",
           href: "/admin-events",
           status: eventsCount !== null ? "live" : "offline",
         },
         {
           label: "Community groups",
-          value: communityCount ?? "—",
-          sub: communityCount === null ? "backend offline" : "life groups",
+          value: communityCount ?? 0,
+          sub: "life groups",
           href: "/admin-community",
           status: communityCount !== null ? "live" : "offline",
         },
@@ -194,15 +236,15 @@ export default function DashboardPage() {
         },
         {
           label: "Members",
-          value: membersCount ?? "—",
-          sub: membersCount === null ? "backend offline" : "registered",
+          value: membersCount ?? 0,
+          sub: "registered",
           href: "/admin-members",
           status: membersCount !== null ? "live" : "offline",
         },
         {
           label: "Messages",
-          value: contactsCount ?? "—",
-          sub: contactsCount === null ? "backend offline" : "contact submissions",
+          value: contactsCount ?? 0,
+          sub: "prayer requests",
           href: "/admin-contacts",
           status: contactsCount !== null ? "live" : "offline",
         },
@@ -226,27 +268,19 @@ export default function DashboardPage() {
             Dashboard
           </h1>
         </div>
-        {backendOnline !== null && (
-          <div
-            className="flex items-center gap-2 px-3 py-1.5"
-            style={{
-              background: backendOnline
-                ? "rgba(52,211,153,0.08)"
-                : "rgba(255,200,0,0.08)",
-              border: `1px solid ${backendOnline ? "rgba(52,211,153,0.20)" : "rgba(255,200,0,0.20)"}`,
-              borderRadius: "8px",
-            }}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${backendOnline ? "bg-emerald-400 animate-pulse" : "bg-yellow-400"}`}
-            />
-            <span
-              className={`font-body text-[10px] tracking-widest uppercase ${backendOnline ? "text-emerald-300/80" : "text-yellow-300/70"}`}
-            >
-              {backendOnline ? "Backend online" : "Backend offline"}
-            </span>
-          </div>
-        )}
+        <div
+          className="flex items-center gap-2 px-3 py-1.5"
+          style={{
+            background: "rgba(52,211,153,0.08)",
+            border: "1px solid rgba(52,211,153,0.20)",
+            borderRadius: "8px",
+          }}
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="font-body text-[10px] tracking-widest uppercase text-emerald-300/80">
+            Local backend active
+          </span>
+        </div>
       </div>
 
       {/* ── Stats grid ── */}

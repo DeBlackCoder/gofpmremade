@@ -7,7 +7,38 @@ import { Button } from "@/components/ui/button";
 import { useEvents, useRegisterForEventMutation } from "@/lib/hooks/queries";
 import { useUiStore } from "@/lib/stores/uiStore";
 import { getDailyPhoto } from "@/lib/church-photos";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import type { ChurchEvent, EventCategory } from "@/lib/types/resources";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface MonthlyProgram {
+  id: string;
+  type: "first" | "last";
+  title: string;
+  time: string;
+  description: string;
+  notes: string;
+}
+
+const defaultMonthlyPrograms: MonthlyProgram[] = [
+  {
+    id: "first-day-default",
+    type: "first",
+    title: "First Sunday Communion Service",
+    time: "10:30 AM",
+    description: "Holy Communion service with special worship and prayer",
+    notes: "All members are encouraged to attend",
+  },
+  {
+    id: "last-day-default",
+    type: "last",
+    title: "Thanksgiving Service",
+    time: "6:00 PM",
+    description: "Monthly thanksgiving and testimony service",
+    notes: "Bring your testimonies to share",
+  },
+];
 
 type Category =
   | "All"
@@ -54,6 +85,134 @@ const categoryEmptyMessage: Record<Category, string> = {
   Prayer: "No prayer events at the moment.",
   Special: "No special events at the moment.",
 };
+
+// ─── Monthly Programs Component ───────────────────────────────────────────────
+
+function MonthlyProgramsSection() {
+  const [programs] = useLocalStorage<MonthlyProgram[]>("admin-monthly-programs", defaultMonthlyPrograms);
+
+  if (!programs || programs.length === 0) {
+    return null;
+  }
+
+  return (
+    <motion.div
+      className="mt-10 sm:mt-12"
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.75, duration: 0.7 }}
+    >
+      <p className="font-body text-white/45 text-xs tracking-widest uppercase mb-5">
+        Monthly Special Programs
+      </p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {programs.map((program, i) => (
+          <motion.div
+            key={program.id}
+            className="relative overflow-hidden p-6"
+            style={{
+              background: program.type === "first"
+                ? "linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%)"
+                : "linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.05) 100%)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: program.type === "first"
+                ? "1px solid rgba(251, 191, 36, 0.2)"
+                : "1px solid rgba(139, 92, 246, 0.2)",
+              borderRadius: "20px",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 + i * 0.1, duration: 0.5 }}
+          >
+            {/* Badge */}
+            <div className="flex items-center justify-between mb-4">
+              <span
+                className="font-body text-[10px] tracking-widest uppercase px-3 py-1"
+                style={{
+                  background: program.type === "first"
+                    ? "rgba(251, 191, 36, 0.2)"
+                    : "rgba(139, 92, 246, 0.2)",
+                  color: program.type === "first"
+                    ? "rgb(251, 191, 36)"
+                    : "rgb(167, 139, 250)",
+                  border: program.type === "first"
+                    ? "1px solid rgba(251, 191, 36, 0.3)"
+                    : "1px solid rgba(139, 92, 246, 0.3)",
+                  borderRadius: "8px",
+                }}
+              >
+                {program.type === "first" ? "1st Day of Month" : "Last Day of Month"}
+              </span>
+              <span
+                className={`w-2.5 h-2.5 rounded-full shadow-lg ${
+                  program.type === "first" ? "bg-amber-400" : "bg-violet-400"
+                }`}
+              />
+            </div>
+
+            {/* Title & Time */}
+            <h3 className="font-heading text-white font-black text-xl sm:text-2xl leading-tight mb-2">
+              {program.title}
+            </h3>
+            <div className="flex items-center gap-2 mb-4">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="text-white/50"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+              <span className="font-body text-white/70 text-sm font-medium">
+                {program.time}
+              </span>
+            </div>
+
+            {/* Description */}
+            <p className="font-body text-white/70 text-sm leading-relaxed mb-4">
+              {program.description}
+            </p>
+
+            {/* Notes */}
+            {program.notes && (
+              <div
+                className="inline-flex items-start gap-2 px-3 py-2"
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  borderRadius: "10px",
+                }}
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="text-white/40 mt-0.5 flex-shrink-0"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="16" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12.01" y2="8" />
+                </svg>
+                <span className="font-body text-white/50 text-xs italic leading-relaxed">
+                  {program.notes}
+                </span>
+              </div>
+            )}
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 
 export default function EventsPage() {
   const bgUrl = getDailyPhoto(6);
@@ -136,6 +295,9 @@ export default function EventsPage() {
             events.
           </motion.span>
         </motion.h1>
+
+        {/* Monthly Programs */}
+        <MonthlyProgramsSection />
 
         {/* Category filters */}
         <motion.div

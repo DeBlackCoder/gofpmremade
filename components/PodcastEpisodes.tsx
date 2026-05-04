@@ -2,8 +2,9 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { PodcastEpisode, PodcastFeed } from "@/app/api/podcast-feed/route";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -216,7 +217,21 @@ function EpisodeCard({
 export default function PodcastEpisodes({ feed }: { feed: PodcastFeed }) {
   const [showAll, setShowAll] = useState(false);
   const INITIAL_COUNT = 6;
-  const visible = showAll ? feed.episodes : feed.episodes.slice(0, INITIAL_COUNT);
+  
+  // Filter out hidden episodes using reactive localStorage hook
+  const [hiddenItems] = useLocalStorage<Array<{ id: string; type: string }>>("admin-hidden-media", []);
+  const [filteredEpisodes, setFilteredEpisodes] = useState(feed.episodes);
+  
+  useEffect(() => {
+    const hiddenAudioIds = new Set(
+      hiddenItems
+        .filter((item) => item.type === 'audio')
+        .map((item) => item.id)
+    );
+    setFilteredEpisodes(feed.episodes.filter(ep => !hiddenAudioIds.has(ep.guid)));
+  }, [hiddenItems, feed.episodes]);
+  
+  const visible = showAll ? filteredEpisodes : filteredEpisodes.slice(0, INITIAL_COUNT);
 
   return (
     <div className="flex flex-col gap-6">
@@ -248,7 +263,7 @@ export default function PodcastEpisodes({ feed }: { feed: PodcastFeed }) {
             {feed.title}
           </h2>
           <span className="font-body text-white/40 text-xs">
-            {feed.episodes.length} episode{feed.episodes.length !== 1 ? "s" : ""}
+            {filteredEpisodes.length} episode{filteredEpisodes.length !== 1 ? "s" : ""}
           </span>
         </div>
       </div>
@@ -256,7 +271,7 @@ export default function PodcastEpisodes({ feed }: { feed: PodcastFeed }) {
       {/* Episode list */}
       <div className="flex flex-col gap-3">
         <p className="font-body text-white/40 text-[10px] tracking-widest uppercase">
-          All episodes — {feed.episodes.length} messages
+          All episodes — {filteredEpisodes.length} messages
         </p>
 
         {visible.map((ep, i) => (
@@ -270,14 +285,14 @@ export default function PodcastEpisodes({ feed }: { feed: PodcastFeed }) {
       </div>
 
       {/* Show more / less */}
-      {feed.episodes.length > INITIAL_COUNT && (
+      {filteredEpisodes.length > INITIAL_COUNT && (
         <button
           onClick={() => setShowAll((s) => !s)}
           className="self-start font-body text-white/50 text-xs tracking-widest uppercase hover:text-white transition-colors underline underline-offset-4"
         >
           {showAll
             ? "Show fewer episodes"
-            : `Show all ${feed.episodes.length} episodes →`}
+            : `Show all ${filteredEpisodes.length} episodes →`}
         </button>
       )}
     </div>

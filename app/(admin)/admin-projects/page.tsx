@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { projects as initialProjects, type Project, type ProjectCategory } from "@/lib/projects-data";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -14,7 +15,6 @@ const emptyForm = {
   category: "Construction" as ProjectCategory,
   status: "Ongoing" as Project["status"],
   year: new Date().getFullYear().toString(),
-  lead: "",
   summary: "",
   body: "",
   goal: "",
@@ -47,12 +47,8 @@ const statusColors: Record<Project["status"], string> = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AdminProjectsPage() {
-  // Use localStorage to persist changes locally (backend integration point)
-  const [projects, setProjects] = useState<Project[]>(() => {
-    if (typeof window === "undefined") return initialProjects;
-    const saved = localStorage.getItem("admin-projects");
-    return saved ? JSON.parse(saved) : initialProjects;
-  });
+  // Use reactive localStorage hook to persist changes
+  const [projects, setProjects] = useLocalStorage<Project[]>("admin-projects", initialProjects);
 
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState<string | null>(null);
@@ -61,7 +57,6 @@ export default function AdminProjectsPage() {
 
   function persist(updated: Project[]) {
     setProjects(updated);
-    localStorage.setItem("admin-projects", JSON.stringify(updated));
   }
 
   function handleChange(
@@ -86,7 +81,6 @@ export default function AdminProjectsPage() {
       category: project.category,
       status: project.status,
       year: project.year,
-      lead: project.lead,
       summary: project.summary,
       body: project.body,
       goal: project.goal ?? "",
@@ -120,7 +114,7 @@ export default function AdminProjectsPage() {
       category: form.category,
       status: form.status,
       year: form.year,
-      lead: form.lead,
+      lead: "Church Leadership", // Default value
       summary: form.summary,
       body: form.body,
       goal: form.goal || null,
@@ -181,12 +175,12 @@ export default function AdminProjectsPage() {
                 <input name="title" value={form.title} onChange={handleChange} required placeholder="Project title" className={inputClass} />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Project Lead</label>
-                <input name="lead" value={form.lead} onChange={handleChange} required placeholder="Engr. Emeka Nweke" className={inputClass} />
+                <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Year of Commencement</label>
+                <input name="year" value={form.year} onChange={handleChange} required placeholder="2025" className={inputClass} />
               </div>
             </div>
             {/* Row 2 */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{" "}
               <div className="flex flex-col gap-1">
                 <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Category</label>
                 <select name="category" value={form.category} onChange={handleChange} className={`${inputClass} appearance-none`}>
@@ -199,16 +193,12 @@ export default function AdminProjectsPage() {
                   {statuses.map((s) => <option key={s} value={s} className="text-black">{s}</option>)}
                 </select>
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Year</label>
-                <input name="year" value={form.year} onChange={handleChange} required placeholder="2025" className={inputClass} />
-              </div>
             </div>
             {/* Row 3 — funding */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
                 <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
-                  Funding Goal <span className="normal-case opacity-50">(optional)</span>
+                  Project Cost <span className="normal-case opacity-50">(optional)</span>
                 </label>
                 <input name="goal" value={form.goal} onChange={handleChange} placeholder="₦120,000,000" className={inputClass} />
               </div>

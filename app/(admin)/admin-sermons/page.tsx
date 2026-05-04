@@ -66,7 +66,9 @@ export default function AdminSermonsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    apiClient.get<Sermon[]>("/admin/sermons").then(setSermons);
+    apiClient
+      .get<{ success: boolean; data: Sermon[] }>("/admin/sermons")
+      .then((response) => setSermons(response.data));
   }, []);
 
   function handleChange(
@@ -105,29 +107,50 @@ export default function AdminSermonsPage() {
     e.preventDefault();
     setSaving(true);
     setError("");
+    // Build podcast links object only if at least one link is provided
+    const podcastLinks: { spotify?: string; apple?: string; youtube?: string } = {};
+    if (form.podcastSpotify.trim()) podcastLinks.spotify = form.podcastSpotify;
+    if (form.podcastApple.trim()) podcastLinks.apple = form.podcastApple;
+    if (form.podcastYoutube.trim()) podcastLinks.youtube = form.podcastYoutube;
+
     const payload = {
-      ...form,
       slug:
         form.slug ||
         form.title
           .toLowerCase()
           .replace(/\s+/g, "-")
           .replace(/[^a-z0-9-]/g, ""),
-      podcastLinks: {
-        ...(form.podcastSpotify && { spotify: form.podcastSpotify }),
-        ...(form.podcastApple && { apple: form.podcastApple }),
-        ...(form.podcastYoutube && { youtube: form.podcastYoutube }),
-      },
+      title: form.title,
+      subtitle: form.subtitle,
+      series: form.series,
+      tag: form.tag,
+      date: form.date,
+      dateISO: form.dateISO,
+      pastor: form.pastor,
+      pastorRole: form.pastorRole,
+      scripture: form.scripture,
+      excerpt: form.excerpt,
+      body: form.body,
+      featured: form.featured,
+      ...(Object.keys(podcastLinks).length > 0 && { podcastLinks }),
     };
     const method = editing ? "PUT" : "POST";
     const response =
       method === "PUT"
-        ? await apiClient.put("/admin/sermons", payload)
-        : await apiClient.post("/admin/sermons", payload);
+        ? await apiClient.put<{ success: boolean; data: Sermon }>(
+            "/admin/sermons",
+            payload,
+          )
+        : await apiClient.post<{ success: boolean; data: Sermon }>(
+            "/admin/sermons",
+            payload,
+          );
 
-    if (response) {
-      const updated = await apiClient.get<Sermon[]>("/admin/sermons");
-      setSermons(updated);
+    if (response && response.success) {
+      const updated = await apiClient.get<{ success: boolean; data: Sermon[] }>(
+        "/admin/sermons",
+      );
+      setSermons(updated.data);
       setForm(emptyForm);
       setEditing(null);
       setShowForm(false);
@@ -139,8 +162,13 @@ export default function AdminSermonsPage() {
 
   async function handleDelete(slug: string) {
     if (!confirm("Delete this sermon?")) return;
-    await apiClient.delete("/admin/sermons", { body: { slug } });
-    setSermons((p) => p.filter((s) => s.slug !== slug));
+    const response = await apiClient.delete<{
+      success: boolean;
+      message: string;
+    }>("/admin/sermons", { slug });
+    if (response && response.success) {
+      setSermons((p) => p.filter((s) => s.slug !== slug));
+    }
   }
 
   const inputClass =

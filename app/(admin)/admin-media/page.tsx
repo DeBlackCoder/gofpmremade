@@ -19,6 +19,13 @@ interface ManualVideo {
   description: string;
 }
 
+interface HiddenItem {
+  id: string;
+  type: 'video' | 'audio';
+  title: string;
+  hiddenAt: string;
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const inputClass =
@@ -54,12 +61,18 @@ export default function AdminMediaPage() {
   const [showVideoForm, setShowVideoForm] = useState(false);
   const [savingVideo, setSavingVideo] = useState(false);
 
+  // ── Hidden items (blocklist) ──
+  const [hiddenItems, setHiddenItems] = useState<HiddenItem[]>([]);
+  const [showHiddenSection, setShowHiddenSection] = useState(false);
+
   // Load from localStorage (since backend may be offline)
   useEffect(() => {
     const saved = localStorage.getItem("admin-media-settings");
     if (saved) setSettings(JSON.parse(saved) as MediaSettings);
     const savedVideos = localStorage.getItem("admin-manual-videos");
     if (savedVideos) setVideos(JSON.parse(savedVideos) as ManualVideo[]);
+    const savedHidden = localStorage.getItem("admin-hidden-media");
+    if (savedHidden) setHiddenItems(JSON.parse(savedHidden) as HiddenItem[]);
   }, []);
 
   function saveSettings(e: React.FormEvent) {
@@ -92,6 +105,24 @@ export default function AdminMediaPage() {
     const updated = videos.filter((v) => v.id !== id);
     setVideos(updated);
     localStorage.setItem("admin-manual-videos", JSON.stringify(updated));
+  }
+
+  function hideItem(id: string, type: 'video' | 'audio', title: string) {
+    const newHidden: HiddenItem = {
+      id,
+      type,
+      title,
+      hiddenAt: new Date().toISOString(),
+    };
+    const updated = [newHidden, ...hiddenItems];
+    setHiddenItems(updated);
+    localStorage.setItem("admin-hidden-media", JSON.stringify(updated));
+  }
+
+  function unhideItem(id: string) {
+    const updated = hiddenItems.filter((item) => item.id !== id);
+    setHiddenItems(updated);
+    localStorage.setItem("admin-hidden-media", JSON.stringify(updated));
   }
 
   return (
@@ -361,7 +392,7 @@ export default function AdminMediaPage() {
 
       {/* ── Info box ── */}
       <div
-        className="p-4 flex flex-col gap-1"
+        className="p-4 flex flex-col gap-1 mb-8"
         style={{
           background: "rgba(255,255,255,0.03)",
           border: "1px solid rgba(255,255,255,0.08)",
@@ -378,6 +409,65 @@ export default function AdminMediaPage() {
           action needed.
         </p>
       </div>
+
+      {/* ── Hidden items (blocklist) ── */}
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="font-body text-white/30 text-[10px] tracking-widest uppercase">
+              Hidden videos & audio
+            </p>
+            <p className="font-body text-white/35 text-xs mt-0.5">
+              Items you hide from auto-fetched feeds won&apos;t appear on the public site.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowHiddenSection(!showHiddenSection)}
+            className="border border-white/30 px-4 py-2 font-body font-semibold text-sm text-white hover:bg-white hover:text-black transition-colors cursor-pointer shrink-0"
+          >
+            {showHiddenSection ? "Hide list" : `View hidden (${hiddenItems.length})`}
+          </button>
+        </div>
+
+        {showHiddenSection && (
+          <>
+            {hiddenItems.length === 0 && (
+              <p className="font-body text-white/25 text-sm">
+                No items hidden. To hide a video or audio episode, you&apos;ll need to add that functionality to the public sermons page.
+              </p>
+            )}
+
+            {hiddenItems.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-start justify-between gap-4 py-4 border-t border-white/10 hover:border-white/20 transition-colors"
+              >
+                <div className="flex flex-col gap-0.5 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-body text-white font-semibold text-sm truncate">
+                      {item.title}
+                    </span>
+                    <span className="font-body text-[9px] tracking-widest uppercase px-1.5 py-0.5 bg-white/5 text-white/35 border border-white/10">
+                      {item.type}
+                    </span>
+                  </div>
+                  <span className="font-body text-white/35 text-xs">
+                    Hidden on {new Date(item.hiddenAt).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button
+                    onClick={() => unhideItem(item.id)}
+                    className="font-body text-white/40 text-xs hover:text-white transition-colors cursor-pointer"
+                  >
+                    Unhide
+                  </button>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </section>
     </div>
   );
 }

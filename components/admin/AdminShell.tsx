@@ -103,6 +103,21 @@ const navItems = [
     ),
   },
   {
+    label: "Media Manager",
+    sub: "Hide/show content",
+    href: "/admin-media-manager",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="2" width="14" height="3" rx="0.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
+        <rect x="1" y="6.5" width="14" height="3" rx="0.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
+        <rect x="1" y="11" width="14" height="3" rx="0.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
+        <circle cx="4" cy="3.5" r="0.8" fill="currentColor" />
+        <circle cx="4" cy="8" r="0.8" fill="currentColor" />
+        <circle cx="4" cy="12.5" r="0.8" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
     label: "Projects",
     sub: "Manage projects",
     href: "/admin-projects",
@@ -111,6 +126,31 @@ const navItems = [
         <rect x="1" y="4" width="14" height="9" rx="1" stroke="currentColor" strokeWidth="1.2" fill="none" />
         <path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
         <path d="M5 8h6M5 11h4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    label: "Monthly Programs",
+    sub: "1st & last day",
+    href: "/admin-monthly-programs",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="1" y="3" width="14" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
+        <path d="M5 1v3M11 1v3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+        <circle cx="5" cy="9" r="1" fill="currentColor" />
+        <circle cx="11" cy="9" r="1" fill="currentColor" />
+      </svg>
+    ),
+  },
+  {
+    label: "Pastor",
+    sub: "Current pastor info",
+    href: "/admin-pastor",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.2" fill="none" />
+        <path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none" />
+        <path d="M8 1v1.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
       </svg>
     ),
   },

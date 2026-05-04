@@ -1,12 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getDailyPhoto } from "@/lib/church-photos";
-import { projects } from "@/lib/projects-data";
+import { projects as defaultProjects, type Project } from "@/lib/projects-data";
 import { Button } from "@/components/ui/button";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 const categoryColors: Record<string, string> = {
   Construction: "bg-amber-500/20 text-amber-200",
@@ -28,8 +29,18 @@ export default function ProjectDetailPage({
 }) {
   const { slug } = use(params);
   const bgUrl = getDailyPhoto(7);
-  const project = projects.find((p) => p.slug === slug) ?? null;
   const [activeImg, setActiveImg] = useState(0);
+  
+  // Use reactive localStorage for projects
+  const [savedProjects] = useLocalStorage<Project[]>("admin-projects", defaultProjects);
+  const [projects, setProjects] = useState<Project[]>(defaultProjects);
+  const [project, setProject] = useState<Project | null>(null);
+  
+  useEffect(() => {
+    setProjects(savedProjects);
+    const foundProject = savedProjects.find((p) => p.slug === slug) ?? null;
+    setProject(foundProject);
+  }, [savedProjects, slug]);
 
   return (
     <section className="relative w-full min-h-svh">
@@ -197,10 +208,9 @@ export default function ProjectDetailPage({
                 }}
               >
                 {[
-                  { label: "Year", value: project.year },
-                  { label: "Project lead", value: project.lead },
+                  { label: "Year of Commencement", value: project.year },
                   ...(project.goal
-                    ? [{ label: "Funding goal", value: project.goal }]
+                    ? [{ label: "Project Cost", value: project.goal }]
                     : []),
                 ].map((item, i) => (
                   <motion.div
