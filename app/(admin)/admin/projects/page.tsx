@@ -54,6 +54,7 @@ export default function AdminProjectsPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
 
   useEffect(() => {
     fetch("/api/v1/projects?limit=100", { cache: "no-store" })
@@ -99,11 +100,13 @@ export default function AdminProjectsPage() {
     setEditing(null);
     setForm(emptyForm);
     setShowForm(false);
+    setSaveError("");
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setSaveError("");
 
     const slug =
       form.slug ||
@@ -118,7 +121,7 @@ export default function AdminProjectsPage() {
       category: form.category,
       status: form.status,
       year: form.year,
-      lead: "Church Leadership", // Default value
+      lead: "Church Leadership",
       summary: form.summary,
       body: form.body,
       goal: form.goal || null,
@@ -126,22 +129,31 @@ export default function AdminProjectsPage() {
       images: form.images.filter(Boolean),
     };
 
-    const res = await fetch("/api/v1/projects", {
-      method: editing ? "PUT" : "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(project),
-    });
-    const payload = await res.json();
+    try {
+      const res = await fetch("/api/v1/projects", {
+        method: editing ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(project),
+      });
+      const payload = await res.json();
 
-    if (res.ok && payload?.data) {
+      if (!res.ok || !payload?.data) {
+        setSaveError(payload?.error ?? `Server error (${res.status}). Check that images are not too large.`);
+        return;
+      }
+
       setProjects((current) =>
         editing
           ? current.map((p) => (p.slug === editing ? payload.data : p))
           : [payload.data, ...current],
       );
       cancel();
+    } catch (err: any) {
+      setSaveError(err.message ?? "Network error. Please try again.");
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   }
 
   async function handleDelete(slug: string) {
@@ -249,13 +261,18 @@ export default function AdminProjectsPage() {
               ))}
             </div>
             {/* Actions */}
-            <div className="flex items-center gap-3 pt-1">
-              <button type="submit" disabled={saving} className="self-start border border-white/30 px-6 py-2.5 font-body font-semibold text-sm text-white hover:bg-white hover:text-black transition-colors disabled:opacity-40 cursor-pointer">
-                {saving ? "Saving…" : editing ? "Update project" : "Create project"}
-              </button>
-              <button type="button" onClick={cancel} className="font-body text-white/40 text-sm hover:text-white transition-colors">
-                Cancel
-              </button>
+            <div className="flex flex-col gap-2 pt-1">
+              {saveError && (
+                <p className="font-body text-red-400 text-xs">{saveError}</p>
+              )}
+              <div className="flex items-center gap-3">
+                <button type="submit" disabled={saving} className="self-start border border-white/30 px-6 py-2.5 font-body font-semibold text-sm text-white hover:bg-white hover:text-black transition-colors disabled:opacity-40 cursor-pointer">
+                  {saving ? "Saving…" : editing ? "Update project" : "Create project"}
+                </button>
+                <button type="button" onClick={cancel} className="font-body text-white/40 text-sm hover:text-white transition-colors">
+                  Cancel
+                </button>
+              </div>
             </div>
           </form>
         </div>

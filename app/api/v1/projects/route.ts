@@ -3,6 +3,11 @@ import { cookies } from "next/headers";
 import { connectDB } from "@/lib/db/mongoose";
 import Project from "@/lib/models/Project";
 
+// Allow large payloads for base64 image uploads (up to 20MB)
+export const config = {
+  api: { bodyParser: { sizeLimit: "20mb" } },
+};
+
 async function isAuthenticated(): Promise<boolean> {
   try {
     const cookieStore = await cookies();
