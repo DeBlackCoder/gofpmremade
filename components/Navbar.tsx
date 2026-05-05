@@ -84,10 +84,10 @@ export default function Navbar() {
               />
               <div className="flex flex-col gap-0">
                 <span className="font-body text-white/70 text-[11px] tracking-widest uppercase leading-tight">
-                  Assemblies Of God Church
+                  Assemblies Of God
                 </span>
                 <span className="font-body text-white/40 text-[9px] tracking-widest uppercase leading-tight">
-                  Choba 2
+                  Choba, Church 2
                 </span>
               </div>
             </Link>
