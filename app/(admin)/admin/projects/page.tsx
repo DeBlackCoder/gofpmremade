@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { projects as initialProjects, type Project, type ProjectCategory } from "@/lib/projects-data";
+import { type Project, type ProjectCategory } from "@/lib/projects-data";
 import { ImageUploadInput } from "@/components/admin/ImageUploadInput";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -47,7 +47,8 @@ const statusColors: Record<Project["status"], string> = {
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AdminProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState<string | null>(null);
@@ -57,8 +58,9 @@ export default function AdminProjectsPage() {
   useEffect(() => {
     fetch("/api/v1/projects?limit=100", { cache: "no-store" })
       .then((res) => res.json())
-      .then((payload) => setProjects(payload?.data?.data ?? initialProjects))
-      .catch(() => setProjects(initialProjects));
+      .then((payload) => setProjects(payload?.data?.data ?? []))
+      .catch(() => setProjects([]))
+      .finally(() => setLoading(false));
   }, []);
 
   function handleChange(
@@ -261,12 +263,25 @@ export default function AdminProjectsPage() {
 
       {/* List */}
       <p className="font-body text-white/30 text-[10px] tracking-widest uppercase mb-2">
-        {projects.length} project{projects.length !== 1 ? "s" : ""}
+        {loading ? "Loading…" : `${projects.length} project${projects.length !== 1 ? "s" : ""}`}
       </p>
-      {projects.length === 0 && (
+      {loading && (
+        <div className="flex flex-col gap-0">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-start justify-between gap-4 py-4 border-t border-white/10">
+              <div className="flex flex-col gap-2 flex-1">
+                <div className="h-4 w-48 bg-white/8 animate-pulse rounded" />
+                <div className="h-3 w-32 bg-white/5 animate-pulse rounded" />
+              </div>
+              <div className="h-3 w-16 bg-white/5 animate-pulse rounded" />
+            </div>
+          ))}
+        </div>
+      )}
+      {!loading && projects.length === 0 && (
         <p className="font-body text-white/25 text-sm">No projects yet.</p>
       )}
-      {projects.map((p) => (
+      {!loading && projects.map((p) => (
         <div
           key={p.slug}
           className="flex items-start justify-between gap-4 py-4 border-t border-white/10 hover:border-white/20 transition-colors"
