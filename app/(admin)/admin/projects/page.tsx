@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { projects as initialProjects, type Project, type ProjectCategory } from "@/lib/projects-data";
+import { ImageUploadInput } from "@/components/admin/ImageUploadInput";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -18,7 +19,7 @@ const emptyForm = {
   body: "",
   goal: "",
   raised: "",
-  images: ["", "", ""],
+  images: ["", "", "", "", "", ""],
 };
 
 const inputClass =
@@ -86,7 +87,7 @@ export default function AdminProjectsPage() {
       body: project.body,
       goal: project.goal ?? "",
       raised: project.raised ?? "",
-      images: [...project.images, "", "", ""].slice(0, 3),
+      images: [...project.images, "", "", "", "", "", ""].slice(0, 6),
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -232,17 +233,16 @@ export default function AdminProjectsPage() {
               <textarea name="body" value={form.body} onChange={handleChange} rows={5} placeholder="Full project description…" className={`${inputClass} resize-none`} />
             </div>
             {/* Images */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
-                Image URLs <span className="normal-case opacity-50">(up to 3)</span>
+                Images <span className="normal-case opacity-50">(up to 6)</span>
               </label>
               {form.images.map((img, idx) => (
-                <input
+                <ImageUploadInput
                   key={idx}
                   value={img}
-                  onChange={(e) => handleImageChange(idx, e.target.value)}
-                  placeholder={`Image ${idx + 1} URL or /path`}
-                  className={inputClass}
+                  onChange={(val) => handleImageChange(idx, val)}
+                  placeholder={`Image ${idx + 1} URL or upload`}
                 />
               ))}
             </div>

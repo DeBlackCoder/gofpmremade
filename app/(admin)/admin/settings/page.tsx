@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ImageUploadInput } from "@/components/admin/ImageUploadInput";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -369,28 +370,20 @@ export default function AdminSettingsPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1">
-              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Pastor&apos;s photo URL</label>
-              <input 
-                name="pastorPhotoUrl" 
-                value={settings.pastorPhotoUrl} 
-                onChange={handleChange} 
-                placeholder="https://example.com/pastor.jpg" 
-                className={inputClass} 
-                disabled={settings.pastorHidden} 
-              />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Wife&apos;s photo URL</label>
-              <input 
-                name="pastorWifePhotoUrl" 
-                value={settings.pastorWifePhotoUrl} 
-                onChange={handleChange} 
-                placeholder="https://example.com/wife.jpg" 
-                className={inputClass} 
-                disabled={settings.pastorHidden} 
-              />
-            </div>
+            <ImageUploadInput
+              label="Pastor's photo"
+              value={settings.pastorPhotoUrl}
+              onChange={(val) => setSettings((p) => ({ ...p, pastorPhotoUrl: val }))}
+              placeholder="https://example.com/pastor.jpg"
+              disabled={settings.pastorHidden}
+            />
+            <ImageUploadInput
+              label="Wife's photo"
+              value={settings.pastorWifePhotoUrl}
+              onChange={(val) => setSettings((p) => ({ ...p, pastorWifePhotoUrl: val }))}
+              placeholder="https://example.com/wife.jpg"
+              disabled={settings.pastorHidden}
+            />
           </div>
         </section>
 
