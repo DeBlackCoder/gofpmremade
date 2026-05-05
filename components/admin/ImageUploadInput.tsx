@@ -44,28 +44,42 @@ export function ImageUploadInput({
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      setError(`Image must be under 10 MB. Yours: ${(file.size / 1024 / 1024).toFixed(1)} MB`);
+    if (file.size > 20 * 1024 * 1024) {
+      setError(`Image must be under 20 MB. Yours: ${(file.size / 1024 / 1024).toFixed(1)} MB`);
       e.target.value = "";
       return;
     }
 
     setFileName(file.name);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64 = reader.result as string;
-      if (!base64?.startsWith("data:image")) {
-        setError("Failed to read image. Please try again.");
-        e.target.value = "";
+
+    // Compress via canvas before encoding to base64
+    const img = new window.Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const MAX = 1200;
+      let { width, height } = img;
+      if (width > MAX) {
+        height = Math.round((height * MAX) / width);
+        width = MAX;
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        setError("Could not process image. Please try again.");
         return;
       }
+      ctx.drawImage(img, 0, 0, width, height);
+      const base64 = canvas.toDataURL("image/jpeg", 0.78);
       onChange(base64);
     };
-    reader.onerror = () => {
+    img.onerror = () => {
       setError("Error reading image. Please try a different file.");
       e.target.value = "";
     };
-    reader.readAsDataURL(file);
+    img.src = objectUrl;
   }
 
   function handleUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
