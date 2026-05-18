@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Location",
+  title: "Location & Hours | GOFPM",
   description:
-    "Find us at Assemblies Of God Church, Port Harcourt. Service times, directions, and everything you need to plan your visit.",
+    "Visit God's Own Favour Prophetic Ministry in Eleme, Rivers State. Service times, directions, and contact information.",
   openGraph: {
-    title: "Location | AG Church",
+    title: "GOFPM — Location & Service Hours",
     description:
-      "Find us at Assemblies Of God Church, Port Harcourt. Service times and directions.",
+      "God's Own Favour Prophetic Ministry in Eleme, Rivers State. Join us for worship, prayer, and community.",
   },
 };
 

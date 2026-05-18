@@ -382,7 +382,7 @@ export default function Hero() {
   return (
     <>
       {/* ── Hero section ─────────────────────────────── */}
-      <section className="relative w-full h-svh min-h-[700px] overflow-hidden">
+      <section className="relative w-full h-svh min-h-[600px] sm:min-h-[700px] overflow-visible">
         {/* Background image */}
         <img
           src={bgUrl}
@@ -399,7 +399,7 @@ export default function Hero() {
 
         {/* Content — centered single column */}
         <div
-          className="public-content relative h-full flex flex-col items-center justify-center gap-8 px-6 pb-10 sm:px-10 sm:pb-12 text-center"
+          className="public-content relative h-full flex flex-col items-center justify-center gap-4 sm:gap-8 px-6 pb-10 sm:px-10 sm:pb-12 text-center"
           style={{ zIndex: 2 }}
         >
 
@@ -429,9 +429,9 @@ export default function Hero() {
             </motion.div>
 
             {/* Headline with gold left border accent */}
-            <div className="flex gap-5 items-stretch mb-6 justify-center">
+            <div className="flex gap-2 sm:gap-5 items-stretch mb-6 justify-center flex-wrap sm:flex-nowrap">
               <motion.div
-                className="w-1 rounded-full flex-shrink-0"
+                className="hidden sm:block w-1 rounded-full flex-shrink-0"
                 style={{ background: "#42a7c0" }}
                 initial={{ scaleY: 0, opacity: 0 }}
                 animate={{ scaleY: 1, opacity: 1 }}
@@ -439,7 +439,7 @@ export default function Hero() {
               />
               <motion.h1
                 className="font-heading text-white font-black leading-[0.88] tracking-tight"
-                style={{ fontSize: "clamp(3rem, 9vw, 6.5rem)" }}
+                style={{ fontSize: "clamp(2.2rem, 7vw, 6.5rem)" }}
               >
                 <motion.span
                   className="block"
