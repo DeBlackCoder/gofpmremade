@@ -406,27 +406,7 @@ export default function Hero() {
           {/* ── Headline + CTAs ── */}
           <div className="flex flex-col items-center w-full max-w-3xl">
 
-            {/* Location pill */}
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="mb-6"
-            >
-              <span
-                className="font-body text-white/60 text-xs tracking-widest uppercase px-4 py-1.5 inline-flex items-center gap-2"
-                style={{
-                  background: "rgba(255,255,255,0.10)",
-                  backdropFilter: "blur(12px)",
-                  WebkitBackdropFilter: "blur(12px)",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  borderRadius: "24px",
-                }}
-              >
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                God's Own Favour Prophetic Ministry · Eleme
-              </span>
-            </motion.div>
+            
 
             {/* Headline with gold left border accent */}
             <div className="flex gap-2 sm:gap-5 items-stretch mb-6 justify-center flex-wrap sm:flex-nowrap">
