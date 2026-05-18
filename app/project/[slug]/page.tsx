@@ -57,9 +57,6 @@ export default function ProjectDetailPage({
       {/* Background */}
 
       {/* Content */}
-<<<<<<< HEAD
-      <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
-=======
       <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
         {/* Loading */}
         {loading && (
@@ -69,7 +66,6 @@ export default function ProjectDetailPage({
           </motion.div>
         )}
 
->>>>>>> b26331d621b95c37a421480224b6fa0dffe3d0bb
         {/* Not found */}
         {!loading && !project && (
           <motion.div
