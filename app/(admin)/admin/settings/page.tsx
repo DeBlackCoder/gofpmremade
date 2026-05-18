@@ -35,8 +35,6 @@ interface SiteSettings {
   pastorHidden: boolean;
   // Social
   youtubeUrl: string;
-  youtubeChannelId: string;
-  youtubeChannelUrl: string;
   facebookUrl: string;
   instagramUrl: string;
   twitterUrl: string;
@@ -78,8 +76,6 @@ const defaults: SiteSettings = {
   pastorWifePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces",
   pastorHidden: false,
   youtubeUrl: "https://www.youtube.com/@AssembliesOfGodChoba2",
-  youtubeChannelId: "UCQshxkbjIwOPDHTtLoM19cQ",
-  youtubeChannelUrl: "https://www.youtube.com/@AssembliesOfGodChoba2",
   facebookUrl: "",
   instagramUrl: "",
   twitterUrl: "",
@@ -455,14 +451,6 @@ export default function AdminSettingsPage() {
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">YouTube</label>
               <input name="youtubeUrl" value={settings.youtubeUrl} onChange={handleChange} placeholder="https://youtube.com/@handle" className={inputClass} />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">YouTube channel ID</label>
-              <input name="youtubeChannelId" value={settings.youtubeChannelId} onChange={handleChange} placeholder="UCxxxxxxxxxxxxxxxxxxxxxx" className={inputClass} />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">YouTube channel URL</label>
-              <input name="youtubeChannelUrl" value={settings.youtubeChannelUrl} onChange={handleChange} placeholder="https://www.youtube.com/@handle" className={inputClass} />
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Facebook</label>

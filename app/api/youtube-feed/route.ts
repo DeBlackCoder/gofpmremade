@@ -87,13 +87,9 @@ const CHANNEL_ID =
   process.env.YOUTUBE_CHANNEL_ID ?? "UCQshxkbjIwOPDHTtLoM19cQ";
 
 export async function GET() {
-  try {
-    await connectDB();
-    const settings = await SiteSettings.findOne().lean();
-    const channelId =
-      settings?.youtubeChannelId || process.env.YOUTUBE_CHANNEL_ID || CHANNEL_ID;
-    const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
+  try {
     const res = await fetch(feedUrl, {
       next: { revalidate: 300 }, // cache 5 min
       headers: {
