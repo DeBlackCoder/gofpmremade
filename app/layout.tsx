@@ -10,15 +10,15 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ag2choba.org';
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Assemblies Of God Church | AG2 Choba, Port Harcourt",
-    template: "%s | AG Church",
+    default: "GOFPM | God's Own Favour Prophetic Ministry",
+    template: "%s | GOFPM",
   },
   description:
     "A Spirit-filled community rooted in love, faith, and service. Join us for worship, sermons, and community in Port Harcourt, Rivers State.",
   keywords: [
     "church",
-    "assemblies of god",
-    "AG2 Choba",
+    "God's Own Favour Prophetic Ministry",
+    "GOFPM",
     "Port Harcourt",
     "Rivers State",
     "worship",
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
     "bible study",
     "prayer",
   ],
-  authors: [{ name: "Assemblies Of God Church" }],
-  creator: "Assemblies Of God Church",
-  publisher: "Assemblies Of God Church",
+  authors: [{ name: "God's Own Favour Prophetic Ministry" }],
+  creator: "God's Own Favour Prophetic Ministry",
+  publisher: "God's Own Favour Prophetic Ministry",
   formatDetection: {
     email: false,
     address: false,
@@ -43,8 +43,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_NG",
     url: siteUrl,
-    siteName: "Assemblies Of God Church",
-    title: "Assemblies Of God Church | AG2 Choba, Port Harcourt",
+    siteName: "God's Own Favour Prophetic Ministry",
+    title: "God's Own Favour Prophetic Ministry | Eleme, Port Harcourt",
     description:
       "A Spirit-filled community rooted in love, faith, and service. Join us for worship, sermons, and community in Port Harcourt, Rivers State.",
     images: [
@@ -52,13 +52,13 @@ export const metadata: Metadata = {
         url: `${siteUrl}/og-image.jpg`,
         width: 1200,
         height: 630,
-        alt: "Assemblies Of God Church",
+        alt: "God's Own Favour Prophetic Ministry",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Assemblies Of God Church | AG2 Choba, Port Harcourt",
+    title: "God's Own Favour Prophetic Ministry | Eleme, Port Harcourt",
     description:
       "A Spirit-filled community rooted in love, faith, and service.",
     images: [`${siteUrl}/og-image.jpg`],
