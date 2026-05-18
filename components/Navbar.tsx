@@ -83,10 +83,15 @@ export default function Navbar() {
                 priority
               />
               <div className="flex flex-col gap-0">
-                <span className="font-body text-white/70 text-[11px] tracking-widest uppercase leading-tight">
+                {/* Full name on sm+ */}
+                <span className="font-body text-white/70 text-[11px] tracking-widest uppercase leading-tight hidden sm:block">
                   God's Own Favour Prophetic Ministry
                 </span>
-                <span className="font-body text-white/40 text-[9px] tracking-widest uppercase leading-tight">
+                {/* Short name on mobile */}
+                <span className="font-body text-white/70 text-[11px] tracking-widest uppercase leading-tight block sm:hidden">
+                  GOFPM
+                </span>
+                <span className="font-body text-white/40 text-[9px] tracking-widest uppercase leading-tight hidden sm:block">
                   Eleme
                 </span>
               </div>
