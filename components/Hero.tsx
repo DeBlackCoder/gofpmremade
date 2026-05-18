@@ -409,7 +409,7 @@ export default function Hero() {
             
 
             {/* Headline with gold left border accent */}
-            <div className="flex gap-5 sm:gap-5 items-stretch mb-6 justify-center flex-wrap sm:flex-nowrap">
+            <div className="flex gap-22 sm:gap-5 items-stretch mb-6 justify-center flex-wrap sm:flex-nowrap">
               <motion.div
                 className="hidden sm:block w-1 rounded-full flex-shrink-0"
                 style={{ background: "#42a7c0" }}
