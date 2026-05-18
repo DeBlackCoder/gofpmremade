@@ -106,7 +106,9 @@ export default function RootLayout({
         <Providers>
           <div className="site-wrapper flex flex-col flex-1">
             <Navbar />
-            {children}
+            <main className="flex-1 pt-16 sm:pt-20">
+              {children}
+            </main>
             <Footer />
           </div>
         </Providers>
