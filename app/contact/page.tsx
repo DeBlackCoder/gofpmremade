@@ -24,8 +24,8 @@ const contactDetails = [
   { label: "Phone", value: "+234 80 6626 7207", href: "tel:+2348066267207" },
   {
     label: "Email",
-    value: "hello@agchurch.org",
-    href: "mailto:hello@agchurch.org",
+    value: "hello@gofpm.org",
+    href: "mailto:hello@gofpm.org",
   },
   {
     label: "Service Times",

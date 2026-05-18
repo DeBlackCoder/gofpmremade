@@ -19,10 +19,7 @@ export interface PodcastFeed {
   episodes: PodcastEpisode[];
 }
 
-// ─── XML helpers ─────────────────────────────────────────────────────────────
-
 function getTagText(xml: string, tag: string): string {
-  // Handle namespaced tags like itunes:title
   const escaped = tag.replace(":", "\\:");
   const re = new RegExp(`<${escaped}[^>]*>([\\s\\S]*?)<\\/${escaped}>`, "i");
   const m = xml.match(re);
@@ -45,33 +42,25 @@ function parseItems(xml: string): PodcastEpisode[] {
   while ((match = itemRe.exec(xml)) !== null) {
     const item = match[1];
 
-    // Audio URL — from <enclosure url="..." type="audio/...">
     const enclosureRe = /<enclosure[^>]*url="([^"]*)"[^>]*type="audio[^"]*"/i;
     const enclosureMatch = item.match(enclosureRe);
     const audioUrl = enclosureMatch ? enclosureMatch[1] : "";
 
-    // Episode image — itunes:image href or fallback
     const itunesImageRe = /<itunes:image[^>]*href="([^"]*)"/i;
     const itunesImageMatch = item.match(itunesImageRe);
     const image = itunesImageMatch ? itunesImageMatch[1] : "";
 
-    // Episode number
     const epNumStr = getTagText(item, "itunes:episode");
     const episodeNumber = epNumStr ? parseInt(epNumStr, 10) : null;
 
-    // Duration
     const duration = getTagText(item, "itunes:duration");
-
-    // GUID
     const guid = getTagText(item, "guid") || `ep-${index}`;
 
-    // Description — prefer itunes:summary, fall back to description
     const description =
       getTagText(item, "itunes:summary") ||
       getTagText(item, "description") ||
       "";
 
-    // Strip HTML tags from description
     const cleanDescription = description.replace(/<[^>]+>/g, "").trim();
 
     items.push({
@@ -91,21 +80,12 @@ function parseItems(xml: string): PodcastEpisode[] {
   return items;
 }
 
-// ─── Route handler ────────────────────────────────────────────────────────────
+const RSS_URL = "https://anchor.fm/s/112be7b58/podcast/rss";
 
 export async function GET() {
-  const RSS_URL = process.env.PODCAST_RSS_URL ?? "https://anchor.fm/s/111293d28/podcast/rss";
-
-  if (!RSS_URL) {
-    return NextResponse.json(
-      { error: "PODCAST_RSS_URL environment variable is not set." },
-      { status: 500 },
-    );
-  }
-
   try {
     const res = await fetch(RSS_URL, {
-      next: { revalidate: 3600 }, // cache for 1 hour, auto-refresh
+      next: { revalidate: 3600 },
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; ChurchSite/1.0)",
         Accept: "application/rss+xml, application/xml, text/xml, */*",
@@ -121,11 +101,9 @@ export async function GET() {
 
     const xml = await res.text();
 
-    // Parse channel-level metadata (outside <item> tags)
     const channelMatch = xml.match(/<channel>([\s\S]*?)<item>/i);
     const channelXml = channelMatch ? channelMatch[1] : xml;
 
-    // Channel image — try itunes:image href first, then <image><url>
     const itunesImgRe = /<itunes:image[^>]*href="([^"]*)"/i;
     const itunesImgMatch = channelXml.match(itunesImgRe);
     const imageUrlRe = /<image>[\s\S]*?<url>([\s\S]*?)<\/url>/i;
@@ -136,7 +114,6 @@ export async function GET() {
 
     const feed: PodcastFeed = {
       title: getTagText(channelXml, "title")
-        // Strip any "Good options:\n" prefix that Anchor sometimes injects
         .replace(/^good options:\s*/i, "")
         .trim(),
       description:

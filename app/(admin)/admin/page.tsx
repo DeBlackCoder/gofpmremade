@@ -259,7 +259,7 @@ export default function DashboardPage() {
       <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">
-            Assemblies Of God Church · Choba 2
+            GOFPM : God's Own Favour Prophetic Ministry
           </span>
           <h1 className="font-heading text-white font-black text-3xl sm:text-4xl leading-none tracking-tight mt-0.5">
             Dashboard

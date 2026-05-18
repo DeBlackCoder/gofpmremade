@@ -18,8 +18,6 @@ export interface YouTubeFeed {
   videos: YouTubeVideo[];
 }
 
-// ─── XML helpers ──────────────────────────────────────────────────────────────
-
 function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\:]/g, (c) => "\\" + c);
 }
@@ -46,21 +44,17 @@ function parseEntries(xml: string): YouTubeVideo[] {
   while ((match = entryRe.exec(xml)) !== null) {
     const entry = match[1];
 
-    // Video ID — <yt:videoId>
     const videoId = getTagText(entry, "yt:videoId");
     if (!videoId) continue;
 
-    // Thumbnail — <media:thumbnail url="...">
     const thumbnail =
       getAttr(entry, "media:thumbnail", "url") ||
       `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 
-    // Description — inside <media:group><media:description>
     const mediaGroupMatch = entry.match(/<media:group>([\s\S]*?)<\/media:group>/i);
     const mediaGroup = mediaGroupMatch ? mediaGroupMatch[1] : "";
     const description = getTagText(mediaGroup, "media:description");
 
-    // Channel info
     const authorMatch = entry.match(/<author>([\s\S]*?)<\/author>/i);
     const authorXml = authorMatch ? authorMatch[1] : "";
     const channelName = getTagText(authorXml, "name");
@@ -81,17 +75,14 @@ function parseEntries(xml: string): YouTubeVideo[] {
   return videos;
 }
 
-// ─── Route handler ────────────────────────────────────────────────────────────
-
-const CHANNEL_ID =
-  process.env.YOUTUBE_CHANNEL_ID ?? "UCQshxkbjIwOPDHTtLoM19cQ";
+const CHANNEL_ID = "UCgs6szqwWTVLXq-tcehTwTQ";
 
 export async function GET() {
   const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
 
   try {
     const res = await fetch(feedUrl, {
-      next: { revalidate: 300 }, // cache 5 min
+      next: { revalidate: 300 },
       headers: {
         "User-Agent": "Mozilla/5.0 (compatible; ChurchSite/1.0)",
         Accept: "application/atom+xml, application/xml, text/xml, */*",
@@ -107,7 +98,6 @@ export async function GET() {
 
     const xml = await res.text();
 
-    // Channel-level metadata
     const channelName = getTagText(xml, "title");
     const channelUrl = `https://www.youtube.com/channel/${CHANNEL_ID}`;
 
