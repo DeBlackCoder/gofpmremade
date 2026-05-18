@@ -31,10 +31,16 @@ export interface ISiteSettings extends Document {
   pastorHidden: boolean;
   // Social
   youtubeUrl: string;
+  youtubeChannelId: string;
+  youtubeChannelUrl: string;
   facebookUrl: string;
   instagramUrl: string;
   twitterUrl: string;
   whatsappNumber: string;
+  bankName: string;
+  bankAccountNumber: string;
+  bankAccountName: string;
+  bankAccountDescription: string;
   updatedAt: Date;
 }
 
@@ -66,10 +72,16 @@ const SiteSettingsSchema = new Schema<ISiteSettings>(
     pastorWifePhotoUrl: { type: String, default: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces" },
     pastorHidden: { type: Boolean, default: false },
     youtubeUrl: { type: String, default: "https://www.youtube.com/@AssembliesOfGodChoba2" },
+    youtubeChannelId: { type: String, default: "UCQshxkbjIwOPDHTtLoM19cQ" },
+    youtubeChannelUrl: { type: String, default: "https://www.youtube.com/@AssembliesOfGodChoba2" },
     facebookUrl: { type: String, default: "" },
     instagramUrl: { type: String, default: "" },
     twitterUrl: { type: String, default: "" },
     whatsappNumber: { type: String, default: "" },
+    bankName: { type: String, default: "Zenith Bank" },
+    bankAccountNumber: { type: String, default: "1229195658" },
+    bankAccountName: { type: String, default: "Assemblies of God 2 Choba — Proj Account" },
+    bankAccountDescription: { type: String, default: "Use this account for project support and general giving." },
   },
   { timestamps: true }
 );

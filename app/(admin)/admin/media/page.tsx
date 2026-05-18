@@ -73,17 +73,47 @@ export default function AdminMediaPage() {
     if (savedVideos) setVideos(JSON.parse(savedVideos) as ManualVideo[]);
     const savedHidden = localStorage.getItem("admin-hidden-media");
     if (savedHidden) setHiddenItems(JSON.parse(savedHidden) as HiddenItem[]);
+
+    fetch("/api/v1/site-settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && data?.data) {
+          setSettings((current) => ({
+            ...current,
+            youtubeChannelId: data.data.youtubeChannelId || current.youtubeChannelId,
+            youtubeChannelUrl: data.data.youtubeChannelUrl || current.youtubeChannelUrl,
+          }));
+        }
+      })
+      .catch(() => {});
   }, []);
 
-  function saveSettings(e: React.FormEvent) {
+  async async function saveSettings(e: React.FormEvent) {
     e.preventDefault();
     setSavingSettings(true);
     localStorage.setItem("admin-media-settings", JSON.stringify(settings));
-    setTimeout(() => {
+
+    try {
+      const res = await fetch("/api/v1/site-settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          youtubeChannelId: settings.youtubeChannelId,
+          youtubeChannelUrl: settings.youtubeChannelUrl,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error ?? "Failed to save YouTube settings");
+      }
+    } catch (error) {
+      console.warn("Unable to persist YouTube settings to server:", error);
+    } finally {
       setSavingSettings(false);
       setSettingsSaved(true);
       setTimeout(() => setSettingsSaved(false), 2500);
-    }, 400);
+    }
   }
 
   function addVideo(e: React.FormEvent) {

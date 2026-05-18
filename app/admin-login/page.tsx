@@ -57,17 +57,17 @@ function AdminLoginForm() {
       <div className="relative z-10 w-full max-w-sm flex flex-col gap-8">
         <div className="flex flex-col gap-1">
           <span className="font-body text-white/30 text-[10px] tracking-widest uppercase">
-            Assemblies Of God Church
+            GOFPM · God's Own Favour Prophetic Ministry
           </span>
           <h1 className="font-heading text-white font-black text-4xl leading-none tracking-tight">
-            Admin
+            GOFPM Admin
           </h1>
           <p className="font-body text-white/40 text-sm mt-1">
-            Sign in with your admin credentials.
+            Sign in to the GOFPM admin portal.
           </p>
           {searchParams.get('redirect') && (
             <p className="font-body text-yellow-400/80 text-xs mt-2 px-3 py-2 bg-yellow-400/10 border border-yellow-400/20 rounded">
-              Please login to access admin pages
+              Please login to access GOFPM admin pages
             </p>
           )}
         </div>

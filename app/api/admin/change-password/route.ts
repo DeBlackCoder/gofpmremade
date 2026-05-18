@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sanctuary2020";
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sanctuary2021";
 
     if (currentPassword !== ADMIN_PASSWORD) {
       return NextResponse.json(

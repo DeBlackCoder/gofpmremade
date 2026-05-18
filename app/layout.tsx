@@ -54,6 +54,12 @@ export const metadata: Metadata = {
         height: 630,
         alt: "God's Own Favour Prophetic Ministry",
       },
+      {
+        url: `${siteUrl}/logo.png`,
+        width: 400,
+        height: 400,
+        alt: "GOFPM logo",
+      },
     ],
   },
   twitter: {
@@ -61,7 +67,7 @@ export const metadata: Metadata = {
     title: "God's Own Favour Prophetic Ministry | Eleme, Port Harcourt",
     description:
       "A Spirit-filled community rooted in love, faith, and service.",
-    images: [`${siteUrl}/og-image.jpg`],
+    images: [`${siteUrl}/og-image.jpg`, `${siteUrl}/logo.png`],
   },
   robots: {
     index: true,

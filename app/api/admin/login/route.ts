@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "agchoba2@gmail.org";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sanctuary2020";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "agchoba1@gmail.org";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "sanctuary2021";
 
 export async function POST(req: NextRequest) {
   try {

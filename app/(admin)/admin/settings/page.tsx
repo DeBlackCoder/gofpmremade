@@ -35,10 +35,16 @@ interface SiteSettings {
   pastorHidden: boolean;
   // Social
   youtubeUrl: string;
+  youtubeChannelId: string;
+  youtubeChannelUrl: string;
   facebookUrl: string;
   instagramUrl: string;
   twitterUrl: string;
   whatsappNumber: string;
+  bankName: string;
+  bankAccountNumber: string;
+  bankAccountName: string;
+  bankAccountDescription: string;
   // Guidance & Counselling
   guidanceText: string;
   guidancePhone: string;
@@ -72,10 +78,16 @@ const defaults: SiteSettings = {
   pastorWifePhotoUrl: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces",
   pastorHidden: false,
   youtubeUrl: "https://www.youtube.com/@AssembliesOfGodChoba2",
+  youtubeChannelId: "UCQshxkbjIwOPDHTtLoM19cQ",
+  youtubeChannelUrl: "https://www.youtube.com/@AssembliesOfGodChoba2",
   facebookUrl: "",
   instagramUrl: "",
   twitterUrl: "",
   whatsappNumber: "",
+  bankName: "Zenith Bank",
+  bankAccountNumber: "1229195658",
+  bankAccountName: "Assemblies of God 2 Choba — Proj Account",
+  bankAccountDescription: "Use this account for project support and general giving.",
   guidanceText: "If this message has stirred something in your heart, or if you're facing challenges and need someone to talk to, we're here for you. Our pastoral team is available for guidance, prayer, and counselling.",
   guidancePhone: "+234 801 234 5678",
   guidanceEmail: "counselling@agchurch.org",
@@ -104,7 +116,11 @@ export default function AdminSettingsPage() {
       .then((r) => r.json())
       .then((data) => {
         if (data?.success && data?.data) {
-          setSettings({ ...defaults, ...data.data });
+          const merged = { ...defaults, ...data.data };
+          setSettings(merged);
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem("admin-site-settings", JSON.stringify(merged));
+          }
         }
       })
       .catch(() => {});
@@ -132,6 +148,9 @@ export default function AdminSettingsPage() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error ?? "Failed to save");
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("admin-site-settings", JSON.stringify(settings));
+      }
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (err: any) {
@@ -152,7 +171,7 @@ export default function AdminSettingsPage() {
           Site Settings
         </h1>
         <p className="font-body text-white/40 text-sm mt-2">
-          Update church info, service times, and social links.
+          Update church info, bank giving details, service times, and social links.
         </p>
       </div>
 
@@ -186,6 +205,46 @@ export default function AdminSettingsPage() {
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Email</label>
               <input name="email" type="email" value={settings.email} onChange={handleChange} placeholder="hello@church.org" className={inputClass} />
             </div>
+          </div>
+        </section>
+
+        {/* ── Giving account details ── */}
+        <section className="p-5 sm:p-6 flex flex-col gap-4" style={glass}>
+          <div className="flex flex-col gap-2">
+            <p className="font-body text-white/30 text-[10px] tracking-widest uppercase">
+              Bank giving details
+            </p>
+            <p className="font-body text-white/50 text-sm leading-relaxed max-w-2xl">
+              These fields control the shared bank account information shown on project pages and giving sections across the site. Keep the number, bank name, account name and optional note up to date here.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1">
+              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Bank name</label>
+              <input name="bankName" value={settings.bankName} onChange={handleChange} className={inputClass} />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Account number</label>
+              <input name="bankAccountNumber" value={settings.bankAccountNumber} onChange={handleChange} className={inputClass} />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Account name</label>
+            <input name="bankAccountName" value={settings.bankAccountName} onChange={handleChange} className={inputClass} />
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Account note</label>
+            <textarea
+              name="bankAccountDescription"
+              value={settings.bankAccountDescription}
+              onChange={handleChange}
+              rows={3}
+              className={inputClass + " min-h-[96px] resize-none"}
+              placeholder="Use this account for project support and general giving."
+            />
           </div>
         </section>
 
@@ -396,6 +455,14 @@ export default function AdminSettingsPage() {
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">YouTube</label>
               <input name="youtubeUrl" value={settings.youtubeUrl} onChange={handleChange} placeholder="https://youtube.com/@handle" className={inputClass} />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">YouTube channel ID</label>
+              <input name="youtubeChannelId" value={settings.youtubeChannelId} onChange={handleChange} placeholder="UCxxxxxxxxxxxxxxxxxxxxxx" className={inputClass} />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">YouTube channel URL</label>
+              <input name="youtubeChannelUrl" value={settings.youtubeChannelUrl} onChange={handleChange} placeholder="https://www.youtube.com/@handle" className={inputClass} />
             </div>
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">Facebook</label>

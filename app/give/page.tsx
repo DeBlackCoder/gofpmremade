@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useInitiateDonationMutation } from "@/lib/hooks/queries";
@@ -74,6 +74,12 @@ export default function GivePage() {
   const [step, setStep] = useState<Step>("amount");
   const [givingType, setGivingType] = useState<GivingType>("Tithe");
   const [frequency, setFrequency] = useState<Frequency>("One-time");
+  const [settings, setSettings] = useState<{
+    bankName?: string;
+    bankAccountNumber?: string;
+    bankAccountName?: string;
+    bankAccountDescription?: string;
+  } | null>(null);
   const [preset, setPreset] = useState<number | null>(null);
   const [customAmt, setCustomAmt] = useState("");
   const [fullName, setFullName] = useState(
@@ -92,6 +98,23 @@ export default function GivePage() {
   const amount =
     preset ?? (customAmt ? parseInt(customAmt.replace(/\D/g, ""), 10) : 0);
   const displayAmount = amount ? `₦${amount.toLocaleString()}` : "₦0";
+
+  useEffect(() => {
+    fetch("/api/v1/site-settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && data?.data) {
+          setSettings(data.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const bankAccountNumber = settings?.bankAccountNumber ?? "1229195658";
+  const bankName = settings?.bankName ?? "Zenith Bank";
+  const bankAccountName = settings?.bankAccountName ?? "Assemblies of God 2 Choba — Proj Account";
+  const bankAccountDescription =
+    settings?.bankAccountDescription ?? "Use this account for project support and general giving.";
 
   const handleInitiateDonation = async () => {
     if (!fullName || !email || !amount) {
@@ -812,6 +835,42 @@ export default function GivePage() {
               </p>
               <p className="font-body text-white/40 text-xs mt-3 tracking-wide">
                 2 Corinthians 9:7
+              </p>
+            </motion.div>
+
+            <motion.div
+              className="p-5"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                backdropFilter: "blur(14px)",
+                WebkitBackdropFilter: "blur(14px)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "20px",
+                boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
+              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.25, duration: 0.6 }}
+            >
+              <p className="font-body text-white/40 text-[10px] tracking-widest uppercase mb-3">
+                Bank giving details
+              </p>
+              <div className="space-y-2">
+                <div>
+                  <p className="font-body text-white/40 text-[10px] uppercase tracking-widest">Bank</p>
+                  <p className="font-body text-white text-sm font-semibold">{bankName}</p>
+                </div>
+                <div>
+                  <p className="font-body text-white/40 text-[10px] uppercase tracking-widest">Account number</p>
+                  <p className="font-body text-white text-sm font-semibold">{bankAccountNumber}</p>
+                </div>
+                <div>
+                  <p className="font-body text-white/40 text-[10px] uppercase tracking-widest">Account name</p>
+                  <p className="font-body text-white text-sm font-semibold">{bankAccountName}</p>
+                </div>
+              </div>
+              <p className="font-body text-white/50 text-xs leading-relaxed mt-4">
+                {bankAccountDescription}
               </p>
             </motion.div>
 

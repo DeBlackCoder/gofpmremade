@@ -32,6 +32,12 @@ export default function ProjectDetailPage({
   const [project, setProject] = useState<Project | null>(null);
   const [allProjects, setAllProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [settings, setSettings] = useState<{
+    bankName?: string;
+    bankAccountNumber?: string;
+    bankAccountName?: string;
+    bankAccountDescription?: string;
+  } | null>(null);
 
   useEffect(() => {
     fetch("/api/v1/projects?limit=100", { cache: "no-store" })
@@ -47,6 +53,17 @@ export default function ProjectDetailPage({
       })
       .finally(() => setLoading(false));
   }, [slug]);
+
+  useEffect(() => {
+    fetch("/api/v1/site-settings", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && data?.data) {
+          setSettings(data.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <section className="relative w-full min-h-svh overflow-hidden">
@@ -243,14 +260,19 @@ export default function ProjectDetailPage({
                     Project account
                   </span>
                   <span className="font-body text-white font-semibold text-sm sm:text-base tracking-widest">
-                    1229195658
+                    {settings?.bankAccountNumber ?? "1229195658"}
                   </span>
                   <span className="font-body text-white/60 text-xs leading-relaxed">
-                    Zenith Bank
+                    {settings?.bankName ?? "Zenith Bank"}
                   </span>
                   <span className="font-body text-white/50 text-[11px] leading-relaxed uppercase tracking-wide">
-                    Assemblies of God 2 Choba — Proj Account
+                    {settings?.bankAccountName ?? "Assemblies of God 2 Choba — Proj Account"}
                   </span>
+                  {settings?.bankAccountDescription ? (
+                    <span className="font-body text-white/50 text-[11px] leading-relaxed mt-2">
+                      {settings.bankAccountDescription}
+                    </span>
+                  ) : null}
                 </motion.div>
               </div>
 

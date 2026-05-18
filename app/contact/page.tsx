@@ -18,10 +18,10 @@ import { API_BASE_URL } from "@/lib/constants/config";
 const contactDetails = [
   {
     label: "Address",
-    value: "14 Grace Avenue, Port Harcourt, Rivers State",
+    value: "God's Own Favour Prophetic Ministry, Eleme, Rivers State",
     href: "https://maps.google.com",
   },
-  { label: "Phone", value: "+234 801 234 5678", href: "tel:+2348012345678" },
+  { label: "Phone", value: "+234 80 6626 7207", href: "tel:+2348066267207" },
   {
     label: "Email",
     value: "hello@agchurch.org",
