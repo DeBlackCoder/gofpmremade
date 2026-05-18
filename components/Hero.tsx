@@ -399,7 +399,7 @@ export default function Hero() {
 
         {/* Content — centered single column */}
         <div
-          className="public-content relative h-full flex flex-col items-center justify-center gap-8 px-6 py-10 sm:px-10 sm:py-12 text-center"
+          className="public-content relative h-full flex flex-col items-center justify-center gap-8 px-6 pb-10 sm:px-10 sm:pb-12 text-center"
           style={{ zIndex: 2 }}
         >
 

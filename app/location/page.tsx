@@ -85,8 +85,8 @@ const dayStyles: Record<string, { accent: string; dot: string; note: string }> =
 const details = [
   {
     label: "Address",
-    value: "Assemblies Of God Church, Choba, Port Harcourt, Rivers State",
-    href: "https://www.google.com/maps/place/Assemblies+Of+God+Church+Choba+2/@4.8832034,6.9008766,1123m",
+    value: "God's Own Favour Prophetic Ministry, Eleme, Rivers State, Nigeria",
+    href: "https://www.google.com/maps/place/God's+Own+Favour+Prophetic+ministry/@4.7893568,7.1104087,17z/data=!3m1!4b1!4m6!3m5!1s0x106833e8ab607935:0xffdbe24e3e6fb34c!8m2!3d4.7893515!4d7.1129836!16s%2Fg%2F11pzhgppgl?entry=ttu&g_ep=EgoyMDI2MDUxMy4wIKXMDSoASAFQAw%3D%3D",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -96,8 +96,8 @@ const details = [
   },
   {
     label: "Phone",
-    value: "+234 801 234 5678",
-    href: "tel:+2348012345678",
+    value: "+234 80 6626 7207",
+    href: "tel:+234 80 6626 7207",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
@@ -150,7 +150,7 @@ const faqs = [
 ];
 
 const MAPS_URL =
-  "https://www.google.com/maps/place/Assemblies+Of+God+Church+Choba+2/@4.8832034,6.9008766,1123m";
+  "https://www.google.com/maps/place/God's+Own+Favour+Prophetic+ministry/@4.7893568,7.1104087,17z/data=!3m1!4b1!4m6!3m5!1s0x106833e8ab607935:0xffdbe24e3e6fb34c!8m2!3d4.7893515!4d7.1129836!16s%2Fg%2F11pzhgppgl?entry=ttu&g_ep=EgoyMDI2MDUxMy4wIKXMDSoASAFQAw%3D%3D";
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
@@ -313,7 +313,7 @@ export default function LocationPage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.6 }}
         >
-          We meet every week in Choba, Port Harcourt. Whether it&apos;s your
+          We meet every week in Alesa, Eleme. Whether it&apos;s your
           first time or your hundredth, there is always a seat for you.
         </motion.p>
 
@@ -578,10 +578,10 @@ export default function LocationPage() {
                 </motion.div>
                 <div className="flex flex-col">
                   <span className="font-body text-white font-semibold text-sm tracking-wide">
-                    AG Church · Choba 2
+                    GOFPM
                   </span>
                   <span className="font-body text-white/50 text-[10px] tracking-widest uppercase">
-                    Port Harcourt, Rivers State
+                    Eleme: Rivers State
                   </span>
                 </div>
               </div>
@@ -612,7 +612,7 @@ export default function LocationPage() {
             >
               <iframe
                 title="Church location map"
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2237.3!2d6.9008766!3d4.8832034!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1069dbcb5d6ca3f3%3A0xd53fd6de46d82c1b!2sAssemblies%20Of%20God%20Church%20Choba%202!5e0!3m2!1sen!2sng!4v1"
+                src="https://maps.google.com/maps?q=4.7893515,7.1129836&z=17&output=embed"
                 width="100%"
                 height="100%"
                 style={{
