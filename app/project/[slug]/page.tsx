@@ -5,9 +5,8 @@ import { use, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getDailyPhoto } from "@/lib/church-photos";
-import { projects as defaultProjects, type Project } from "@/lib/projects-data";
+import { type Project } from "@/lib/projects-data";
 import { Button } from "@/components/ui/button";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 const categoryColors: Record<string, string> = {
   Construction: "bg-amber-500/20 text-amber-200",
@@ -30,17 +29,24 @@ export default function ProjectDetailPage({
   const { slug } = use(params);
   const bgUrl = getDailyPhoto(7);
   const [activeImg, setActiveImg] = useState(0);
-  
-  // Use reactive localStorage for projects
-  const [savedProjects] = useLocalStorage<Project[]>("admin-projects", defaultProjects);
-  const [projects, setProjects] = useState<Project[]>(defaultProjects);
   const [project, setProject] = useState<Project | null>(null);
-  
+  const [allProjects, setAllProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    setProjects(savedProjects);
-    const foundProject = savedProjects.find((p) => p.slug === slug) ?? null;
-    setProject(foundProject);
-  }, [savedProjects, slug]);
+    fetch("/api/v1/projects?limit=100", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((data) => {
+        const list: Project[] = data?.data?.data ?? [];
+        setAllProjects(list);
+        setProject(list.find((p) => p.slug === slug) ?? null);
+      })
+      .catch(() => {
+        setAllProjects([]);
+        setProject(null);
+      })
+      .finally(() => setLoading(false));
+  }, [slug]);
 
   return (
     <section className="relative w-full min-h-svh overflow-hidden">
@@ -51,9 +57,21 @@ export default function ProjectDetailPage({
       {/* Background */}
 
       {/* Content */}
+<<<<<<< HEAD
       <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
+=======
+      <div className="public-content relative z-10 flex flex-col min-h-svh px-6 py-6 sm:px-10 sm:py-8">
+        {/* Loading */}
+        {loading && (
+          <motion.div className="mt-16 flex flex-col gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <div className="h-8 w-64 bg-white/8 animate-pulse rounded" />
+            <div className="h-4 w-40 bg-white/5 animate-pulse rounded" />
+          </motion.div>
+        )}
+
+>>>>>>> b26331d621b95c37a421480224b6fa0dffe3d0bb
         {/* Not found */}
-        {!project && (
+        {!loading && !project && (
           <motion.div
             className="mt-16 flex flex-col gap-4"
             initial={{ opacity: 0 }}
@@ -72,7 +90,7 @@ export default function ProjectDetailPage({
         )}
 
         {/* Project detail */}
-        {project && (
+        {!loading && project && (
           <>
             {/* Heading */}
             <motion.div
@@ -297,7 +315,7 @@ export default function ProjectDetailPage({
                 Other projects
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {projects
+                {allProjects
                   .filter((p) => p.slug !== project.slug)
                   .slice(0, 4)
                   .map((p, i) => (

@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
+import { ImageUploadInput } from "@/components/admin/ImageUploadInput";
 
 type ChurchEvent = {
   _id: string;
@@ -39,7 +40,6 @@ export default function AdminEventsPage() {
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetch("/api/v1/events?limit=100", { cache: "no-store" })
@@ -63,22 +63,7 @@ export default function AdminEventsPage() {
 
     let imageUrl = form.imageUrl;
 
-    // Convert image file to base64 if selected
-    if (imageFile) {
-      try {
-        imageUrl = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = () => reject(new Error("Failed to read image"));
-          reader.readAsDataURL(imageFile);
-        });
-      } catch {
-        setError("Failed to process image.");
-        setSaving(false);
-        return;
-      }
-    }
-
+    // imageUrl is already set via ImageUploadInput (base64 or URL)
     try {
       const res = await fetch("/api/v1/events", {
         method: "POST",
@@ -90,7 +75,6 @@ export default function AdminEventsPage() {
       if (!res.ok || !payload?.data) throw new Error(payload?.error ?? "Failed to save event");
       setEvents((p) => [payload.data, ...p].filter(Boolean));
       setForm(empty);
-      setImageFile(null);
       setShowForm(false);
     } catch (err: any) {
       setError(err.message ?? "Failed to save event.");
@@ -233,22 +217,12 @@ export default function AdminEventsPage() {
               />
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
-                Event image
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-                className={`${inputClass} file:mr-3 file:border-0 file:bg-white/15 file:px-3 file:py-1.5 file:text-xs file:text-white`}
-              />
-              {imageFile && (
-                <p className="font-body text-white/45 text-xs">
-                  Selected: {imageFile.name}
-                </p>
-              )}
-            </div>
+            <ImageUploadInput
+              label="Event image"
+              value={form.imageUrl}
+              onChange={(val) => setForm((p) => ({ ...p, imageUrl: val }))}
+              placeholder="https://example.com/event.jpg"
+            />
 
             {error && <p className="font-body text-red-400 text-xs">{error}</p>}
 

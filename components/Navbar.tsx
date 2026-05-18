@@ -84,10 +84,10 @@ export default function Navbar() {
               />
               <div className="flex flex-col gap-0">
                 <span className="font-body text-white/70 text-[11px] tracking-widest uppercase leading-tight">
-                  GOFPM
+                  Assemblies Of God Church
                 </span>
-                <span className="font-body text-[9px] tracking-widest uppercase leading-tight" style={{ color: "#42a7c0" }}>
-                  Eleme - Rivers State
+                <span className="font-body text-white/40 text-[9px] tracking-widest uppercase leading-tight">
+                  Choba 2
                 </span>
               </div>
             </Link>

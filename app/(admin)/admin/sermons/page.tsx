@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/ui/date-picker";
 import { apiClient } from "@/lib/api/client";
+import { ImageUploadInput } from "@/components/admin/ImageUploadInput";
 
 type SeriesTag = "Faith" | "Family" | "Prayer" | "Identity" | "Prophecy";
 
@@ -350,6 +351,12 @@ export default function AdminSermonsPage() {
                 />
               </div>
             </div>
+            <ImageUploadInput
+              label="Pastor photo (optional)"
+              value={form.pastorPhoto}
+              onChange={(val) => setForm((p) => ({ ...p, pastorPhoto: val }))}
+              placeholder="https://example.com/pastor.jpg"
+            />
             <div className="flex flex-col gap-1">
               <label className="font-body text-white/35 text-[10px] tracking-widest uppercase">
                 Excerpt
