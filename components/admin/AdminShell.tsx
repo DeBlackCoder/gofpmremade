@@ -474,7 +474,7 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
                   href="/"
                   className="font-body text-white/40 text-xs tracking-widest uppercase hover:text-white transition-colors"
                 >
-                  ↗ View site
+                  ↗ View public site
                 </Link>
                 <button
                   onClick={handleLogout}

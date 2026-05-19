@@ -50,7 +50,7 @@ export default function SermonDetailPage({
       <div className="public-content relative flex flex-col items-center min-h-svh px-6 py-6 sm:px-10 sm:py-8" style={{ zIndex: 1 }}>
         <div className="flex items-center justify-between">
           <p className="font-body text-white/70 text-xs tracking-widest uppercase">
-            Assemblies Of God Church
+            GOD'S OWN FAVOUR PROPHETIC MINISTRY
           </p>
           <Link
             href="/sermons"

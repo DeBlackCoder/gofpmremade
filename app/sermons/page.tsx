@@ -404,7 +404,7 @@ export default function SermonsPage() {
               {podcastError && !podcastLoading && (
                 <div className="px-6 py-8 flex flex-col gap-3" style={glass}>
                   <p className="font-body text-white/60 text-sm">
-                    Could not load audio messages.
+                    Could not load audio messages due to database congestion.
                   </p>
                   <p className="font-body text-white/35 text-xs">{podcastError}</p>
                 </div>

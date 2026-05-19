@@ -304,7 +304,7 @@ export default function MinistryPage() {
                           backdropFilter: "blur(8px)",
                         }}
                       >
-                        Lead Pastor
+                        Leadership
                       </span>
                       <h3 className="font-heading text-white font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight">
                         {settings.pastorName}
@@ -357,7 +357,7 @@ export default function MinistryPage() {
                           backdropFilter: "blur(8px)",
                         }}
                       >
-                        Pastor&apos;s Wife
+                        Leadership
                       </span>
                       <h3 className="font-heading text-white font-black text-sm sm:text-2xl md:text-3xl leading-tight tracking-tight">
                         {settings.pastorWifeName}

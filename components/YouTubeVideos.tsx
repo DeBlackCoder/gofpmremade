@@ -242,7 +242,7 @@ export default function YouTubeVideos() {
         style={glass}
       >
         <p className="font-body text-white/60 text-sm">
-          Could not load videos right now.
+          Could not load videos right now due to database congestion.
         </p>
         <p className="font-body text-white/35 text-xs leading-relaxed">
           {error}
