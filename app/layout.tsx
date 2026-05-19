@@ -5,7 +5,7 @@ import { Providers } from "@/lib/providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.ag2choba.org';
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.gofpm.org';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -49,13 +49,7 @@ export const metadata: Metadata = {
       "A Spirit-filled community rooted in love, faith, and service. Join us for worship, sermons, and community in Port Harcourt, Rivers State.",
     images: [
       {
-        url: `${siteUrl}/og-image.jpg`,
-        width: 1200,
-        height: 630,
-        alt: "God's Own Favour Prophetic Ministry",
-      },
-      {
-        url: `${siteUrl}/logo.png`,
+        url: `${siteUrl}/gofpm.png`,
         width: 400,
         height: 400,
         alt: "GOFPM logo",
@@ -67,7 +61,7 @@ export const metadata: Metadata = {
     title: "God's Own Favour Prophetic Ministry | Eleme, Port Harcourt",
     description:
       "A Spirit-filled community rooted in love, faith, and service.",
-    images: [`${siteUrl}/og-image.jpg`, `${siteUrl}/logo.png`],
+    images: [`${siteUrl}/gofpm.png`],
   },
   robots: {
     index: true,
