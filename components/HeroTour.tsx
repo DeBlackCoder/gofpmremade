@@ -20,7 +20,7 @@ export default function HeroTour() {
           popover: {
             title: "Home",
             description:
-              "You're at Assemblies Of God Church — a Spirit-filled community in Port Harcourt.",
+              "You're at God's Own Favour Prophetic Ministry a Spirit-filled community Eleme.",
             side: "bottom",
             align: "start",
           },

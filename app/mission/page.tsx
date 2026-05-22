@@ -30,7 +30,7 @@ const values = [
     id: 1,
     name: "Scripture First",
     sub: "The Bible is our authority and compass",
-    body: "Every decision we make — pastoral, financial, structural — is measured against the Word of God. We do not bend Scripture to culture; we let Scripture shape culture.",
+    body: "Every decision we make pastoral, financial, structural is measured against the Word of God. We do not bend Scripture to culture; we let Scripture shape culture.",
   },
   {
     id: 2,
@@ -42,7 +42,7 @@ const values = [
     id: 3,
     name: "Radical Generosity",
     sub: "We give our resources, time, and lives",
-    body: "Generosity is not a budget line — it's a posture. We tithe, we give, and we serve because we have received freely and choose to give freely.",
+    body: "Generosity is not a budget line it's a posture. We tithe, we give, and we serve because we have received freely and choose to give freely.",
   },
   {
     id: 4,
@@ -54,30 +54,30 @@ const values = [
     id: 5,
     name: "Faithful to the Ends of the Earth",
     sub: "Missions is not optional",
-    body: "Port Harcourt is not our final destination — it is our launching pad. We invest in local, national, and international mission efforts as an expression of our obedience to the Great Commission.",
+    body: "Eleme is not our final destination it is our launching pad. We invest in local, national, and international mission efforts as an expression of our obedience to the Great Commission.",
   },
 ];
 
 const timeline = [
   {
-    year: "2006",
+    year: "**** 1",
     heading: "Founded.",
-    desc: "Pastor James Okafor and a congregation of 14 began meeting in a single room in Rumuola, Port Harcourt — with nothing but faith and a shared hunger for God.",
+    desc: "Prophetess Faith Promise and a congregation of 25 began meeting in a single room in Eleme, with nothing but faith and a shared hunger for God.",
   },
   {
-    year: "2011",
+    year: "**** 2",
     heading: "First building.",
-    desc: "After five years of house meetings and rented halls, the church dedicated its first permanent facility — debt-free — through the giving of the congregation.",
+    desc: "After many years of house meetings and rented halls, the church dedicated its first permanent facility, debt-free through the giving of the congregation.",
   },
   {
-    year: "2018",
-    heading: "1,000 members.",
-    desc: "A landmark milestone and a reminder that growth is God's business. We expanded our pastoral team and launched six life groups.",
+    year: "**** 3",
+    heading: "500+ members.",
+    desc: "A landmark milestone and a reminder that growth is God's business. We expanded our pastoral team and launched a number life groups.",
   },
   {
     year: "Today",
-    heading: "1,200+ members, 40+ nations.",
-    desc: "We are a church that looks like heaven — diverse, united, and still reaching. The mission continues.",
+    heading: "1,0 00+ members.",
+    desc: "We are a church that looks like heaven diverse, united, and still reaching. The mission continues.",
   },
 ];
 
@@ -128,10 +128,8 @@ export default function MissionPage() {
           transition={{ delay: 0.85, duration: 0.7 }}
         >
           <p className="font-body text-white/70 text-sm sm:text-base leading-relaxed max-w-sm">
-            Our mission is not a programme — it&apos;s a calling. For over
-            eighteen years, we have pursued one thing: to know God deeply, make
-            Him known boldly, and serve humanity selflessly — right here in Port
-            Harcourt and beyond.
+            Our mission is not a programme it&apos;s a calling. For years, we have pursued one thing: to know God deeply, make
+            Him known boldly, and serve humanity selflessly right here in Eleme and beyond.
           </p>
 
           <div className="border-l-2 border-white/25 pl-5 flex flex-col gap-2">

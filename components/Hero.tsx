@@ -391,7 +391,7 @@ export default function Hero() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.88, duration: 0.7 }}
               >
-                A Spirit-filled family rooted in the Word, alive in worship, and committed to transforming lives — right here in Port Harcourt.
+                A Spirit-filled family rooted in the Word, alive in worship, and committed to transforming lives — right here in Eleme.
               </motion.p>
 
               {/* Scripture pill */}
@@ -630,7 +630,7 @@ export default function Hero() {
 
           <motion.p className="font-body text-white/40 text-sm mb-14 max-w-sm"
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.2 }}>
-            Eighteen years of lives changed in Port Harcourt and beyond.
+            Eighteen years of lives changed in Eleme and beyond.
           </motion.p>
 
           {/* Stats */}
@@ -673,14 +673,13 @@ export default function Hero() {
             }}
           >
             <p className="font-body text-white/68 text-sm sm:text-base leading-[1.8] mb-4">
-              We are not just a congregation — we are a family on mission. For over
-              eighteen years, AG Church Choba 2 has been a place where broken people
+              We are not just a congregation we are a family on mission. For years, God's Own Favour Prophetic Ministry has been a place where broken people
               find wholeness, seekers find truth, and believers grow deeper in Christ.
             </p>
             <p className="font-body text-white/45 text-sm sm:text-base leading-[1.8] mb-6">
-              Rooted in the Assemblies of God fellowship, we are passionate about
+              Rooted in the Word Of God, we are passionate about
               Spirit-filled worship, sound biblical teaching, and reaching every
-              soul in Port Harcourt and beyond with the love of Jesus.
+              soul in Eleme and beyond with the love of God.
             </p>
             <div className="flex flex-wrap gap-5 pt-1">
               <Link href="/mission" className="font-body text-sm font-semibold transition-colors"
